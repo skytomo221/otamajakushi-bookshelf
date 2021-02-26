@@ -1,0 +1,32 @@
+env:
+  browser: true
+  es2021: true
+extends:
+  - 'plugin:react/recommended'
+  - airbnb
+  - 'plugin:@typescript-eslint/recommended'
+parser: '@typescript-eslint/parser'
+parserOptions:
+  ecmaFeatures:
+    jsx: true
+  ecmaVersion: 12
+  sourceType: module
+plugins:
+  - react
+  - '@typescript-eslint'
+  - eslint-plugin-prettier
+rules:
+  react/prop-types: off
+  prettier/prettier:
+    - error
+  '@typescript-eslint/interface-name-prefix':
+    - error
+    - prefixWithI: 'always'
+  react/jsx-filename-extension:
+    - 2
+    - extensions:
+        - '.js'
+        - '.jsx'
+        - '.ts'
+        - '.tsx'
+  devDependencies: true
