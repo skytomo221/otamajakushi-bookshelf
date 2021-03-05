@@ -19,9 +19,6 @@ rules:
   react/prop-types: off
   prettier/prettier:
     - error
-  '@typescript-eslint/interface-name-prefix':
-    - error
-    - prefixWithI: 'always'
   react/jsx-filename-extension:
     - 2
     - extensions:
@@ -30,3 +27,13 @@ rules:
         - '.ts'
         - '.tsx'
   devDependencies: true
+  '@typescript-eslint/naming-convention':
+    - error
+    - selector: interface
+      format:
+        - PascalCase
+      custom:
+        regex: '^I[A-Z]'
+        match: false
+settings:
+  import/resolver: webpack
