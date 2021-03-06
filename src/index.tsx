@@ -1,9 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
+
+import Store from './Store';
 import BookshelfForm from './components/BookshelfForm';
 import OtamaAppBar from './components/OtamaAppBar';
-import Store from './Store';
 
 const container = document.getElementById('contents');
 

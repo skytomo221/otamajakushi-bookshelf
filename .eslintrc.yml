@@ -2,9 +2,13 @@ env:
   browser: true
   es2021: true
 extends:
-  - 'plugin:react/recommended'
   - airbnb
+  - 'eslint:recommended'
+  - 'plugin:react/recommended'
   - 'plugin:@typescript-eslint/recommended'
+  - 'plugin:import/warnings'
+  - 'plugin:import/typescript'
+  - prettier
 parser: '@typescript-eslint/parser'
 parserOptions:
   ecmaFeatures:
@@ -14,11 +18,8 @@ parserOptions:
 plugins:
   - react
   - '@typescript-eslint'
-  - eslint-plugin-prettier
 rules:
   react/prop-types: off
-  prettier/prettier:
-    - error
   react/jsx-filename-extension:
     - 2
     - extensions:
@@ -26,7 +27,7 @@ rules:
         - '.jsx'
         - '.ts'
         - '.tsx'
-  devDependencies: true
+  devDependencies: 0
   '@typescript-eslint/naming-convention':
     - error
     - selector: interface
@@ -34,6 +35,23 @@ rules:
         - PascalCase
       custom:
         regex: '^I[A-Z]'
-        match: false
+        match: true
+  import/extensions:
+    - error
+    - ignorePackages
+    - js: never
+      jsx: never
+      ts: never
+      tsx: never
+  import/no-extraneous-dependencies:
+    - error
+    - devDependencies: false
+      optionalDependencies: false
+  no-use-before-define: off
+  import/order:
+    - warn
+    - alphabetize:
+        order: asc
+      newlines-between: always
 settings:
   import/resolver: webpack

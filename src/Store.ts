@@ -1,6 +1,7 @@
 import { combineReducers, createStore } from 'redux';
-import { IState } from './states/IState';
+
 import bookshelfReducer from './reducers/BookshelfReducer';
+import { IState } from './states/IState';
 
 const combinedReducer = combineReducers<IState>({
   bookshelf: bookshelfReducer,

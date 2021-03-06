@@ -1,9 +1,10 @@
+import { Button, TextField } from '@material-ui/core';
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+
 import { changeBookshelfAction } from '../actions/BookshelfActions';
-import { IState } from '../states/IState';
 import IBookshelf from '../states/IBookshelf';
-import { Button, TextField } from '@material-ui/core';
+import { IState } from '../states/IState';
 
 // データは、Storeから渡されるので、プロパティは必要ありません。
 const BookshelfForm: React.FC = () => {

@@ -1,29 +1,23 @@
-import React from 'react';
+import AppBar from '@material-ui/core/AppBar';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
 import {
   fade,
   makeStyles,
   Theme,
   createStyles,
 } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import InputBase from '@material-ui/core/InputBase';
-import Badge from '@material-ui/core/Badge';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
-import MenuIcon from '@material-ui/icons/Menu';
-import SearchIcon from '@material-ui/icons/Search';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import MailIcon from '@material-ui/icons/Mail';
-import NotificationsIcon from '@material-ui/icons/Notifications';
-import MoreIcon from '@material-ui/icons/MoreVert';
-import Button from '@material-ui/core/Button';
 import CloseIcon from '@material-ui/icons/Close';
+import MenuIcon from '@material-ui/icons/Menu';
 import MinimizeIcon from '@material-ui/icons/Minimize';
-import Icon from '@mdi/react';
 import { mdiWindowMaximize } from '@mdi/js';
+import Icon from '@mdi/react';
+import React from 'react';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -91,7 +85,7 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export default function OtamaAppBar() {
+export default function OtamaAppBar(): JSX.Element {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [
@@ -145,13 +139,13 @@ export default function OtamaAppBar() {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}>
       <MenuItem>
-        <IconButton aria-label="show 4 new mails" color="inherit"></IconButton>
+        <IconButton aria-label="show 4 new mails" color="inherit" />
         <p>Messages</p>
       </MenuItem>
       <MenuItem>
         <IconButton
           aria-label="show 11 new notifications"
-          color="inherit"></IconButton>
+          color="inherit" />
         <p>Notifications</p>
       </MenuItem>
       <MenuItem onClick={handleProfileMenuOpen}>

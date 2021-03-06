@@ -1,4 +1,5 @@
 import { reducerWithInitialState } from 'typescript-fsa-reducers';
+
 import { changeBookshelfAction } from '../actions/BookshelfActions';
 import IBookshelf from '../states/IBookshelf';
 
