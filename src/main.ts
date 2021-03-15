@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain, remote } from 'electron';
 import path from 'path';
 
 // セキュアな Electron の構成
@@ -9,10 +9,12 @@ const createWindow = (): void => {
     width: 1200,
     height: 600,
     webPreferences: {
-      nodeIntegration: false,
-      nodeIntegrationInWorker: false,
-      contextIsolation: true,
+      nodeIntegration: true,
+      nodeIntegrationInWorker: true,
+      contextIsolation: false,
+      // preload: `${__dirname}/preload.js`
     },
+    frame: false,
   });
 
   // 読み込む index.html。
@@ -21,6 +23,20 @@ const createWindow = (): void => {
 
   // 開発者ツールを起動する
   // win.webContents.openDevTools();
+
+  ipcMain.handle('window-minimize', () => {
+    win.minimize();
+  });
+
+  let fullScreen = false;
+
+  ipcMain.handle('window-maximize', () => {
+    win.setFullScreen((fullScreen = !fullScreen));
+  });
+
+  ipcMain.handle('window-close', () => {
+    app.quit();
+  });
 };
 
 // Electronの起動準備が終わったら、ウィンドウを作成する。

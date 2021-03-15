@@ -1,3 +1,5 @@
+import { ipcRenderer } from 'electron';
+
 import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
@@ -11,7 +13,6 @@ import {
   Theme,
   createStyles,
 } from '@material-ui/core/styles';
-import AccountCircle from '@material-ui/icons/AccountCircle';
 import CloseIcon from '@material-ui/icons/Close';
 import MenuIcon from '@material-ui/icons/Menu';
 import MinimizeIcon from '@material-ui/icons/Minimize';
@@ -21,6 +22,9 @@ import React from 'react';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    appBar: {
+      margin: 0,
+    },
     grow: {
       flexGrow: 1,
     },
@@ -96,8 +100,16 @@ export default function OtamaAppBar(): JSX.Element {
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
-  const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
+  const windowMinimize = () => {
+    ipcRenderer.invoke('window-minimize');
+  };
+
+  const windowMaximize = () => {
+    ipcRenderer.invoke('window-maximize');
+  };
+
+  const windowClose = () => {
+    ipcRenderer.invoke('window-close');
   };
 
   const handleMobileMenuClose = () => {
@@ -107,10 +119,6 @@ export default function OtamaAppBar(): JSX.Element {
   const handleMenuClose = () => {
     setAnchorEl(null);
     handleMobileMenuClose();
-  };
-
-  const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setMobileMoreAnchorEl(event.currentTarget);
   };
 
   const menuId = 'primary-search-account-menu';
@@ -143,28 +151,16 @@ export default function OtamaAppBar(): JSX.Element {
         <p>Messages</p>
       </MenuItem>
       <MenuItem>
-        <IconButton
-          aria-label="show 11 new notifications"
-          color="inherit" />
+        <IconButton aria-label="show 11 new notifications" color="inherit" />
         <p>Notifications</p>
-      </MenuItem>
-      <MenuItem onClick={handleProfileMenuOpen}>
-        <IconButton
-          aria-label="account of current user"
-          aria-controls="primary-search-account-menu"
-          aria-haspopup="true"
-          color="inherit">
-          <AccountCircle />
-        </IconButton>
-        <p>Profile</p>
       </MenuItem>
     </Menu>
   );
 
   return (
-    <div className={classes.grow}>
-      <AppBar position="static">
-        <Toolbar>
+    <>
+      <AppBar position="static" className={classes.appBar}>
+        <Toolbar variant="dense">
           <IconButton
             edge="start"
             className={classes.menuIconButton}
@@ -185,10 +181,16 @@ export default function OtamaAppBar(): JSX.Element {
           </Typography>
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
-            <IconButton aria-label="show 17 new notifications" color="inherit">
+            <IconButton
+              aria-label="show 17 new notifications"
+              color="inherit"
+              onClick={windowMinimize}>
               <MinimizeIcon />
             </IconButton>
-            <IconButton aria-label="show 4 new mails" color="inherit">
+            <IconButton
+              aria-label="show 4 new mails"
+              color="inherit"
+              onClick={windowMaximize}>
               <Icon path={mdiWindowMaximize} title="Window Maximize" size={1} />
             </IconButton>
             <IconButton
@@ -196,17 +198,7 @@ export default function OtamaAppBar(): JSX.Element {
               aria-label="account of current user"
               aria-controls={menuId}
               aria-haspopup="true"
-              onClick={handleProfileMenuOpen}
-              color="inherit">
-              <CloseIcon />
-            </IconButton>
-          </div>
-          <div className={classes.sectionMobile}>
-            <IconButton
-              aria-label="show more"
-              aria-controls={mobileMenuId}
-              aria-haspopup="true"
-              onClick={handleMobileMenuOpen}
+              onClick={windowClose}
               color="inherit">
               <CloseIcon />
             </IconButton>
@@ -215,6 +207,6 @@ export default function OtamaAppBar(): JSX.Element {
       </AppBar>
       {renderMobileMenu}
       {renderMenu}
-    </div>
+    </>
   );
 }
