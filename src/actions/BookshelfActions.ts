@@ -1,10 +1,10 @@
 import { actionCreatorFactory } from 'typescript-fsa';
 
-import IBookshelf from '../states/IBookshelf';
+import Bookshelf from '../states/Bookshelf';
 
 const actionCreator = actionCreatorFactory('bookshelf-action');
 
-export const changeBookshelfAction = actionCreator<Partial<IBookshelf>>(
+export const changeBookshelfAction = actionCreator<Partial<Bookshelf>>(
   'change-bookshelf',
 );
 

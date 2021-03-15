@@ -3,13 +3,13 @@ import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { changeBookshelfAction } from '../actions/BookshelfActions';
-import IBookshelf from '../states/IBookshelf';
-import { IState } from '../states/IState';
+import Bookshelf from '../states/Bookshelf';
+import { State } from '../states/State';
 
 // データは、Storeから渡されるので、プロパティは必要ありません。
 const BookshelfForm: React.FC = () => {
   // useSelector でステートの変更を受け取れます。
-  const { books } = useSelector<IState, IBookshelf>((a: IState) => a.bookshelf); // -- (a)
+  const { books } = useSelector<State, Bookshelf>((a: State) => a.bookshelf); // -- (a)
   const dispatch = useDispatch(); // -- (b)
   const onBookChange = useCallback((value: string) => {
     // 名前を変更したとき(タイプするたび)のイベント

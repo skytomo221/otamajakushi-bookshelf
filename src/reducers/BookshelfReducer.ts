@@ -1,13 +1,13 @@
 import { reducerWithInitialState } from 'typescript-fsa-reducers';
 
 import { changeBookshelfAction } from '../actions/BookshelfActions';
-import IBookshelf from '../states/IBookshelf';
+import Bookshelf from '../states/Bookshelf';
 
-const initBookshelf: IBookshelf = {
+const initBookshelf: Bookshelf = {
   books: [],
 };
 
-const bookshelfReducer = reducerWithInitialState<IBookshelf>(initBookshelf)
+const bookshelfReducer = reducerWithInitialState<Bookshelf>(initBookshelf)
   // Action ごとに`.case`をメソッドチェーンでつなぐ
   // 1番目の引数は、アクション、2番めが処理の関数
   // 処理の関数の引数は、1番目が変更前の State、2番めが Action の値

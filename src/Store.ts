@@ -1,9 +1,9 @@
 import { combineReducers, createStore } from 'redux';
 
 import bookshelfReducer from './reducers/BookshelfReducer';
-import { IState } from './states/IState';
+import { State } from './states/State';
 
-const combinedReducer = combineReducers<IState>({
+const combinedReducer = combineReducers<State>({
   bookshelf: bookshelfReducer,
 });
 
