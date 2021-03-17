@@ -24,18 +24,26 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     appBar: {
       margin: 0,
+      '-webkit-app-region': 'drag',
     },
     grow: {
       flexGrow: 1,
     },
     menuIconButton: {
       marginRight: theme.spacing(2),
+      '-webkit-app-region': 'no-drag',
+    },
+    iconButton: {
+      '-webkit-app-region': 'no-drag',
     },
     title: {
       display: 'none',
+      textOverflow: 'ellipsis',
+      overflow: 'hidden',
       [theme.breakpoints.up('sm')]: {
         display: 'block',
       },
+      minWidth: '100px',
     },
     search: {
       position: 'relative',
@@ -76,14 +84,9 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     sectionDesktop: {
       display: 'none',
-      [theme.breakpoints.up('md')]: {
+      [theme.breakpoints.up('xs')]: {
         display: 'flex',
-      },
-    },
-    sectionMobile: {
-      display: 'flex',
-      [theme.breakpoints.up('md')]: {
-        display: 'none',
+        flexShrink: 1,
       },
     },
   }),
@@ -169,14 +172,14 @@ export default function OtamaAppBar(): JSX.Element {
             <MenuIcon />
           </IconButton>
           <div>
-            <Button color="inherit">
+            <Button color="inherit" className={classes.iconButton}>
               <Typography variant="button" noWrap>
                 ファイル
               </Typography>
             </Button>
           </div>
           <div className={classes.grow} />
-          <Typography className={classes.title} variant="body1" noWrap>
+          <Typography className={classes.title} variant="body1">
             ようこそ - Otamajakushi Bookshelf
           </Typography>
           <div className={classes.grow} />
@@ -184,13 +187,15 @@ export default function OtamaAppBar(): JSX.Element {
             <IconButton
               aria-label="show 17 new notifications"
               color="inherit"
-              onClick={windowMinimize}>
+              onClick={windowMinimize}
+              className={classes.iconButton}>
               <MinimizeIcon />
             </IconButton>
             <IconButton
               aria-label="show 4 new mails"
               color="inherit"
-              onClick={windowMaximize}>
+              onClick={windowMaximize}
+              className={classes.iconButton}>
               <Icon path={mdiWindowMaximize} title="Window Maximize" size={1} />
             </IconButton>
             <IconButton
@@ -199,7 +204,8 @@ export default function OtamaAppBar(): JSX.Element {
               aria-controls={menuId}
               aria-haspopup="true"
               onClick={windowClose}
-              color="inherit">
+              color="inherit"
+              className={classes.iconButton}>
               <CloseIcon />
             </IconButton>
           </div>

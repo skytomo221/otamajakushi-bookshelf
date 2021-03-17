@@ -6,8 +6,8 @@ import path from 'path';
 
 const createWindow = (): void => {
   const win = new BrowserWindow({
-    width: 1200,
-    height: 600,
+    width: 500,
+    height: 700,
     webPreferences: {
       nodeIntegration: true,
       nodeIntegrationInWorker: true,
@@ -15,6 +15,7 @@ const createWindow = (): void => {
       // preload: `${__dirname}/preload.js`
     },
     frame: false,
+    resizable: true,
   });
 
   // 読み込む index.html。
