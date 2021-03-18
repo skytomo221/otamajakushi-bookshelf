@@ -95,13 +95,8 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function OtamaAppBar(): JSX.Element {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [
-    mobileMoreAnchorEl,
-    setMobileMoreAnchorEl,
-  ] = React.useState<null | HTMLElement>(null);
 
   const isMenuOpen = Boolean(anchorEl);
-  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
   const windowMinimize = () => {
     ipcRenderer.invoke('window-minimize');
@@ -115,13 +110,12 @@ export default function OtamaAppBar(): JSX.Element {
     ipcRenderer.invoke('window-close');
   };
 
-  const handleMobileMenuClose = () => {
-    setMobileMoreAnchorEl(null);
+  const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
   };
 
   const handleMenuClose = () => {
     setAnchorEl(null);
-    handleMobileMenuClose();
   };
 
   const menuId = 'primary-search-account-menu';
@@ -134,29 +128,8 @@ export default function OtamaAppBar(): JSX.Element {
       transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       open={isMenuOpen}
       onClose={handleMenuClose}>
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-    </Menu>
-  );
-
-  const mobileMenuId = 'primary-search-account-menu-mobile';
-  const renderMobileMenu = (
-    <Menu
-      anchorEl={mobileMoreAnchorEl}
-      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-      id={mobileMenuId}
-      keepMounted
-      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-      open={isMobileMenuOpen}
-      onClose={handleMobileMenuClose}>
-      <MenuItem>
-        <IconButton aria-label="show 4 new mails" color="inherit" />
-        <p>Messages</p>
-      </MenuItem>
-      <MenuItem>
-        <IconButton aria-label="show 11 new notifications" color="inherit" />
-        <p>Notifications</p>
-      </MenuItem>
+      <MenuItem onClick={handleMenuClose}>新規の辞書作成</MenuItem>
+      <MenuItem onClick={handleMenuClose}>辞書を開く</MenuItem>
     </Menu>
   );
 
@@ -172,14 +145,17 @@ export default function OtamaAppBar(): JSX.Element {
             <MenuIcon />
           </IconButton>
           <div>
-            <Button color="inherit" className={classes.iconButton}>
+            <Button
+              color="inherit"
+              className={classes.iconButton}
+              onClick={handleMenuClick}>
               <Typography variant="button" noWrap>
                 ファイル
               </Typography>
             </Button>
           </div>
           <div className={classes.grow} />
-          <Typography className={classes.title} variant="body1">
+          <Typography className={classes.title} variant="body1" noWrap>
             ようこそ - Otamajakushi Bookshelf
           </Typography>
           <div className={classes.grow} />
@@ -211,7 +187,6 @@ export default function OtamaAppBar(): JSX.Element {
           </div>
         </Toolbar>
       </AppBar>
-      {renderMobileMenu}
       {renderMenu}
     </>
   );
