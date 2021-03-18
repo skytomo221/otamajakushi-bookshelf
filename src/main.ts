@@ -1,5 +1,6 @@
-import { app, BrowserWindow, ipcMain, remote } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, Menu, remote } from 'electron';
 import path from 'path';
+import { writeFileSync, readFileSync } from 'fs';
 
 // セキュアな Electron の構成
 // 参考: https://qiita.com/pochman/items/64b34e9827866664d436
@@ -37,6 +38,37 @@ const createWindow = (): void => {
 
   ipcMain.handle('window-close', () => {
     app.quit();
+  });
+
+  ipcMain.handle('file-open', async event => {
+    // ファイルを選択
+    const paths = dialog.showOpenDialogSync(win, {
+      buttonLabel: '開く', // 確認ボタンのラベル
+      filters: [{ name: 'Text', extensions: ['txt', 'text'] }],
+      properties: [
+        'openFile', // ファイルの選択を許可
+        'createDirectory', // ディレクトリの作成を許可 (macOS)
+      ],
+    });
+
+    // キャンセルで閉じた場合
+    if (paths === undefined) {
+      return { status: undefined };
+    }
+
+    // ファイルの内容を返却
+    try {
+      const filePath = paths[0];
+      const buff = readFileSync(filePath);
+
+      return {
+        status: true,
+        path: filePath,
+        text: buff.toString(),
+      };
+    } catch (error) {
+      return { status: false, message: error.message };
+    }
   });
 };
 

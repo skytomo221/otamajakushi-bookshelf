@@ -129,7 +129,30 @@ export default function OtamaAppBar(): JSX.Element {
       open={isMenuOpen}
       onClose={handleMenuClose}>
       <MenuItem onClick={handleMenuClose}>新規の辞書作成</MenuItem>
-      <MenuItem onClick={handleMenuClose}>辞書を開く</MenuItem>
+      <MenuItem
+        onClick={() => {
+          // メインプロセスを呼び出し
+          ipcRenderer
+            .invoke('file-open')
+            .then(data => {
+              // キャンセルで閉じた
+              if (data.status === undefined) {
+                return false;
+              }
+              // ファイルが開けなかった
+              if (!data.status) {
+                alert(`ファイルが開けませんでした\n${data.message}`);
+                return false;
+              }
+              console.log(data.text);
+              return true;
+            })
+            .catch(err => {
+              alert(err);
+            });
+        }}>
+        辞書を開く
+      </MenuItem>
     </Menu>
   );
 
