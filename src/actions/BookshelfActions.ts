@@ -4,8 +4,10 @@ import Bookshelf from '../states/Bookshelf';
 
 const actionCreator = actionCreatorFactory('bookshelf-action');
 
-export const changeBookshelfAction = actionCreator<Partial<Bookshelf>>(
-  'change-bookshelf',
+export const addBookAction = actionCreator<Partial<Bookshelf>>(
+  'add-book',
 );
 
-export { changeBookshelfAction as default };
+export const removeBookAction = actionCreator<Partial<Bookshelf>>(
+  'remove-book',
+);

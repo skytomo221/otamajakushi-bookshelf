@@ -92,7 +92,11 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export default function OtamaAppBar(): JSX.Element {
+interface OtamaAppBarProps {
+  onBookChange: (text: string) => void;
+}
+
+export default function OtamaAppBar(props: OtamaAppBarProps): JSX.Element {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
@@ -144,7 +148,7 @@ export default function OtamaAppBar(): JSX.Element {
                 alert(`ファイルが開けませんでした\n${data.message}`);
                 return false;
               }
-              console.log(data.text);
+              props.onBookChange(data.text);
               return true;
             })
             .catch(err => {

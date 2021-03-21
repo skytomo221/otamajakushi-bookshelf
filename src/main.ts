@@ -44,7 +44,7 @@ const createWindow = (): void => {
     // ファイルを選択
     const paths = dialog.showOpenDialogSync(win, {
       buttonLabel: '開く', // 確認ボタンのラベル
-      filters: [{ name: 'Text', extensions: ['txt', 'text'] }],
+      filters: [{ name: 'OTM-JSON', extensions: ['json'] }],
       properties: [
         'openFile', // ファイルの選択を許可
         'createDirectory', // ディレクトリの作成を許可 (macOS)
