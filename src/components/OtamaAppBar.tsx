@@ -1,5 +1,6 @@
 import { ipcRenderer } from 'electron';
 
+import { CssBaseline, Fab, useScrollTrigger, Zoom } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
@@ -14,6 +15,7 @@ import {
   createStyles,
 } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
+import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import MenuIcon from '@material-ui/icons/Menu';
 import MinimizeIcon from '@material-ui/icons/Minimize';
 import { mdiWindowMaximize } from '@mdi/js';
@@ -25,6 +27,7 @@ const useStyles = makeStyles((theme: Theme) =>
     appBar: {
       margin: 0,
       '-webkit-app-region': 'drag',
+      position: 'fixed',
     },
     grow: {
       flexGrow: 1,
@@ -89,17 +92,68 @@ const useStyles = makeStyles((theme: Theme) =>
         flexShrink: 1,
       },
     },
+    scrollTop: {
+      position: 'fixed',
+      bottom: theme.spacing(2),
+      right: theme.spacing(2),
+    },
   }),
 );
 
-interface OtamaAppBarProps {
-  onBookChange: (text: string) => void;
+type ElevationScrollProps = {
+  children: React.ReactElement;
+};
+
+function ElevationScroll(props: ElevationScrollProps) {
+  const { children } = props;
+  const trigger = useScrollTrigger({
+    disableHysteresis: true,
+    threshold: 0,
+  });
+
+  return React.cloneElement(children, {
+    elevation: trigger ? 4 : 0,
+  });
 }
 
-export default function OtamaAppBar(props: OtamaAppBarProps): JSX.Element {
+function ScrollTop(props: ElevationScrollProps) {
+  const { children } = props;
   const classes = useStyles();
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const trigger = useScrollTrigger({
+    disableHysteresis: true,
+    threshold: 100,
+  });
 
+  const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    const anchor = (
+      (event.target as HTMLDivElement).ownerDocument || document
+    ).querySelector('#back-to-top-anchor');
+
+    if (anchor) {
+      anchor.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
+
+  return (
+    <Zoom in={trigger}>
+      <div
+        onClick={handleClick}
+        role="presentation"
+        className={classes.scrollTop}>
+        {children}
+      </div>
+    </Zoom>
+  );
+}
+
+type Props = {
+  onBookChange: (text: string) => void;
+};
+
+export default function OtamaAppBar(props: Props): JSX.Element {
+  const classes = useStyles();
+  const { onBookChange } = props;
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const isMenuOpen = Boolean(anchorEl);
 
   const windowMinimize = () => {
@@ -148,7 +202,7 @@ export default function OtamaAppBar(props: OtamaAppBarProps): JSX.Element {
                 alert(`ファイルが開けませんでした\n${data.message}`);
                 return false;
               }
-              props.onBookChange(data.text);
+              onBookChange(data.text);
               return true;
             })
             .catch(err => {
@@ -162,59 +216,72 @@ export default function OtamaAppBar(props: OtamaAppBarProps): JSX.Element {
 
   return (
     <>
-      <AppBar position="static" className={classes.appBar}>
-        <Toolbar variant="dense">
-          <IconButton
-            edge="start"
-            className={classes.menuIconButton}
-            color="inherit"
-            aria-label="open drawer">
-            <MenuIcon />
-          </IconButton>
-          <div>
-            <Button
-              color="inherit"
-              className={classes.iconButton}
-              onClick={handleMenuClick}>
-              <Typography variant="button" noWrap>
-                ファイル
-              </Typography>
-            </Button>
-          </div>
-          <div className={classes.grow} />
-          <Typography className={classes.title} variant="body1" noWrap>
-            ようこそ - Otamajakushi Bookshelf
-          </Typography>
-          <div className={classes.grow} />
-          <div className={classes.sectionDesktop}>
+      <CssBaseline />
+      <ElevationScroll>
+        <AppBar position="static" className={classes.appBar}>
+          <Toolbar variant="dense">
             <IconButton
-              aria-label="show 17 new notifications"
+              edge="start"
+              className={classes.menuIconButton}
               color="inherit"
-              onClick={windowMinimize}
-              className={classes.iconButton}>
-              <MinimizeIcon />
+              aria-label="open drawer">
+              <MenuIcon />
             </IconButton>
-            <IconButton
-              aria-label="show 4 new mails"
-              color="inherit"
-              onClick={windowMaximize}
-              className={classes.iconButton}>
-              <Icon path={mdiWindowMaximize} title="Window Maximize" size={1} />
-            </IconButton>
-            <IconButton
-              edge="end"
-              aria-label="account of current user"
-              aria-controls={menuId}
-              aria-haspopup="true"
-              onClick={windowClose}
-              color="inherit"
-              className={classes.iconButton}>
-              <CloseIcon />
-            </IconButton>
-          </div>
-        </Toolbar>
-      </AppBar>
+            <div>
+              <Button
+                color="inherit"
+                className={classes.iconButton}
+                onClick={handleMenuClick}>
+                <Typography variant="button" noWrap>
+                  ファイル
+                </Typography>
+              </Button>
+            </div>
+            <div className={classes.grow} />
+            <Typography className={classes.title} variant="body1" noWrap>
+              ようこそ - Otamajakushi Bookshelf
+            </Typography>
+            <div className={classes.grow} />
+            <div className={classes.sectionDesktop}>
+              <IconButton
+                aria-label="show 17 new notifications"
+                color="inherit"
+                onClick={windowMinimize}
+                className={classes.iconButton}>
+                <MinimizeIcon />
+              </IconButton>
+              <IconButton
+                aria-label="show 4 new mails"
+                color="inherit"
+                onClick={windowMaximize}
+                className={classes.iconButton}>
+                <Icon
+                  path={mdiWindowMaximize}
+                  title="Window Maximize"
+                  size={1}
+                />
+              </IconButton>
+              <IconButton
+                edge="end"
+                aria-label="account of current user"
+                aria-controls={menuId}
+                aria-haspopup="true"
+                onClick={windowClose}
+                color="inherit"
+                className={classes.iconButton}>
+                <CloseIcon />
+              </IconButton>
+            </div>
+          </Toolbar>
+        </AppBar>
+      </ElevationScroll>
+      <Toolbar id="back-to-top-anchor" />
       {renderMenu}
+      <ScrollTop>
+        <Fab color="secondary" size="small" aria-label="scroll back to top">
+          <KeyboardArrowUpIcon />
+        </Fab>
+      </ScrollTop>
     </>
   );
 }
