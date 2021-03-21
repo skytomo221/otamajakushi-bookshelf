@@ -1,4 +1,11 @@
-import { Button, TextField } from '@material-ui/core';
+import {
+  Button,
+  Container,
+  createStyles,
+  makeStyles,
+  TextField,
+  Theme,
+} from '@material-ui/core';
 import OTMJSON from 'otamajakushi';
 import { Otm } from 'otamajakushi/dist/Otm';
 import { Word } from 'otamajakushi/dist/Word';
@@ -9,12 +16,20 @@ import { addBookAction } from '../actions/BookshelfActions';
 import Bookshelf from '../states/Bookshelf';
 import { State } from '../states/State';
 import OtamaAppBar from './OtamaAppBar';
+import WordCard from './WordCard';
 
-// データは、Storeから渡されるので、プロパティは必要ありません。
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    wordCard: {
+      margin: theme.spacing(1.25),
+    },
+  }),
+);
+
 const BookshelfForm: React.FC = () => {
-  // useSelector でステートの変更を受け取れます。
-  const { books } = useSelector<State, Bookshelf>((a: State) => a.bookshelf); // -- (a)
-  const dispatch = useDispatch(); // -- (b)
+  const { books } = useSelector<State, Bookshelf>((a: State) => a.bookshelf);
+  const classes = useStyles();
+  const dispatch = useDispatch();
   const onBookChange = useCallback((text: string) => {
     const newBook = OTMJSON.parse(text);
 
@@ -23,13 +38,12 @@ const BookshelfForm: React.FC = () => {
     }
 
     const newBookshelf = addItem(books, newBook);
-    // 名前を変更したとき(タイプするたび)のイベント
     dispatch(addBookAction({ books: newBookshelf }));
-  }, []); // [] は初回のみという意味
+  }, []);
   return (
     <>
       <OtamaAppBar onBookChange={onBookChange} />
-      <div>
+      <Container>
         <p>
           <TextField label="ユーザー名" />
         </p>
@@ -37,12 +51,16 @@ const BookshelfForm: React.FC = () => {
           {books.map((book: Otm) => (
             <>
               {book.words.map((word: Word) => (
-                <div key={word.entry.id}>{word.entry.form}</div>
+                <WordCard
+                  word={word}
+                  key={word.entry.id}
+                  className={classes.wordCard}
+                />
               ))}
             </>
           ))}
         </p>
-      </div>
+      </Container>
     </>
   );
 };
