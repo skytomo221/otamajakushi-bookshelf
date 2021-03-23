@@ -1,6 +1,12 @@
 import { ipcRenderer } from 'electron';
 
-import { CssBaseline, Fab, useScrollTrigger, Zoom } from '@material-ui/core';
+import {
+  CssBaseline,
+  Fab,
+  Snackbar,
+  useScrollTrigger,
+  Zoom,
+} from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
@@ -18,6 +24,8 @@ import CloseIcon from '@material-ui/icons/Close';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import MenuIcon from '@material-ui/icons/Menu';
 import MinimizeIcon from '@material-ui/icons/Minimize';
+import { AlertTitle } from '@material-ui/lab';
+import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 import { mdiWindowMaximize } from '@mdi/js';
 import Icon from '@mdi/react';
 import React from 'react';
@@ -146,6 +154,11 @@ function ScrollTop(props: ElevationScrollProps) {
   );
 }
 
+function Alert(props: AlertProps) {
+  // eslint-disable-next-line react/jsx-props-no-spreading
+  return <MuiAlert elevation={6} {...props} />;
+}
+
 type Props = {
   onBookChange: (text: string) => void;
 };
@@ -176,6 +189,21 @@ export default function OtamaAppBar(props: Props): JSX.Element {
     setAnchorEl(null);
   };
 
+  const [alertOpen, setAlertOpen] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState('');
+
+  const alertHandleClick = (message: string) => {
+    setErrorMessage(message);
+    setAlertOpen(true);
+  };
+
+  const alertHandleClose = (event?: React.SyntheticEvent, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setAlertOpen(false);
+  };
+
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
     <Menu
@@ -189,24 +217,29 @@ export default function OtamaAppBar(props: Props): JSX.Element {
       <MenuItem onClick={handleMenuClose}>新規の辞書作成</MenuItem>
       <MenuItem
         onClick={() => {
-          // メインプロセスを呼び出し
           ipcRenderer
             .invoke('file-open')
             .then(data => {
-              // キャンセルで閉じた
               if (data.status === undefined) {
                 return false;
               }
-              // ファイルが開けなかった
               if (!data.status) {
-                alert(`ファイルが開けませんでした\n${data.message}`);
+                alertHandleClick(`ファイルが開けませんでした\n${data.message}`);
                 return false;
               }
               onBookChange(data.text);
               return true;
             })
             .catch(err => {
-              alert(err);
+              // eslint-disable-next-line no-console
+              console.log(err);
+              if ('at' in err && 'kind' in err && 'message' in err) {
+                alertHandleClick(
+                  `場所：${err.at}, 種類：${err.kind}, エラーメッセージ：${err.message}`,
+                );
+              } else {
+                alertHandleClick('原因不明のエラー');
+              }
             });
         }}>
         辞書を開く
@@ -282,6 +315,17 @@ export default function OtamaAppBar(props: Props): JSX.Element {
           <KeyboardArrowUpIcon />
         </Fab>
       </ScrollTop>
+      <Snackbar
+        open={alertOpen}
+        autoHideDuration={10000}
+        onClose={alertHandleClose}>
+        <Alert onClose={alertHandleClose} severity="error">
+          <AlertTitle>
+            <strong>辞書ファイルの読み込みに失敗しました。</strong>
+          </AlertTitle>
+          {errorMessage}
+        </Alert>
+      </Snackbar>
     </>
   );
 }
