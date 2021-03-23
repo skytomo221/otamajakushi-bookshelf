@@ -60,7 +60,7 @@ export default function WordCard(props: Props): JSX.Element {
           </span>
         </Typography>
         {word.translations.map((translation: Translation) => (
-          <Typography key={translation.title} variant="body2">
+          <Typography key={translation.title + translation.forms} variant="body2">
             <Chip
               variant="outlined"
               size="small"
@@ -92,7 +92,7 @@ export default function WordCard(props: Props): JSX.Element {
                 変化形
               </Typography>
               {word.variations.map((variation: Variation) => (
-                <Typography key={variation.title} variant="body2">
+                <Typography key={variation.form} variant="body2">
                   <Chip
                     variant="outlined"
                     size="small"
@@ -116,7 +116,7 @@ export default function WordCard(props: Props): JSX.Element {
                 関連項目
               </Typography>
               {word.relations.map((relation: Relation) => (
-                <Typography key={relation.title} variant="body2">
+                <Typography key={relation.entry.id} variant="body2">
                   <Chip
                     variant="outlined"
                     size="small"
