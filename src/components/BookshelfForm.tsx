@@ -1,11 +1,4 @@
-import {
-  Button,
-  Container,
-  createStyles,
-  makeStyles,
-  TextField,
-  Theme,
-} from '@material-ui/core';
+import { Container, createStyles, makeStyles, Theme } from '@material-ui/core';
 import OTMJSON from 'otamajakushi';
 import { Otm } from 'otamajakushi/dist/Otm';
 import { Word } from 'otamajakushi/dist/Word';
@@ -13,9 +6,12 @@ import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { addBookAction } from '../actions/BookshelfActions';
+import { changeSearchWordAction } from '../actions/SearchWordActions';
 import Bookshelf from '../states/Bookshelf';
 import { State } from '../states/State';
+
 import OtamaAppBar from './OtamaAppBar';
+import SearchWordTextField from './SearchWordTextField';
 import WordCard from './WordCard';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -28,6 +24,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const BookshelfForm: React.FC = () => {
   const { books } = useSelector<State, Bookshelf>((a: State) => a.bookshelf);
+  const searchWord = useSelector<State, string>((a: State) => a.searchWord);
   const classes = useStyles();
   const dispatch = useDispatch();
   const onBookChange = useCallback((text: string) => {
@@ -40,23 +37,28 @@ const BookshelfForm: React.FC = () => {
     const newBookshelf = addItem(books, newBook);
     dispatch(addBookAction({ books: newBookshelf }));
   }, []);
+
+  const onSearchWordChange = useCallback((text: string) => {
+    dispatch(changeSearchWordAction(text));
+  }, []);
+
   return (
     <>
       <OtamaAppBar onBookChange={onBookChange} />
       <Container>
-        <p>
-          <TextField label="ユーザー名" />
-        </p>
+        <SearchWordTextField onChangeText={onSearchWordChange} />
         <p>
           {books.map((book: Otm) => (
             <>
-              {book.words.map((word: Word) => (
-                <WordCard
-                  word={word}
-                  key={word.entry.id}
-                  className={classes.wordCard}
-                />
-              ))}
+              {book.words
+                .filter((word: Word) => word.entry.form.startsWith(searchWord))
+                .map((word: Word) => (
+                  <WordCard
+                    word={word}
+                    key={word.entry.id}
+                    className={classes.wordCard}
+                  />
+                ))}
             </>
           ))}
         </p>
