@@ -23,7 +23,7 @@ const createWindow = () => {
   // 読み込む index.html。
   // tsc でコンパイルするので、出力先の dist の相対パスで指定する。
   const path = require('path');
-  win.loadFile('index.html');
+  win.loadFile(path.join(__dirname, './index.html'));
 
   if (process.argv.find(arg => arg === '--debug')) {
     win.webContents.openDevTools();

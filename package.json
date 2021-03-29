@@ -23,7 +23,7 @@
     },
     "files": [
       "./dist/**/*.js",
-      "./index.html",
+      "./dist/index.html",
       "./main.js",
       "./icon/**/*"
     ],
