@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "eslint": "eslint . --fix",
-    "start": "electron-forge start",
+    "start": "electron ./dist/main.js",
     "build:main": "tsc",
     "build:render": "webpack",
     "package:mac": "webpack && electron-builder --mac --x64",
