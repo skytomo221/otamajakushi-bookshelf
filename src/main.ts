@@ -1,11 +1,14 @@
-import { app, BrowserWindow, dialog, ipcMain, Menu, remote } from 'electron';
-import path from 'path';
-import { writeFileSync, readFileSync } from 'fs';
+/* eslint-disable global-require */
+/* eslint-disable @typescript-eslint/no-var-requires */
+import { app, BrowserWindow, dialog, ipcMain } from 'electron';
+import { readFileSync } from 'fs';
+
+declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 
 // セキュアな Electron の構成
 // 参考: https://qiita.com/pochman/items/64b34e9827866664d436
 
-const createWindow = (): void => {
+const createWindow = () => {
   const win = new BrowserWindow({
     width: 500,
     height: 700,
@@ -21,10 +24,12 @@ const createWindow = (): void => {
 
   // 読み込む index.html。
   // tsc でコンパイルするので、出力先の dist の相対パスで指定する。
-  win.loadFile('./index.html');
+  const path = require('path');
+  win.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
-  // 開発者ツールを起動する
-  // win.webContents.openDevTools();
+  if (process.argv.find(arg => arg === '--debug')) {
+    win.webContents.openDevTools();
+  }
 
   ipcMain.handle('window-minimize', () => {
     win.minimize();

@@ -1,14 +1,50 @@
 {
   "name": "otamashelf",
   "version": "0.1.0",
-  "description": "",
-  "main": "main.js",
+  "description": "OTM-JSONファイルで書かれた辞書が開けるアプリ",
+  "main": "./.webpack/main",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "eslint": "eslint . --fix",
-    "start": "electron ./dist/main.js",
+    "start": "electron-forge start",
     "build:main": "tsc",
-    "build:render": "webpack"
+    "build:render": "webpack",
+    "package:mac": "webpack && electron-builder --mac --x64",
+    "package:windows": "webpack && electron-builder --win --x64",
+    "package:linux": "webpack && electron-builder --linux --x64",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
+  },
+  "build": {
+    "productName": "Otamajakushi Bookshelf",
+    "appId": "todo.example.com",
+    "directories": {
+      "output": "./product"
+    },
+    "files": [
+      "./dist/**/*.js",
+      "./index.html",
+      "./main.js",
+      "./icon/**/*"
+    ],
+    "extraMetadata": {
+      "main": "./dist/main.js"
+    },
+    "dmg": {
+      "contents": [
+        {
+          "x": 410,
+          "y": 150,
+          "type": "link",
+          "path": "/Applications"
+        },
+        {
+          "x": 130,
+          "y": 150,
+          "type": "file"
+        }
+      ]
+    }
   },
   "author": "skytomo",
   "license": "MIT",
@@ -19,6 +55,7 @@
     "@mdi/font": "^5.9.55",
     "@mdi/js": "^5.9.55",
     "@mdi/react": "^1.4.0",
+    "electron-squirrel-startup": "^1.0.0",
     "otamajakushi": "^1.1.0",
     "path": "^0.12.7",
     "react": "^17.0.1",
@@ -29,6 +66,12 @@
     "typescript-fsa-reducers": "^1.2.2"
   },
   "devDependencies": {
+    "@electron-forge/cli": "^6.0.0-beta.54",
+    "@electron-forge/maker-deb": "^6.0.0-beta.54",
+    "@electron-forge/maker-rpm": "^6.0.0-beta.54",
+    "@electron-forge/maker-squirrel": "^6.0.0-beta.54",
+    "@electron-forge/maker-zip": "^6.0.0-beta.54",
+    "@electron-forge/plugin-webpack": "^6.0.0-beta.54",
     "@types/material-ui": "^0.21.8",
     "@types/react": "^17.0.2",
     "@types/react-dom": "^17.0.1",
@@ -36,6 +79,7 @@
     "@typescript-eslint/eslint-plugin": "^4.16.1",
     "@typescript-eslint/parser": "^4.16.1",
     "electron": "^12.0.1",
+    "electron-builder": "^22.10.5",
     "eslint": "^7.21.0",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-config-prettier": "^8.1.0",
@@ -51,7 +95,52 @@
     "prettier": "^2.2.1",
     "ts-loader": "^8.0.17",
     "typescript": "^4.1.5",
-    "webpack": "^5.23.0",
+    "webpack": "^5.28.0",
     "webpack-cli": "^4.5.0"
+  },
+  "config": {
+    "forge": {
+      "packagerConfig": {},
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "name": "otamashelf"
+          }
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "darwin"
+          ]
+        },
+        {
+          "name": "@electron-forge/maker-deb",
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-rpm",
+          "config": {}
+        }
+      ],
+      "plugins": [
+        [
+          "@electron-forge/plugin-webpack",
+          {
+            "mainConfig": "./webpack.main.config.js",
+            "renderer": {
+              "config": "./webpack.config.js",
+              "entryPoints": [
+                {
+                  "html": "./src/index.html",
+                  "js": "./src/index.tsx",
+                  "name": "main_window"
+                }
+              ]
+            }
+          }
+        ]
+      ]
+    }
   }
 }

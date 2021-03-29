@@ -125,3 +125,6 @@ dist
 *.code-workspace
 
 # End of https://www.toptal.com/developers/gitignore/api/node,vscode
+
+out
+product
