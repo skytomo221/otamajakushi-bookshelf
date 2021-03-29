@@ -2,7 +2,7 @@
   "name": "otamashelf",
   "version": "0.1.0",
   "description": "OTM-JSONファイルで書かれた辞書が開けるアプリ",
-  "main": "./.webpack/main",
+  "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "eslint": "eslint . --fix",
