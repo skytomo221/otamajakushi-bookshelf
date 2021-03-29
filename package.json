@@ -18,9 +18,6 @@
   "build": {
     "productName": "Otamajakushi Bookshelf",
     "appId": "todo.example.com",
-    "directories": {
-      "output": "./product"
-    },
     "files": [
       "./dist/**/*.js",
       "./dist/index.html",
