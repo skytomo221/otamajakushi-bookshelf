@@ -1,10 +1,10 @@
 import {
   Box,
-  Card,
-  CardContent,
   Chip,
   createStyles,
   Divider,
+  ListItem,
+  ListItemText,
   makeStyles,
   Theme,
   Typography,
@@ -14,7 +14,9 @@ import { Relation } from 'otamajakushi/dist/Relation';
 import { Translation } from 'otamajakushi/dist/Translation';
 import { Variation } from 'otamajakushi/dist/Variation';
 import { Word } from 'otamajakushi/dist/Word';
-import React from 'react';
+import React, { memo } from 'react';
+import { render } from 'react-dom';
+import { areEqual, ListChildComponentProps } from 'react-window';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -41,16 +43,20 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  word: Word;
+  data: Word;
   className: string;
 }
 
-export default function WordCard(props: Props): JSX.Element {
-  const { word, className } = props;
+export default function WordCard({
+  data,
+  index,
+  style,
+}: ListChildComponentProps): JSX.Element {
+  const word = (data as Word[])[index];
   const classes = useStyles();
   return (
-    <Card className={className}>
-      <CardContent>
+    <ListItem alignItems="flex-start" style={style}>
+      <ListItemText>
         <Typography variant="h5" component="h2">
           {word.entry.form}
           <span className={classes.root}>
@@ -60,7 +66,9 @@ export default function WordCard(props: Props): JSX.Element {
           </span>
         </Typography>
         {word.translations.map((translation: Translation) => (
-          <Typography key={translation.title + translation.forms} variant="body2">
+          <Typography
+            key={translation.title + translation.forms}
+            variant="body2">
             <Chip
               variant="outlined"
               size="small"
@@ -132,7 +140,7 @@ export default function WordCard(props: Props): JSX.Element {
         ) : (
           ''
         )}
-      </CardContent>
-    </Card>
+      </ListItemText>
+    </ListItem>
   );
 }

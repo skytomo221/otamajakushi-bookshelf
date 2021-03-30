@@ -4,6 +4,7 @@ import { Otm } from 'otamajakushi/dist/Otm';
 import { Word } from 'otamajakushi/dist/Word';
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { FixedSizeList } from 'react-window';
 
 import { addBookAction } from '../actions/BookshelfActions';
 import { changeSearchWordAction } from '../actions/SearchWordActions';
@@ -22,7 +23,7 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const BookshelfForm: React.FC = () => {
+export default function BookshelfForm(): JSX.Element {
   const { books } = useSelector<State, Bookshelf>((a: State) => a.bookshelf);
   const searchWord = useSelector<State, string>((a: State) => a.searchWord);
   const classes = useStyles();
@@ -42,29 +43,33 @@ const BookshelfForm: React.FC = () => {
     dispatch(changeSearchWordAction(text));
   }, []);
 
+  const book = books[books.length - 1];
+  const emptyWords: Word[] = [];
+  const filteredWords =
+    book === undefined
+      ? emptyWords
+      : book.words.filter((word: Word) =>
+          word.entry.form.startsWith(searchWord),
+        );
+
   return (
     <>
       <OtamaAppBar onBookChange={onBookChange} />
-      <Container>
-        <SearchWordTextField onChangeText={onSearchWordChange} />
-        <p>
-          {books.map((book: Otm) => (
-            <>
-              {book.words
-                .filter((word: Word) => word.entry.form.startsWith(searchWord))
-                .map((word: Word) => (
-                  <WordCard
-                    word={word}
-                    key={word.entry.id}
-                    className={classes.wordCard}
-                  />
-                ))}
-            </>
-          ))}
-        </p>
-      </Container>
+      {book === undefined ? (
+        ''
+      ) : (
+        <Container>
+          <SearchWordTextField onChangeText={onSearchWordChange} />
+          <FixedSizeList
+            height={500}
+            width="100%"
+            itemSize={46}
+            itemCount={filteredWords.length}
+            itemData={filteredWords}>
+            {WordCard}
+          </FixedSizeList>
+        </Container>
+      )}
     </>
   );
 };
-
-export default BookshelfForm;
