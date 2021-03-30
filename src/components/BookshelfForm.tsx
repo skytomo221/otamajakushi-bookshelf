@@ -10,6 +10,7 @@ import { addBookAction } from '../actions/BookshelfActions';
 import { changeSearchWordAction } from '../actions/SearchWordActions';
 import Bookshelf from '../states/Bookshelf';
 import { State } from '../states/State';
+import useWindowDimensions from '../useWindowDimensions';
 
 import OtamaAppBar from './OtamaAppBar';
 import SearchWordTextField from './SearchWordTextField';
@@ -24,6 +25,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 export default function BookshelfForm(): JSX.Element {
+  const { height } = useWindowDimensions();
   const { books } = useSelector<State, Bookshelf>((a: State) => a.bookshelf);
   const searchWord = useSelector<State, string>((a: State) => a.searchWord);
   const classes = useStyles();
@@ -61,7 +63,7 @@ export default function BookshelfForm(): JSX.Element {
         <Container>
           <SearchWordTextField onChangeText={onSearchWordChange} />
           <FixedSizeList
-            height={500}
+            height={height - 104 < 1 ? 1 : height - 104}
             width="100%"
             itemSize={46}
             itemCount={filteredWords.length}
@@ -72,4 +74,4 @@ export default function BookshelfForm(): JSX.Element {
       )}
     </>
   );
-};
+}
