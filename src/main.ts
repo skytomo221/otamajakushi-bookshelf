@@ -8,8 +8,8 @@ import { readFileSync } from 'fs';
 
 const createWindow = () => {
   const win = new BrowserWindow({
-    width: 500,
-    height: 700,
+    width: 1200,
+    height: 675,
     webPreferences: {
       nodeIntegration: true,
       nodeIntegrationInWorker: true,
