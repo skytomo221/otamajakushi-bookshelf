@@ -3,8 +3,6 @@ import {
   Chip,
   createStyles,
   Divider,
-  ListItem,
-  ListItemText,
   makeStyles,
   Theme,
   Typography,
@@ -15,7 +13,6 @@ import { Translation } from 'otamajakushi/dist/Translation';
 import { Variation } from 'otamajakushi/dist/Variation';
 import { Word } from 'otamajakushi/dist/Word';
 import React from 'react';
-import { ListChildComponentProps } from 'react-window';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -41,100 +38,91 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export default function WordCard({
-  data,
-  index,
-  style,
-}: ListChildComponentProps): JSX.Element {
-  const word = (data as Word[])[index];
+interface Props {
+  word: Word;
+}
+
+export default function WordCard({ word }: Props): JSX.Element {
   const classes = useStyles();
   return (
-    <ListItem alignItems="flex-start" style={style}>
-      <ListItemText>
-        <Typography variant="h5" component="h2">
-          {word.entry.form}
-          <span className={classes.root}>
-            {word.tags.map((tag: string) => (
-              <Chip size="small" label={tag} key={tag} />
-            ))}
-          </span>
+    <div>
+      <Typography variant="h5" component="h2">
+        {word.entry.form}
+        <span className={classes.root}>
+          {word.tags.map((tag: string) => (
+            <Chip size="small" label={tag} key={tag} />
+          ))}
+        </span>
+      </Typography>
+      {word.translations.map((translation: Translation) => (
+        <Typography key={translation.title + translation.forms} variant="body2">
+          <Chip
+            variant="outlined"
+            size="small"
+            label={translation.title}
+            className={classes.translationTitle}
+            component="h3"
+          />
+          {translation.forms.join(', ')}
         </Typography>
-        {word.translations.map((translation: Translation) => (
-          <Typography
-            key={translation.title + translation.forms}
-            variant="body2">
-            <Chip
-              variant="outlined"
-              size="small"
-              label={translation.title}
-              className={classes.translationTitle}
-              component="h3"
-            />
-            {translation.forms.join(', ')}
+      ))}
+      {word.contents.length > 0 ? <Divider className={classes.divider} /> : ''}
+      {word.contents.map((content: Content) => (
+        <Box key={content.title} className={classes.content}>
+          <Typography variant="h6" component="h3">
+            {content.title}
           </Typography>
-        ))}
-        {word.contents.length > 0 ? (
+          <Typography variant="body2">{content.text}</Typography>
+        </Box>
+      ))}
+      {word.variations.length > 0 ? (
+        <>
           <Divider className={classes.divider} />
-        ) : (
-          ''
-        )}
-        {word.contents.map((content: Content) => (
-          <Box key={content.title} className={classes.content}>
+          <Box className={classes.content}>
             <Typography variant="h6" component="h3">
-              {content.title}
+              変化形
             </Typography>
-            <Typography variant="body2">{content.text}</Typography>
+            {word.variations.map((variation: Variation) => (
+              <Typography key={variation.form} variant="body2">
+                <Chip
+                  variant="outlined"
+                  size="small"
+                  label={variation.title}
+                  className={classes.translationTitle}
+                  component="h3"
+                />
+                {variation.form}
+              </Typography>
+            ))}
           </Box>
-        ))}
-        {word.variations.length > 0 ? (
-          <>
-            <Divider className={classes.divider} />
-            <Box className={classes.content}>
-              <Typography variant="h6" component="h3">
-                変化形
+        </>
+      ) : (
+        ''
+      )}
+      {word.relations.length > 0 ? (
+        <>
+          <Divider className={classes.divider} />
+          <Box className={classes.content}>
+            <Typography variant="h6" component="h3">
+              関連項目
+            </Typography>
+            {word.relations.map((relation: Relation) => (
+              <Typography key={relation.entry.id} variant="body2">
+                <Chip
+                  variant="outlined"
+                  size="small"
+                  label={relation.title}
+                  className={classes.translationTitle}
+                  component="h3"
+                />
+                {relation.entry.form}
               </Typography>
-              {word.variations.map((variation: Variation) => (
-                <Typography key={variation.form} variant="body2">
-                  <Chip
-                    variant="outlined"
-                    size="small"
-                    label={variation.title}
-                    className={classes.translationTitle}
-                    component="h3"
-                  />
-                  {variation.form}
-                </Typography>
-              ))}
-            </Box>
-          </>
-        ) : (
-          ''
-        )}
-        {word.relations.length > 0 ? (
-          <>
-            <Divider className={classes.divider} />
-            <Box className={classes.content}>
-              <Typography variant="h6" component="h3">
-                関連項目
-              </Typography>
-              {word.relations.map((relation: Relation) => (
-                <Typography key={relation.entry.id} variant="body2">
-                  <Chip
-                    variant="outlined"
-                    size="small"
-                    label={relation.title}
-                    className={classes.translationTitle}
-                    component="h3"
-                  />
-                  {relation.entry.form}
-                </Typography>
-              ))}
-            </Box>
-          </>
-        ) : (
-          ''
-        )}
-      </ListItemText>
-    </ListItem>
+            ))}
+          </Box>
+        </>
+      ) : (
+        ''
+      )}
+    </div>
   );
 }

@@ -15,6 +15,7 @@ import { FixedSizeList, ListChildComponentProps } from 'react-window';
 
 import { addBookAction } from '../actions/BookshelfActions';
 import { changeSearchWordAction } from '../actions/SearchWordActions';
+import { changeSelectedWordAction } from '../actions/SelectedWordActions';
 import Bookshelf from '../states/Bookshelf';
 import { State } from '../states/State';
 import useWindowDimensions from '../useWindowDimensions';
@@ -25,12 +26,18 @@ import WordCard from './WordCard';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    wordCard: {
-      margin: theme.spacing(1.25),
+    mainContainer: {
+      display: 'flex',
     },
     resizable: {
-      resize: 'horizontal'
-    }
+      resize: 'horizontal',
+      float: 'left',
+    },
+    wordCard: {
+      flex: 1,
+      overflow: 'auto',
+      padding: '5ex',
+    },
   }),
 );
 
@@ -38,6 +45,7 @@ export default function BookshelfForm(): JSX.Element {
   const { height } = useWindowDimensions();
   const { books } = useSelector<State, Bookshelf>((a: State) => a.bookshelf);
   const searchWord = useSelector<State, string>((a: State) => a.searchWord);
+  const selectedWord = useSelector<State, number>((a: State) => a.selectedWord);
   const classes = useStyles();
   const dispatch = useDispatch();
   const onBookChange = useCallback((text: string) => {
@@ -54,6 +62,9 @@ export default function BookshelfForm(): JSX.Element {
   const onSearchWordChange = useCallback((text: string) => {
     dispatch(changeSearchWordAction(text));
   }, []);
+  const onSelectedWordChange = useCallback((id: number) => {
+    dispatch(changeSelectedWordAction(id));
+  }, []);
 
   const book = books[books.length - 1];
   const emptyWords: Word[] = [];
@@ -69,7 +80,14 @@ export default function BookshelfForm(): JSX.Element {
     const word = (data as Word[])[index];
 
     return (
-      <ListItem button style={style} key={index}>
+      <ListItem
+        button
+        style={style}
+        key={index}
+        onClick={e => {
+          e.preventDefault();
+          onSelectedWordChange(word.entry.id);
+        }}>
         <ListItemText primary={word.entry.form} />
       </ListItem>
     );
@@ -82,16 +100,37 @@ export default function BookshelfForm(): JSX.Element {
         ''
       ) : (
         <Container>
-          <SearchWordTextField onChangeText={onSearchWordChange} />
-          <FixedSizeList
-            height={height - 112 < 1 ? 1 : height - 112}
-            width="30%"
-            itemSize={46}
-            itemCount={filteredWords.length}
-            itemData={filteredWords}
-            className={classes.resizable}>
-            {renderWordList}
-          </FixedSizeList>
+          <SearchWordTextField
+            onChangeText={(value: string) => {
+              onSearchWordChange(value);
+              if (filteredWords.length > 0)
+                onSelectedWordChange(filteredWords[0].entry.id);
+            }}
+          />
+          <Container className={classes.mainContainer}>
+            <FixedSizeList
+              height={height - 112 < 1 ? 1 : height - 112}
+              width="30%"
+              itemSize={46}
+              itemCount={filteredWords.length}
+              itemData={filteredWords}
+              className={classes.resizable}>
+              {renderWordList}
+            </FixedSizeList>
+            {selectedWord >= 0 ? (
+              <Container
+                className={classes.wordCard}
+                style={{ height: height - 112 < 1 ? 1 : height - 112 }}>
+                <WordCard
+                  word={
+                    book.words.filter(word => word.entry.id === selectedWord)[0]
+                  }
+                />
+              </Container>
+            ) : (
+              ''
+            )}
+          </Container>
         </Container>
       )}
     </>
