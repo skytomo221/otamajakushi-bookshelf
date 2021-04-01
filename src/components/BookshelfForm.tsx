@@ -1,10 +1,17 @@
-import { Container, createStyles, makeStyles, Theme } from '@material-ui/core';
+import {
+  Container,
+  createStyles,
+  ListItem,
+  ListItemText,
+  makeStyles,
+  Theme,
+} from '@material-ui/core';
 import OTMJSON from 'otamajakushi';
 import { Otm } from 'otamajakushi/dist/Otm';
 import { Word } from 'otamajakushi/dist/Word';
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { FixedSizeList } from 'react-window';
+import { FixedSizeList, ListChildComponentProps } from 'react-window';
 
 import { addBookAction } from '../actions/BookshelfActions';
 import { changeSearchWordAction } from '../actions/SearchWordActions';
@@ -21,6 +28,9 @@ const useStyles = makeStyles((theme: Theme) =>
     wordCard: {
       margin: theme.spacing(1.25),
     },
+    resizable: {
+      resize: 'horizontal'
+    }
   }),
 );
 
@@ -54,6 +64,17 @@ export default function BookshelfForm(): JSX.Element {
           word.entry.form.startsWith(searchWord),
         );
 
+  function renderWordList(props: ListChildComponentProps) {
+    const { data, index, style } = props;
+    const word = (data as Word[])[index];
+
+    return (
+      <ListItem button style={style} key={index}>
+        <ListItemText primary={word.entry.form} />
+      </ListItem>
+    );
+  }
+
   return (
     <>
       <OtamaAppBar onBookChange={onBookChange} />
@@ -63,12 +84,13 @@ export default function BookshelfForm(): JSX.Element {
         <Container>
           <SearchWordTextField onChangeText={onSearchWordChange} />
           <FixedSizeList
-            height={height - 104 < 1 ? 1 : height - 104}
-            width="100%"
+            height={height - 112 < 1 ? 1 : height - 112}
+            width="30%"
             itemSize={46}
             itemCount={filteredWords.length}
-            itemData={filteredWords}>
-            {WordCard}
+            itemData={filteredWords}
+            className={classes.resizable}>
+            {renderWordList}
           </FixedSizeList>
         </Container>
       )}
