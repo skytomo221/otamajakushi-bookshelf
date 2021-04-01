@@ -11,9 +11,7 @@
     "build:render": "webpack",
     "package:mac": "webpack && electron-builder --mac --x64",
     "package:windows": "webpack && electron-builder --win --x64",
-    "package:linux": "webpack && electron-builder --linux --x64",
-    "package": "electron-forge package",
-    "make": "electron-forge make"
+    "package:linux": "webpack && electron-builder --linux --x64"
   },
   "build": {
     "productName": "Otamajakushi Bookshelf",

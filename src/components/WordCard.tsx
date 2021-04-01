@@ -14,9 +14,8 @@ import { Relation } from 'otamajakushi/dist/Relation';
 import { Translation } from 'otamajakushi/dist/Translation';
 import { Variation } from 'otamajakushi/dist/Variation';
 import { Word } from 'otamajakushi/dist/Word';
-import React, { memo } from 'react';
-import { render } from 'react-dom';
-import { areEqual, ListChildComponentProps } from 'react-window';
+import React from 'react';
+import { ListChildComponentProps } from 'react-window';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -41,11 +40,6 @@ const useStyles = makeStyles((theme: Theme) =>
     },
   }),
 );
-
-interface Props {
-  data: Word;
-  className: string;
-}
 
 export default function WordCard({
   data,
