@@ -45,7 +45,7 @@ export default function BookshelfForm(): JSX.Element {
   const { height } = useWindowDimensions();
   const { books } = useSelector<State, Bookshelf>((a: State) => a.bookshelf);
   const searchWord = useSelector<State, string>((a: State) => a.searchWord);
-  const selectedWord = useSelector<State, number>((a: State) => a.selectedWord);
+  const selectedWord = useSelector<State, Word>((a: State) => a.selectedWord);
   const classes = useStyles();
   const dispatch = useDispatch();
   const onBookChange = useCallback((text: string) => {
@@ -62,8 +62,8 @@ export default function BookshelfForm(): JSX.Element {
   const onSearchWordChange = useCallback((text: string) => {
     dispatch(changeSearchWordAction(text));
   }, []);
-  const onSelectedWordChange = useCallback((id: number) => {
-    dispatch(changeSelectedWordAction(id));
+  const onSelectedWordChange = useCallback((word: Word) => {
+    dispatch(changeSelectedWordAction(word));
   }, []);
 
   const book = books[books.length - 1];
@@ -86,7 +86,7 @@ export default function BookshelfForm(): JSX.Element {
         key={index}
         onClick={e => {
           e.preventDefault();
-          onSelectedWordChange(word.entry.id);
+          onSelectedWordChange(word);
         }}>
         <ListItemText primary={word.entry.form} />
       </ListItem>
@@ -104,7 +104,7 @@ export default function BookshelfForm(): JSX.Element {
             onChangeText={(value: string) => {
               onSearchWordChange(value);
               if (filteredWords.length > 0)
-                onSelectedWordChange(filteredWords[0].entry.id);
+                onSelectedWordChange(filteredWords[0]);
             }}
           />
           <Container className={classes.mainContainer}>
@@ -117,15 +117,11 @@ export default function BookshelfForm(): JSX.Element {
               className={classes.resizable}>
               {renderWordList}
             </FixedSizeList>
-            {selectedWord >= 0 ? (
+            {selectedWord.entry.id >= 0 ? (
               <Container
                 className={classes.wordCard}
                 style={{ height: height - 112 < 1 ? 1 : height - 112 }}>
-                <WordCard
-                  word={
-                    book.words.filter(word => word.entry.id === selectedWord)[0]
-                  }
-                />
+                <WordCard word={selectedWord} />
               </Container>
             ) : (
               ''
