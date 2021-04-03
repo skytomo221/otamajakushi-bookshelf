@@ -68,11 +68,11 @@ export default function BookshelfForm(): JSX.Element {
 
   const book = books[books.length - 1];
   const emptyWords: Word[] = [];
-  const filteredWords =
+  const filteredWords = (searchWordEntryForm: string) =>
     book === undefined
       ? emptyWords
       : book.words.filter((word: Word) =>
-          word.entry.form.startsWith(searchWord),
+          word.entry.form.startsWith(searchWordEntryForm),
         );
 
   function renderWordList(props: ListChildComponentProps) {
@@ -103,8 +103,9 @@ export default function BookshelfForm(): JSX.Element {
           <SearchWordTextField
             onChangeText={(value: string) => {
               onSearchWordChange(value);
-              if (filteredWords.length > 0)
-                onSelectedWordChange(filteredWords[0]);
+              if (filteredWords(value).length > 0) {
+                onSelectedWordChange(filteredWords(value)[0]);
+              }
             }}
           />
           <Container className={classes.mainContainer}>
@@ -112,8 +113,8 @@ export default function BookshelfForm(): JSX.Element {
               height={height - 112 < 1 ? 1 : height - 112}
               width="30%"
               itemSize={46}
-              itemCount={filteredWords.length}
-              itemData={filteredWords}
+              itemCount={filteredWords(searchWord).length}
+              itemData={filteredWords(searchWord)}
               className={classes.resizable}>
               {renderWordList}
             </FixedSizeList>
