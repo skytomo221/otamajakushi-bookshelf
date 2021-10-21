@@ -45,6 +45,9 @@ rules:
     - alphabetize:
         order: asc
       newlines-between: always
+  no-shadow: off,
+  "@typescript-eslint/no-shadow":
+    - error
 settings:
   import/resolver: webpack
   import/core-modules:
