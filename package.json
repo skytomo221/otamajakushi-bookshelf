@@ -7,6 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "eslint": "eslint . --fix",
     "start": "electron ./dist/main.js",
+    "build": "tsc && webpack",
     "build:main": "tsc",
     "build:render": "webpack",
     "package:mac": "webpack && electron-builder --mac --x64",
