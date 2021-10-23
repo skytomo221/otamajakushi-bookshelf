@@ -5,7 +5,7 @@
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "eslint": "eslint . --fix",
+    "eslint": "eslint ./src --fix",
     "start": "electron ./dist/main.js",
     "build": "tsc && webpack",
     "build:main": "tsc",
