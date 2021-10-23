@@ -43,7 +43,7 @@ const createWindow = () => {
     app.quit();
   });
 
-  ipcMain.handle('file-open', async event => {
+  ipcMain.handle('file-open', async () => {
     // ファイルを選択
     const paths = dialog.showOpenDialogSync(win, {
       buttonLabel: '開く', // 確認ボタンのラベル
@@ -63,15 +63,17 @@ const createWindow = () => {
     try {
       const filePath = paths[0];
       const buff = readFileSync(filePath);
-
       return {
         status: true,
         path: filePath,
         text: buff.toString(),
       };
     } catch (error) {
-      return { status: false, message: error.message };
+      if (error instanceof Error) {
+        return { status: false, message: error.message };
+      }
     }
+    return { status: undefined };
   });
 };
 

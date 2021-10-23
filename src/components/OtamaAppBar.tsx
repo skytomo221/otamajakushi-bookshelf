@@ -14,12 +14,6 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import {
-  fade,
-  makeStyles,
-  Theme,
-  createStyles,
-} from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import MenuIcon from '@material-ui/icons/Menu';
@@ -29,6 +23,7 @@ import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 import { mdiWindowMaximize } from '@mdi/js';
 import Icon from '@mdi/react';
 import React from 'react';
+
 import defaultLightTheme from '../extension/defaultLightTheme';
 
 const useStyles = defaultLightTheme().styles;

@@ -4,7 +4,6 @@ import {
   ListItem,
   ListItemText,
   makeStyles,
-  Theme,
 } from '@material-ui/core';
 import OTMJSON from 'otamajakushi';
 import { Otm } from 'otamajakushi/dist/Otm';
@@ -24,7 +23,7 @@ import OtamaAppBar from './OtamaAppBar';
 import SearchWordTextField from './SearchWordTextField';
 import WordCard from './WordCard';
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     mainContainer: {
       display: 'flex',
