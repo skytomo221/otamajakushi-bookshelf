@@ -23,10 +23,10 @@ import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 import { mdiWindowMaximize } from '@mdi/js';
 import Icon from '@mdi/react';
 import React from 'react';
+import { useSelector } from 'react-redux';
 
-import defaultLightTheme from '../extension/defaultLightTheme';
-
-const useStyles = defaultLightTheme().styles;
+import { ThemeExtension } from '../extension/theme';
+import { State } from '../states/State';
 
 type ElevationScrollProps = {
   children: React.ReactElement;
@@ -46,6 +46,9 @@ function ElevationScroll(props: ElevationScrollProps) {
 
 function ScrollTop(props: ElevationScrollProps) {
   const { children } = props;
+  const { useStyles } = useSelector<State, ThemeExtension>(
+    state => state.theme,
+  );
   const classes = useStyles();
   const trigger = useScrollTrigger({
     disableHysteresis: true,
@@ -84,6 +87,9 @@ type Props = {
 };
 
 export default function OtamaAppBar(props: Props): JSX.Element {
+  const { useStyles } = useSelector<State, ThemeExtension>(
+    state => state.theme,
+  );
   const classes = useStyles();
   const { onBookChange } = props;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
