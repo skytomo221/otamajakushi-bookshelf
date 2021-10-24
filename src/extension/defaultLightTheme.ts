@@ -2,7 +2,7 @@ import { createStyles, fade, makeStyles, Theme } from '@material-ui/core';
 
 import { ThemeExtension } from './theme';
 
-const styles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     appBar: {
       margin: 0,
@@ -81,5 +81,5 @@ const styles = makeStyles((theme: Theme) =>
 );
 
 export default function defaultLightTheme(): ThemeExtension {
-  return { name: 'defaultLightTheme', styles };
+  return { name: 'defaultLightTheme', useStyles };
 }
