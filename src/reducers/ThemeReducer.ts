@@ -1,12 +1,13 @@
 import { reducerWithInitialState } from 'typescript-fsa-reducers';
 
 import { changeThemeAction } from '../actions/ThemeActions';
-import defaultLightTheme from '../extension/defaultLightTheme';
-import { ThemeExtension } from '../extension/theme';
+import ThemeParameter from '../states/ThemeParameter';
 
-const initTheme: ThemeExtension = defaultLightTheme();
+const initTheme: ThemeParameter = {
+  spacing: 8,
+};
 
-const themeReducer = reducerWithInitialState<ThemeExtension>(initTheme)
+const themeReducer = reducerWithInitialState<ThemeParameter>(initTheme)
   .case(changeThemeAction, (state, payload) => ({
     ...state,
     ...payload,

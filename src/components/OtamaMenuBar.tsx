@@ -1,32 +1,34 @@
 import { ipcRenderer } from 'electron';
 
+import { mdiWindowMaximize } from '@mdi/js';
+import Icon from '@mdi/react';
+import CloseIcon from '@mui/icons-material/Close';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import MenuIcon from '@mui/icons-material/Menu';
+import MinimizeIcon from '@mui/icons-material/Minimize';
 import {
   CssBaseline,
   Fab,
   Snackbar,
   useScrollTrigger,
   Zoom,
-} from '@material-ui/core';
-import AppBar from '@material-ui/core/AppBar';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import CloseIcon from '@material-ui/icons/Close';
-import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
-import MenuIcon from '@material-ui/icons/Menu';
-import MinimizeIcon from '@material-ui/icons/Minimize';
-import { AlertTitle } from '@material-ui/lab';
-import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
-import { mdiWindowMaximize } from '@mdi/js';
-import Icon from '@mdi/react';
+  AlertTitle,
+  useTheme,
+  Box,
+} from '@mui/material';
+import MuiAlert, { AlertProps } from '@mui/material/Alert';
+import AppBar from '@mui/material/AppBar';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-import { ThemeExtension } from '../extension/theme';
 import { State } from '../states/State';
+import ControlBox from './ControlBox';
 
 type ElevationScrollProps = {
   children: React.ReactElement;
@@ -46,10 +48,6 @@ function ElevationScroll(props: ElevationScrollProps) {
 
 function ScrollTop(props: ElevationScrollProps) {
   const { children } = props;
-  const { useStyles } = useSelector<State, ThemeExtension>(
-    state => state.theme,
-  );
-  const classes = useStyles();
   const trigger = useScrollTrigger({
     disableHysteresis: true,
     threshold: 100,
@@ -67,10 +65,7 @@ function ScrollTop(props: ElevationScrollProps) {
 
   return (
     <Zoom in={trigger}>
-      <div
-        onClick={handleClick}
-        role="presentation"
-        className={classes.scrollTop}>
+      <div onClick={handleClick} role="presentation">
         {children}
       </div>
     </Zoom>
@@ -82,18 +77,10 @@ function Alert(props: AlertProps) {
   return <MuiAlert elevation={6} {...props} />;
 }
 
-type Props = {
-  onBookChange: (text: string) => void;
-};
-
-export default function OtamaAppBar(props: Props): JSX.Element {
-  const { useStyles } = useSelector<State, ThemeExtension>(
-    state => state.theme,
-  );
-  const classes = useStyles();
-  const { onBookChange } = props;
+export default function OtamaMenuBar(): JSX.Element {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const isMenuOpen = Boolean(anchorEl);
+  const theme = useTheme();
 
   const windowMinimize = () => {
     ipcRenderer.invoke('window-minimize');
@@ -153,7 +140,6 @@ export default function OtamaAppBar(props: Props): JSX.Element {
                 alertHandleClick(`ファイルが開けませんでした\n${data.message}`);
                 return false;
               }
-              onBookChange(data.text);
               return true;
             })
             .catch(err => {
@@ -177,60 +163,26 @@ export default function OtamaAppBar(props: Props): JSX.Element {
     <>
       <CssBaseline />
       <ElevationScroll>
-        <AppBar position="static" className={classes.appBar}>
+        <AppBar position="static" sx={theme.menuBar}>
           <Toolbar variant="dense">
-            <IconButton
-              edge="start"
-              className={classes.menuIconButton}
-              color="inherit"
-              aria-label="open drawer">
+            <IconButton edge="start" color="inherit" aria-label="open drawer">
               <MenuIcon />
             </IconButton>
             <div>
-              <Button
-                color="inherit"
-                className={classes.iconButton}
-                onClick={handleMenuClick}>
+              <Button color="inherit" onClick={handleMenuClick}>
                 <Typography variant="button" noWrap>
                   ファイル
                 </Typography>
               </Button>
             </div>
-            <div className={classes.grow} />
-            <Typography className={classes.title} variant="body1" noWrap>
-              ようこそ - Otamajakushi Bookshelf
+            <div />
+            <Box component="div" sx={theme.grow} />
+            <Typography variant="body1" noWrap>
+              Otamajakushi Bookshelf
             </Typography>
-            <div className={classes.grow} />
-            <div className={classes.sectionDesktop}>
-              <IconButton
-                aria-label="show 17 new notifications"
-                color="inherit"
-                onClick={windowMinimize}
-                className={classes.iconButton}>
-                <MinimizeIcon />
-              </IconButton>
-              <IconButton
-                aria-label="show 4 new mails"
-                color="inherit"
-                onClick={windowMaximize}
-                className={classes.iconButton}>
-                <Icon
-                  path={mdiWindowMaximize}
-                  title="Window Maximize"
-                  size={1}
-                />
-              </IconButton>
-              <IconButton
-                edge="end"
-                aria-label="account of current user"
-                aria-controls={menuId}
-                aria-haspopup="true"
-                onClick={windowClose}
-                color="inherit"
-                className={classes.iconButton}>
-                <CloseIcon />
-              </IconButton>
-            </div>
+            <div />
+            <Box component="div" sx={theme.grow} />
+            <ControlBox />
           </Toolbar>
         </AppBar>
       </ElevationScroll>
@@ -241,10 +193,7 @@ export default function OtamaAppBar(props: Props): JSX.Element {
           <KeyboardArrowUpIcon />
         </Fab>
       </ScrollTop>
-      <Snackbar
-        open={alertOpen}
-        autoHideDuration={10000}
-        onClose={alertHandleClose}>
+      <Snackbar open={alertOpen} autoHideDuration={10000}>
         <Alert onClose={alertHandleClose} severity="error">
           <AlertTitle>
             <strong>辞書ファイルの読み込みに失敗しました。</strong>
@@ -254,4 +203,7 @@ export default function OtamaAppBar(props: Props): JSX.Element {
       </Snackbar>
     </>
   );
+}
+function useStyles() {
+  throw new Error('Function not implemented.');
 }

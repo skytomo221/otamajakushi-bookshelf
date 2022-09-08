@@ -1,12 +1,11 @@
 import { Word } from 'otamajakushi/dist/Word';
 
-import { ThemeExtension } from '../extension/theme';
-
 import Bookshelf from './Bookshelf';
+import ThemeParameter from './ThemeParameter';
 
 export interface State {
   searchWord: string;
   bookshelf: Bookshelf;
   selectedWord: Word;
-  theme: ThemeExtension;
+  theme: ThemeParameter;
 }
