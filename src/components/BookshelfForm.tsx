@@ -23,9 +23,9 @@ import Bookshelf from '../states/Bookshelf';
 import { State } from '../states/State';
 import ThemeParameter from '../states/ThemeParameter';
 import useWindowDimensions from '../useWindowDimensions';
-import createOtamaTheme from './OtamaThemeProvider';
 
 import OtamaMenuBar from './OtamaMenuBar';
+import createOtamaTheme from './OtamaThemeProvider';
 import OtamaThemeProvider from './OtamaThemeProvider';
 
 type ElevationScrollProps = {
