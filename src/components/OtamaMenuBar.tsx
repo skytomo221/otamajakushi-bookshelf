@@ -185,6 +185,3 @@ export default function OtamaMenuBar(): JSX.Element {
     </AppBar>
   );
 }
-function useStyles() {
-  throw new Error('Function not implemented.');
-}
