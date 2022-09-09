@@ -160,48 +160,28 @@ export default function OtamaMenuBar(): JSX.Element {
   );
 
   return (
-    <>
-      <CssBaseline />
-      <ElevationScroll>
-        <AppBar position="static" sx={theme.menuBar}>
-          <Toolbar variant="dense">
-            <IconButton edge="start" color="inherit" aria-label="open drawer">
-              <MenuIcon />
-            </IconButton>
-            <div>
-              <Button color="inherit" onClick={handleMenuClick}>
-                <Typography variant="button" noWrap>
-                  ファイル
-                </Typography>
-              </Button>
-            </div>
-            <div />
-            <Box component="div" sx={theme.grow} />
-            <Typography variant="body1" noWrap>
-              Otamajakushi Bookshelf
+    <AppBar position="static" sx={theme.menuBar}>
+      <Toolbar variant="dense">
+        <IconButton edge="start" color="inherit" aria-label="open drawer">
+          <MenuIcon />
+        </IconButton>
+        <div>
+          <Button color="inherit" onClick={handleMenuClick}>
+            <Typography variant="button" noWrap>
+              ファイル
             </Typography>
-            <div />
-            <Box component="div" sx={theme.grow} />
-            <ControlBox />
-          </Toolbar>
-        </AppBar>
-      </ElevationScroll>
-      <Toolbar id="back-to-top-anchor" />
-      {renderMenu}
-      <ScrollTop>
-        <Fab color="secondary" size="small" aria-label="scroll back to top">
-          <KeyboardArrowUpIcon />
-        </Fab>
-      </ScrollTop>
-      <Snackbar open={alertOpen} autoHideDuration={10000}>
-        <Alert onClose={alertHandleClose} severity="error">
-          <AlertTitle>
-            <strong>辞書ファイルの読み込みに失敗しました。</strong>
-          </AlertTitle>
-          {errorMessage}
-        </Alert>
-      </Snackbar>
-    </>
+          </Button>
+        </div>
+        <div />
+        <Box component="div" sx={theme.grow} />
+        <Typography variant="body1" noWrap>
+          Otamajakushi Bookshelf
+        </Typography>
+        <div />
+        <Box component="div" sx={theme.grow} />
+        <ControlBox />
+      </Toolbar>
+    </AppBar>
   );
 }
 function useStyles() {

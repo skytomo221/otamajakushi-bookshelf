@@ -1,9 +1,13 @@
 import {
+  Box,
   Container,
   createStyles,
+  CssBaseline,
   ListItem,
   ListItemText,
   ThemeProvider,
+  useScrollTrigger,
+  useTheme,
 } from '@mui/material';
 import OTMJSON from 'otamajakushi';
 import { Otm } from 'otamajakushi/dist/Otm';
@@ -24,11 +28,33 @@ import createOtamaTheme from './OtamaThemeProvider';
 import OtamaMenuBar from './OtamaMenuBar';
 import OtamaThemeProvider from './OtamaThemeProvider';
 
+type ElevationScrollProps = {
+  children: React.ReactElement;
+};
+
+function ElevationScroll(props: ElevationScrollProps) {
+  const { children } = props;
+  const trigger = useScrollTrigger({
+    disableHysteresis: true,
+    threshold: 0,
+  });
+
+  return React.cloneElement(children, {
+    elevation: trigger ? 4 : 0,
+  });
+}
+
 export default function BookshelfForm(): JSX.Element {
+  const theme = useTheme();
+
   return (
     <OtamaThemeProvider>
-      <OtamaMenuBar />
-      Hello!
+      <CssBaseline />
+      <ElevationScroll>
+        <OtamaMenuBar />
+      </ElevationScroll>
+      <Box component="div" sx={theme.mixins.toolbar} />
+      <div>Hello!</div>
     </OtamaThemeProvider>
   );
 }
