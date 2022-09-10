@@ -30,6 +30,7 @@ import { useSelector } from 'react-redux';
 import { State } from '../states/State';
 
 import ControlBox from './ControlBox';
+import FileMenu from './FileMenu';
 
 type ElevationScrollProps = {
   children: React.ReactElement;
@@ -166,13 +167,7 @@ export default function OtamaMenuBar(): JSX.Element {
         <IconButton edge="start" color="inherit" aria-label="open drawer">
           <MenuIcon />
         </IconButton>
-        <div>
-          <Button color="inherit" onClick={handleMenuClick} sx={theme.button}>
-            <Typography variant="button" noWrap>
-              ファイル
-            </Typography>
-          </Button>
-        </div>
+        <FileMenu />
         <Box component="div" sx={theme.grow} />
         <Typography variant="body1" noWrap>
           Otamajakushi Bookshelf
