@@ -53,6 +53,7 @@
     "@mui/icons-material": "^5.10.3",
     "@mui/material": "^5.10.4",
     "electron-squirrel-startup": "^1.0.0",
+    "notistack": "^2.0.5",
     "otamajakushi": "^1.2.0",
     "path": "^0.12.7",
     "react": "^17.0.2",

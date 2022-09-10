@@ -1,14 +1,17 @@
 import {
   Box,
+  Button,
   Container,
   createStyles,
   CssBaseline,
   ListItem,
   ListItemText,
+  Snackbar,
   ThemeProvider,
   useScrollTrigger,
   useTheme,
 } from '@mui/material';
+import { SnackbarProvider, VariantType, useSnackbar } from 'notistack';
 import OTMJSON from 'otamajakushi';
 import { Otm } from 'otamajakushi/dist/Otm';
 import { Word } from 'otamajakushi/dist/Word';
@@ -49,12 +52,14 @@ export default function BookshelfForm(): JSX.Element {
 
   return (
     <OtamaThemeProvider>
-      <CssBaseline />
-      <ElevationScroll>
-        <OtamaMenuBar />
-      </ElevationScroll>
-      <Box component="div" sx={theme.mixins.toolbar} />
-      <div>Hello!</div>
+      <SnackbarProvider maxSnack={3}>
+        <CssBaseline />
+        <ElevationScroll>
+          <OtamaMenuBar />
+        </ElevationScroll>
+        <Box component="div" sx={theme.mixins.toolbar} />
+        <div>Hello!</div>
+      </SnackbarProvider>
     </OtamaThemeProvider>
   );
 }
