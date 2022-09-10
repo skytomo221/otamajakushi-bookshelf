@@ -173,12 +173,10 @@ export default function OtamaMenuBar(): JSX.Element {
             </Typography>
           </Button>
         </div>
-        <div />
         <Box component="div" sx={theme.grow} />
         <Typography variant="body1" noWrap>
           Otamajakushi Bookshelf
         </Typography>
-        <div />
         <Box component="div" sx={theme.grow} />
         <ControlBox />
       </Toolbar>
