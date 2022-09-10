@@ -167,7 +167,7 @@ export default function OtamaMenuBar(): JSX.Element {
           <MenuIcon />
         </IconButton>
         <div>
-          <Button color="inherit" onClick={handleMenuClick}>
+          <Button color="inherit" onClick={handleMenuClick} sx={theme.button}>
             <Typography variant="button" noWrap>
               ファイル
             </Typography>
