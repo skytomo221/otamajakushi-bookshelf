@@ -10,7 +10,6 @@ import React from 'react';
 
 export interface Props {
   menuItems: (
-    | 'divider'
     | {
         key: string;
         name: string;
@@ -50,9 +49,9 @@ export function OtamaMenu({ menuItems }: Props): JSX.Element {
         MenuListProps={{
           'aria-labelledby': 'file-button',
         }}>
-        {menuItems.map(item => {
-          if (item === 'divider') {
-            return <Divider />;
+        {menuItems.map((item) => {
+          if (item.name === 'divider') {
+            return <Divider key={item.key} />;
           }
           return (
             <MenuItem

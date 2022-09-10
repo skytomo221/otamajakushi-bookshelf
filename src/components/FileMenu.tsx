@@ -45,7 +45,10 @@ export default function FileMenu(): JSX.Element {
                 }
               });
           }},
-        'divider',
+        {
+          key: 'divider',
+          name: 'divider',
+        },
         {
           key: 'exit',
           name: '終了',
