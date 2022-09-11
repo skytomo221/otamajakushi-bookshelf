@@ -12,6 +12,7 @@ import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { changePrimarySidebarAction } from '../actions/PrimarySidebarActions';
+import { changeSecondarySidebarAction } from '../actions/SecondarySidebarActions';
 import { State } from '../states/State';
 
 export const activityBarWidth = 240;
@@ -43,10 +44,10 @@ const Drawer = styled(MuiDrawer, {
   flexShrink: 0,
   whiteSpace: 'nowrap',
   boxSizing: 'border-box',
-  ...({
+  ...{
     ...closedMixin(theme),
     '& .MuiDrawer-paper': closedMixin(theme),
-  }),
+  },
 }));
 
 export default function ActivityBar(): JSX.Element {
@@ -57,6 +58,12 @@ export default function ActivityBar(): JSX.Element {
   const onPrimarySidebarChange = React.useCallback((text: string | null) => {
     dispatch(changePrimarySidebarAction(text));
   }, []);
+  const secondarySidebar = useSelector<State, null | string>(
+    (state: State) => state.secondarySidebar,
+  );
+  const onSecondarySidebarChange = React.useCallback((text: string | null) => {
+    dispatch(changeSecondarySidebarAction(text));
+  }, []);
 
   return (
     <Drawer variant="permanent" open={false}>
@@ -66,6 +73,29 @@ export default function ActivityBar(): JSX.Element {
           <ListItemButton
             onClick={() =>
               onPrimarySidebarChange(primarySidebar === null ? 'open' : null)
+            }
+            sx={{
+              minHeight: 48,
+              justifyContent: 'center',
+              px: 2.5,
+            }}>
+            <ListItemIcon
+              sx={{
+                minWidth: 0,
+                mr: 'auto',
+                justifyContent: 'center',
+              }}>
+              <InboxIcon />
+            </ListItemIcon>
+            <ListItemText primary="右" sx={{ opacity: 0 }} />
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding sx={{ display: 'block' }}>
+          <ListItemButton
+            onClick={() =>
+              onSecondarySidebarChange(
+                secondarySidebar === null ? 'open' : null,
+              )
             }
             sx={{
               minHeight: 48,

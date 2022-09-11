@@ -13,29 +13,29 @@ import { useSelector } from 'react-redux';
 
 import { State } from '../states/State';
 
-export const primiarySidebarWidth = 240;
+export const secondarySidebarWidth = 240;
 
-export default function PrimiarySidebar(): JSX.Element {
+export default function SecondarySidebar(): JSX.Element {
   const theme = useTheme();
-  const primarySidebar = useSelector<State, null | string>(
-    (state: State) => state.primarySidebar,
+  const secondarySidebar = useSelector<State, null | string>(
+    (state: State) => state.secondarySidebar,
   );
-  const open = primarySidebar !== null;
+  const open = secondarySidebar !== null;
 
   return (
     <Drawer
       sx={{
-        width: primiarySidebarWidth,
+        width: secondarySidebarWidth,
         flexShrink: 0,
         '& .MuiDrawer-paper': {
           marginLeft: `calc(${theme.spacing(8)} + 1px)`,
-          width: primiarySidebarWidth,
+          width: secondarySidebarWidth,
           boxSizing: 'border-box',
           zIndex: 1199,
         },
       }}
       variant="persistent"
-      anchor="left"
+      anchor="right"
       open={open}>
       <Divider />
       <List>

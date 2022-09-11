@@ -9,4 +9,5 @@ export interface State {
   selectedWord: Word;
   theme: ThemeParameter;
   primarySidebar: null | string;
+  secondarySidebar: null | string;
 }

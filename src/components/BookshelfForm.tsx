@@ -33,7 +33,8 @@ import ContentEditable from './ContentEditable';
 import OtamaMenuBar from './OtamaMenuBar';
 import createOtamaTheme from './OtamaThemeProvider';
 import OtamaThemeProvider from './OtamaThemeProvider';
-import PrimiarySidebar, { primiarySidebarWidth } from './PrimiarySidebar';
+import PrimarySidebar, { primarySidebarWidth } from './PrimarySidebar';
+import SecondarySidebar, { secondarySidebarWidth } from './SecondarySidebar';
 import StatusBar from './StatusBar';
 
 type ElevationScrollProps = {
@@ -55,8 +56,9 @@ function ElevationScroll(props: ElevationScrollProps) {
 const Editor = styled('main', {
   shouldForwardProp: prop => prop !== 'open',
 })<{
-  open?: boolean;
-}>(({ theme, open }) => ({
+  primarySidebarOpen?: boolean;
+  secondarySidebarOpen?: boolean;
+}>(({ theme, primarySidebarOpen, secondarySidebarOpen }) => ({
   flexGrow: 1,
   padding: theme.spacing(3),
   transition: theme.transitions.create('margin', {
@@ -64,12 +66,17 @@ const Editor = styled('main', {
     duration: theme.transitions.duration.leavingScreen,
   }),
   marginLeft: `calc(${theme.spacing(8)} + 1px)`,
-  ...(open && {
+  ...((primarySidebarOpen || secondarySidebarOpen) && {
     transition: theme.transitions.create('margin', {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
     }),
-    marginLeft: `calc(${theme.spacing(8)} + ${1 + primiarySidebarWidth}px)`,
+  }),
+  ...(primarySidebarOpen && {
+    marginLeft: `calc(${theme.spacing(8)} + ${1 + primarySidebarWidth}px)`,
+  }),
+  ...(secondarySidebarOpen && {
+    marginRight: `${1 + secondarySidebarWidth}px`,
   }),
 }));
 
@@ -78,6 +85,9 @@ export default function BookshelfForm(): JSX.Element {
   const [text, setText] = useState('この文章は書き換えることができます。');
   const primarySidebar = useSelector<State, null | string>(
     (state: State) => state.primarySidebar,
+  );
+  const secondarySidebar = useSelector<State, null | string>(
+    (state: State) => state.secondarySidebar,
   );
 
   return (
@@ -88,9 +98,12 @@ export default function BookshelfForm(): JSX.Element {
           <OtamaMenuBar />
         </ElevationScroll>
         <ActivityBar />
-        <PrimiarySidebar />
+        <PrimarySidebar />
+        <SecondarySidebar />
         <Box component="div" sx={theme.mixins.toolbar} />
-        <Editor open={primarySidebar !== null}>
+        <Editor
+          primarySidebarOpen={primarySidebar !== null}
+          secondarySidebarOpen={secondarySidebar !== null}>
           <Container maxWidth="md">
             <ContentEditable value={text} onChange={setText} />
           </Container>
