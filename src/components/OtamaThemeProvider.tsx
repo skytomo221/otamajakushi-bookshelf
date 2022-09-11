@@ -14,14 +14,18 @@ declare module '@mui/material/styles' {
     grow: {
       flexGrow: number;
     };
+    iconButton: {
+      '-webkit-app-region': string;
+    };
     menuBar: {
       '-webkit-app-region': string;
       margin: number;
       position: string;
     };
-    iconButton: {
-      '-webkit-app-region': string;
-    };
+    statusBar: {
+      top: 'auto';
+      bottom: 0;
+    }
   }
   // allow configuration using `createTheme`
   interface ThemeOptions {
@@ -39,6 +43,10 @@ declare module '@mui/material/styles' {
       margin?: number;
       position?: string;
     };
+    statusBar?: {
+      top: string;
+      bottom: number;
+    }
   }
 }
 
@@ -58,6 +66,10 @@ const createOtamaTheme = (param: ThemeParameter): Theme =>
       '-webkit-app-region': 'drag',
       margin: 0,
       position: 'fixed',
+    },
+    statusBar: {
+      top: 'auto',
+      bottom: 0,
     },
   });
 

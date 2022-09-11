@@ -30,6 +30,7 @@ import useWindowDimensions from '../useWindowDimensions';
 import OtamaMenuBar from './OtamaMenuBar';
 import createOtamaTheme from './OtamaThemeProvider';
 import OtamaThemeProvider from './OtamaThemeProvider';
+import StatusBar from './StatusBar';
 
 type ElevationScrollProps = {
   children: React.ReactElement;
@@ -58,7 +59,7 @@ export default function BookshelfForm(): JSX.Element {
           <OtamaMenuBar />
         </ElevationScroll>
         <Box component="div" sx={theme.mixins.toolbar} />
-        <div>Hello!</div>
+        <StatusBar />
       </SnackbarProvider>
     </OtamaThemeProvider>
   );
