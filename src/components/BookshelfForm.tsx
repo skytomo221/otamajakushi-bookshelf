@@ -26,6 +26,7 @@ import Bookshelf from '../states/Bookshelf';
 import { State } from '../states/State';
 import ThemeParameter from '../states/ThemeParameter';
 import useWindowDimensions from '../useWindowDimensions';
+import ActivityBar from './ActivityBar';
 
 import OtamaMenuBar from './OtamaMenuBar';
 import createOtamaTheme from './OtamaThemeProvider';
@@ -58,6 +59,7 @@ export default function BookshelfForm(): JSX.Element {
         <ElevationScroll>
           <OtamaMenuBar />
         </ElevationScroll>
+        <ActivityBar />
         <Box component="div" sx={theme.mixins.toolbar} />
         <StatusBar />
       </SnackbarProvider>

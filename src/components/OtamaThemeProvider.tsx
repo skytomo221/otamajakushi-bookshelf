@@ -21,10 +21,12 @@ declare module '@mui/material/styles' {
       '-webkit-app-region': string;
       margin: number;
       position: string;
+      zIndex: number;
     };
     statusBar: {
       top: 'auto';
       bottom: 0;
+      zIndex: number;
     }
   }
   // allow configuration using `createTheme`
@@ -42,10 +44,12 @@ declare module '@mui/material/styles' {
       '-webkit-app-region'?: string;
       margin?: number;
       position?: string;
+      zIndex?: number;
     };
     statusBar?: {
       top: string;
       bottom: number;
+      zIndex?: number;
     }
   }
 }
@@ -66,10 +70,12 @@ const createOtamaTheme = (param: ThemeParameter): Theme =>
       '-webkit-app-region': 'drag',
       margin: 0,
       position: 'fixed',
+      zIndex: 1201,
     },
     statusBar: {
       top: 'auto',
       bottom: 0,
+      zIndex: 1201,
     },
   });
 
