@@ -9,17 +9,12 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { styled, Theme, CSSObject } from '@mui/material/styles';
 import * as React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
-const drawerWidth = 240;
+import { changePrimarySidebarAction } from '../actions/PrimarySidebarActions';
+import { State } from '../states/State';
 
-const openedMixin = (theme: Theme): CSSObject => ({
-  width: drawerWidth,
-  transition: theme.transitions.create('width', {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.enteringScreen,
-  }),
-  overflowX: 'hidden',
-});
+export const activityBarWidth = 240;
 
 const closedMixin = (theme: Theme): CSSObject => ({
   transition: theme.transitions.create('width', {
@@ -44,26 +39,50 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 
 const Drawer = styled(MuiDrawer, {
   shouldForwardProp: prop => prop !== 'open',
-})(({ theme, open }) => ({
-  width: drawerWidth,
+})(({ theme }) => ({
   flexShrink: 0,
   whiteSpace: 'nowrap',
   boxSizing: 'border-box',
-  ...(open && {
-    ...openedMixin(theme),
-    '& .MuiDrawer-paper': openedMixin(theme),
-  }),
-  ...(!open && {
+  ...({
     ...closedMixin(theme),
     '& .MuiDrawer-paper': closedMixin(theme),
   }),
 }));
 
 export default function ActivityBar(): JSX.Element {
+  const dispatch = useDispatch();
+  const primarySidebar = useSelector<State, null | string>(
+    (state: State) => state.primarySidebar,
+  );
+  const onPrimarySidebarChange = React.useCallback((text: string | null) => {
+    dispatch(changePrimarySidebarAction(text));
+  }, []);
+
   return (
     <Drawer variant="permanent" open={false}>
       <DrawerHeader />
       <List>
+        <ListItem disablePadding sx={{ display: 'block' }}>
+          <ListItemButton
+            onClick={() =>
+              onPrimarySidebarChange(primarySidebar === null ? 'open' : null)
+            }
+            sx={{
+              minHeight: 48,
+              justifyContent: 'center',
+              px: 2.5,
+            }}>
+            <ListItemIcon
+              sx={{
+                minWidth: 0,
+                mr: 'auto',
+                justifyContent: 'center',
+              }}>
+              <InboxIcon />
+            </ListItemIcon>
+            <ListItemText primary="左" sx={{ opacity: 0 }} />
+          </ListItemButton>
+        </ListItem>
         {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
           <ListItem key={text} disablePadding sx={{ display: 'block' }}>
             <ListItemButton

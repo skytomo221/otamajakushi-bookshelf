@@ -8,4 +8,5 @@ export interface State {
   bookshelf: Bookshelf;
   selectedWord: Word;
   theme: ThemeParameter;
+  primarySidebar: null | string;
 }

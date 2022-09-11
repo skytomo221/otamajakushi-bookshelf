@@ -7,6 +7,7 @@ import {
   ListItem,
   ListItemText,
   Snackbar,
+  styled,
   ThemeProvider,
   useScrollTrigger,
   useTheme,
@@ -15,7 +16,7 @@ import { SnackbarProvider, VariantType, useSnackbar } from 'notistack';
 import OTMJSON from 'otamajakushi';
 import { Otm } from 'otamajakushi/dist/Otm';
 import { Word } from 'otamajakushi/dist/Word';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 
@@ -26,11 +27,13 @@ import Bookshelf from '../states/Bookshelf';
 import { State } from '../states/State';
 import ThemeParameter from '../states/ThemeParameter';
 import useWindowDimensions from '../useWindowDimensions';
-import ActivityBar from './ActivityBar';
+import ActivityBar, { activityBarWidth } from './ActivityBar';
+import ContentEditable from './ContentEditable';
 
 import OtamaMenuBar from './OtamaMenuBar';
 import createOtamaTheme from './OtamaThemeProvider';
 import OtamaThemeProvider from './OtamaThemeProvider';
+import PrimiarySidebar, { primiarySidebarWidth } from './PrimiarySidebar';
 import StatusBar from './StatusBar';
 
 type ElevationScrollProps = {
@@ -49,8 +52,33 @@ function ElevationScroll(props: ElevationScrollProps) {
   });
 }
 
+const Editor = styled('main', {
+  shouldForwardProp: prop => prop !== 'open',
+})<{
+  open?: boolean;
+}>(({ theme, open }) => ({
+  flexGrow: 1,
+  padding: theme.spacing(3),
+  transition: theme.transitions.create('margin', {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  marginLeft: `calc(${theme.spacing(8)} + 1px)`,
+  ...(open && {
+    transition: theme.transitions.create('margin', {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+    marginLeft: `calc(${theme.spacing(8)} + ${1 + primiarySidebarWidth}px)`,
+  }),
+}));
+
 export default function BookshelfForm(): JSX.Element {
   const theme = useTheme();
+  const [text, setText] = useState('この文章は書き換えることができます。');
+  const primarySidebar = useSelector<State, null | string>(
+    (state: State) => state.primarySidebar,
+  );
 
   return (
     <OtamaThemeProvider>
@@ -60,7 +88,13 @@ export default function BookshelfForm(): JSX.Element {
           <OtamaMenuBar />
         </ElevationScroll>
         <ActivityBar />
+        <PrimiarySidebar />
         <Box component="div" sx={theme.mixins.toolbar} />
+        <Editor open={primarySidebar !== null}>
+          <Container maxWidth="md">
+            <ContentEditable value={text} onChange={setText} />
+          </Container>
+        </Editor>
         <StatusBar />
       </SnackbarProvider>
     </OtamaThemeProvider>
