@@ -8,6 +8,8 @@ import {
   ListItemText,
   Snackbar,
   styled,
+  Tab,
+  Tabs,
   ThemeProvider,
   useScrollTrigger,
   useTheme,
@@ -22,7 +24,7 @@ import { FixedSizeList, ListChildComponentProps } from 'react-window';
 
 import { addBookAction } from '../actions/BookshelfActions';
 import { changeSearchWordAction } from '../actions/SearchWordActions';
-import { changeSelectedWordAction } from '../actions/SelectedWordActions';
+import Book from '../states/Book';
 import Bookshelf from '../states/Bookshelf';
 import { State } from '../states/State';
 import ThemeParameter from '../states/ThemeParameter';
@@ -36,6 +38,7 @@ import OtamaThemeProvider from './OtamaThemeProvider';
 import PrimarySidebar, { primarySidebarWidth } from './PrimarySidebar';
 import SecondarySidebar, { secondarySidebarWidth } from './SecondarySidebar';
 import StatusBar from './StatusBar';
+import WordTabs from './WordTabs';
 
 type ElevationScrollProps = {
   children: React.ReactElement;
@@ -87,6 +90,9 @@ export default function BookshelfForm(): JSX.Element {
   const secondarySidebar = useSelector<State, null | string>(
     (state: State) => state.secondarySidebar,
   );
+  const books = useSelector<State, Book[]>(
+    (state: State) => state.bookshelf.books,
+  );
 
   return (
     <OtamaThemeProvider>
@@ -102,9 +108,14 @@ export default function BookshelfForm(): JSX.Element {
         <Editor
           primarySidebarOpen={primarySidebar !== null}
           secondarySidebarOpen={secondarySidebar !== null}>
-          <Container maxWidth="md">
-            <ContentEditable value={text} onChange={setText} />
-          </Container>
+          {books.some(book => book.path === primarySidebar) ? (
+            <WordTabs />
+          ) : (
+            <Container maxWidth="md">
+              <h1>ようこそ！</h1>
+            </Container>
+          )}
+          <ContentEditable value={text} onChange={setText} />
         </Editor>
         <StatusBar />
       </SnackbarProvider>

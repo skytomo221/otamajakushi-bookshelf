@@ -9,8 +9,10 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import * as React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { addSelectedWordAction } from '../actions/SelectedWordsActions';
 import Book from '../states/Book';
+import SelectedWord from '../states/SelectedWord';
 
 import { State } from '../states/State';
 
@@ -24,6 +26,32 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   // necessary for content to be below app bar
   ...theme.mixins.toolbar,
 }));
+
+interface BookListItemProps {
+  book: Book;
+}
+
+function BookListItem({ book }: BookListItemProps): JSX.Element {
+  const dispatch = useDispatch();
+  const onSelectedWordAdd = React.useCallback((selectedWord: SelectedWord) => {
+    dispatch(addSelectedWordAction(selectedWord));
+  }, []);
+
+  return (
+    <>
+      {book.dictionary.words.map(word => (
+        <ListItem key={word.entry.id} disablePadding>
+          <ListItemButton
+            onClick={() =>
+              onSelectedWordAdd({ path: book.path, id: word.entry.id })
+            }>
+            <ListItemText primary={word.entry.form} />
+          </ListItemButton>
+        </ListItem>
+      ))}
+    </>
+  );
+}
 
 export default function PrimarySidebar(): JSX.Element {
   const theme = useTheme();
@@ -53,15 +81,9 @@ export default function PrimarySidebar(): JSX.Element {
       <DrawerHeader />
       {books.some(book => book.path === primarySidebar) ? (
         <List>
-          {
-          books.find(book => book.path === primarySidebar)?.dictionary.words
-          .map((word) => (
-              <ListItem key={word.entry.id} disablePadding>
-                <ListItemButton>
-                  <ListItemText primary={word.entry.form} />
-                </ListItemButton>
-              </ListItem>
-            ))}
+          <BookListItem
+            book={books.find(book => book.path === primarySidebar) as Book}
+          />
         </List>
       ) : (
         <></>
