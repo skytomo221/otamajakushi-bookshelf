@@ -10,6 +10,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
+import Book from '../states/Book';
 
 import { State } from '../states/State';
 
@@ -17,6 +18,9 @@ export const primarySidebarWidth = 240;
 
 export default function PrimarySidebar(): JSX.Element {
   const theme = useTheme();
+  const books = useSelector<State, Book[]>(
+    (state: State) => state.bookshelf.books,
+  );
   const primarySidebar = useSelector<State, null | string>(
     (state: State) => state.primarySidebar,
   );
@@ -37,32 +41,21 @@ export default function PrimarySidebar(): JSX.Element {
       variant="persistent"
       anchor="left"
       open={open}>
-      <Divider />
-      <List>
-        {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-      <Divider />
-      <List>
-        {['All mail', 'Trash', 'Spam'].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
+      {books.some(book => book.path === primarySidebar) ? (
+        <List>
+          {
+          books.find(book => book.path === primarySidebar)?.dictionary.words
+          .map((word) => (
+              <ListItem key={word.entry.id} disablePadding>
+                <ListItemButton>
+                  <ListItemText primary={word.entry.form} />
+                </ListItemButton>
+              </ListItem>
+            ))}
+        </List>
+      ) : (
+        <></>
+      )}
     </Drawer>
   );
 }

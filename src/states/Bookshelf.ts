@@ -1,5 +1,5 @@
-import Otm from 'otamajakushi/dist/Otm';
+import Book from "./Book";
 
 export default interface Bookshelf {
-  books: Otm.Otm[];
+  books: Book[];
 }

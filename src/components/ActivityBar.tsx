@@ -1,3 +1,4 @@
+import BookIcon from '@mui/icons-material/Book';
 import MailIcon from '@mui/icons-material/Mail';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import Divider from '@mui/material/Divider';
@@ -13,6 +14,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { changePrimarySidebarAction } from '../actions/PrimarySidebarActions';
 import { changeSecondarySidebarAction } from '../actions/SecondarySidebarActions';
+import Book from '../states/Book';
 import { State } from '../states/State';
 
 export const activityBarWidth = 240;
@@ -64,6 +66,9 @@ export default function ActivityBar(): JSX.Element {
   const onSecondarySidebarChange = React.useCallback((text: string | null) => {
     dispatch(changeSecondarySidebarAction(text));
   }, []);
+  const books = useSelector<State, Book[]>(
+    (state: State) => state.bookshelf.books,
+  );
 
   return (
     <Drawer variant="permanent" open={false}>
@@ -113,31 +118,17 @@ export default function ActivityBar(): JSX.Element {
             <ListItemText primary="左" sx={{ opacity: 0 }} />
           </ListItemButton>
         </ListItem>
-        {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-          <ListItem key={text} disablePadding sx={{ display: 'block' }}>
-            <ListItemButton
-              sx={{
-                minHeight: 48,
-                justifyContent: 'center',
-                px: 2.5,
-              }}>
-              <ListItemIcon
-                sx={{
-                  minWidth: 0,
-                  mr: 'auto',
-                  justifyContent: 'center',
-                }}>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} sx={{ opacity: 0 }} />
-            </ListItemButton>
-          </ListItem>
-        ))}
       </List>
       <Divider />
       <List>
-        {['All mail', 'Trash', 'Spam'].map((text, index) => (
-          <ListItem key={text} disablePadding sx={{ display: 'block' }}>
+        {books.map(book => (
+          <ListItem
+            onClick={() =>
+              onPrimarySidebarChange(primarySidebar === null ? book.path : null)
+            }
+            key={book.path}
+            disablePadding
+            sx={{ display: 'block' }}>
             <ListItemButton
               sx={{
                 minHeight: 48,
@@ -150,9 +141,9 @@ export default function ActivityBar(): JSX.Element {
                   mr: 'auto',
                   justifyContent: 'center',
                 }}>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                <BookIcon />
               </ListItemIcon>
-              <ListItemText primary={text} sx={{ opacity: 0 }} />
+              <ListItemText primary={book.path} sx={{ opacity: 0 }} />
             </ListItemButton>
           </ListItem>
         ))}

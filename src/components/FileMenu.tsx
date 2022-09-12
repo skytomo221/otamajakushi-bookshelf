@@ -1,13 +1,17 @@
 import { ipcRenderer } from 'electron';
 
 import { useSnackbar } from 'notistack';
+import OTMJSON from 'otamajakushi';
 import React from 'react';
+import { useDispatch } from 'react-redux';
+import { addBookAction } from '../actions/BookshelfActions';
 
 import { windowClose } from '../windowControl';
 
 import { OtamaMenu } from './OtamaMenu';
 
 export default function FileMenu(): JSX.Element {
+  const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
 
   return (
@@ -28,9 +32,13 @@ export default function FileMenu(): JSX.Element {
                   return false;
                 }
                 if (!data.status) {
-                  enqueueSnackbar(`ファイルが開けませんでした\n${data.message}`);
+                  enqueueSnackbar(
+                    `ファイルが開けませんでした\n${data.message}`,
+                  );
                   return false;
                 }
+                const otm = OTMJSON.parse(data.text);
+                dispatch(addBookAction({ path: data.path, dictionary: otm }));
                 return true;
               })
               .catch(err => {
@@ -44,7 +52,8 @@ export default function FileMenu(): JSX.Element {
                   enqueueSnackbar('原因不明のエラー');
                 }
               });
-          }},
+          },
+        },
         {
           key: 'divider',
           name: 'divider',

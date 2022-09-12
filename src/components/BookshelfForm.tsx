@@ -12,7 +12,7 @@ import {
   useScrollTrigger,
   useTheme,
 } from '@mui/material';
-import { SnackbarProvider, VariantType, useSnackbar } from 'notistack';
+import { SnackbarProvider } from 'notistack';
 import OTMJSON from 'otamajakushi';
 import { Otm } from 'otamajakushi/dist/Otm';
 import { Word } from 'otamajakushi/dist/Word';
@@ -53,11 +53,9 @@ function ElevationScroll(props: ElevationScrollProps) {
   });
 }
 
-const Editor = styled('main', {
-  shouldForwardProp: prop => prop !== 'open',
-})<{
-  primarySidebarOpen?: boolean;
-  secondarySidebarOpen?: boolean;
+const Editor = styled('main')<{
+  primarySidebarOpen: boolean;
+  secondarySidebarOpen: boolean;
 }>(({ theme, primarySidebarOpen, secondarySidebarOpen }) => ({
   flexGrow: 1,
   padding: theme.spacing(3),
