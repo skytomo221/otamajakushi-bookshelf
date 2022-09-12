@@ -1,6 +1,6 @@
 import MailIcon from '@mui/icons-material/Mail';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
-import { useTheme } from '@mui/material';
+import { styled, useTheme } from '@mui/material';
 import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
@@ -14,6 +14,15 @@ import { useSelector } from 'react-redux';
 import { State } from '../states/State';
 
 export const secondarySidebarWidth = 240;
+
+const DrawerHeader = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'flex-end',
+  padding: theme.spacing(0, 1),
+  // necessary for content to be below app bar
+  ...theme.mixins.toolbar,
+}));
 
 export default function SecondarySidebar(): JSX.Element {
   const theme = useTheme();
@@ -37,7 +46,7 @@ export default function SecondarySidebar(): JSX.Element {
       variant="persistent"
       anchor="right"
       open={open}>
-      <Divider />
+      <DrawerHeader />
       <List>
         {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
           <ListItem key={text} disablePadding>
