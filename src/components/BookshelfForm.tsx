@@ -4,7 +4,10 @@ import {
   Container,
   createStyles,
   CssBaseline,
+  List,
   ListItem,
+  ListItemButton,
+  ListItemIcon,
   ListItemText,
   Snackbar,
   styled,
@@ -14,7 +17,7 @@ import {
   useScrollTrigger,
   useTheme,
 } from '@mui/material';
-import { SnackbarProvider } from 'notistack';
+import { SnackbarProvider, useSnackbar } from 'notistack';
 import OTMJSON from 'otamajakushi';
 import { Otm } from 'otamajakushi/dist/Otm';
 import { Word } from 'otamajakushi/dist/Word';
@@ -31,6 +34,12 @@ import ThemeParameter from '../states/ThemeParameter';
 import useWindowDimensions from '../useWindowDimensions';
 import ActivityBar, { activityBarWidth } from './ActivityBar';
 import ContentEditable from './ContentEditable';
+import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
+import NoteAddIcon from '@mui/icons-material/NoteAdd';
+import EditIcon from '@mui/icons-material/Edit';
+import FolderIcon from '@mui/icons-material/Folder';
+import FileOpenIcon from '@mui/icons-material/FileOpen';
+import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 
 import OtamaMenuBar from './OtamaMenuBar';
 import createOtamaTheme from './OtamaThemeProvider';
@@ -39,6 +48,8 @@ import PrimarySidebar, { primarySidebarWidth } from './PrimarySidebar';
 import SecondarySidebar, { secondarySidebarWidth } from './SecondarySidebar';
 import StatusBar from './StatusBar';
 import WordTabs from './WordTabs';
+import { ipcRenderer } from 'electron';
+import Editor from './Editor';
 
 type ElevationScrollProps = {
   children: React.ReactElement;
@@ -56,43 +67,9 @@ function ElevationScroll(props: ElevationScrollProps) {
   });
 }
 
-const Editor = styled('main')<{
-  primarySidebarOpen: boolean;
-  secondarySidebarOpen: boolean;
-}>(({ theme, primarySidebarOpen, secondarySidebarOpen }) => ({
-  flexGrow: 1,
-  padding: theme.spacing(3),
-  transition: theme.transitions.create('margin', {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  marginLeft: `calc(${theme.spacing(8)} + 1px)`,
-  ...((primarySidebarOpen || secondarySidebarOpen) && {
-    transition: theme.transitions.create('margin', {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  }),
-  ...(primarySidebarOpen && {
-    marginLeft: `calc(${theme.spacing(8)} + ${1 + primarySidebarWidth}px)`,
-  }),
-  ...(secondarySidebarOpen && {
-    marginRight: `${1 + secondarySidebarWidth}px`,
-  }),
-}));
-
 export default function BookshelfForm(): JSX.Element {
   const theme = useTheme();
   const [text, setText] = useState('この文章は書き換えることができます。');
-  const primarySidebar = useSelector<State, null | string>(
-    (state: State) => state.primarySidebar,
-  );
-  const secondarySidebar = useSelector<State, null | string>(
-    (state: State) => state.secondarySidebar,
-  );
-  const books = useSelector<State, Book[]>(
-    (state: State) => state.bookshelf.books,
-  );
 
   return (
     <OtamaThemeProvider>
@@ -105,18 +82,7 @@ export default function BookshelfForm(): JSX.Element {
         <PrimarySidebar />
         <SecondarySidebar />
         <Box component="div" sx={theme.mixins.toolbar} />
-        <Editor
-          primarySidebarOpen={primarySidebar !== null}
-          secondarySidebarOpen={secondarySidebar !== null}>
-          {books.some(book => book.path === primarySidebar) ? (
-            <WordTabs />
-          ) : (
-            <Container maxWidth="md">
-              <h1>ようこそ！</h1>
-            </Container>
-          )}
-          <ContentEditable value={text} onChange={setText} />
-        </Editor>
+        <Editor />
         <StatusBar />
       </SnackbarProvider>
     </OtamaThemeProvider>
