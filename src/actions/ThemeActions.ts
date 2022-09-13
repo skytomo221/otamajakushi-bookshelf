@@ -1,11 +1,10 @@
 import { actionCreatorFactory } from 'typescript-fsa';
 
-import { ThemeExtension } from '../extension/theme';
+import ThemeParameter from '../states/ThemeParameter';
 
 const actionCreator = actionCreatorFactory('change-theme');
 
-export const changeThemeAction = actionCreator<Partial<ThemeExtension>>(
-  'change-theme',
-);
+export const changeThemeAction =
+  actionCreator<ThemeParameter>('change-theme');
 
 export default changeThemeAction;

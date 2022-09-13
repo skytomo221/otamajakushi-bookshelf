@@ -1,12 +1,10 @@
 import {
   Box,
   Chip,
-  createStyles,
   Divider,
-  makeStyles,
   Theme,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
 import { Content } from 'otamajakushi/dist/Content';
 import { Relation } from 'otamajakushi/dist/Relation';
 import { Translation } from 'otamajakushi/dist/Translation';
@@ -14,41 +12,40 @@ import { Variation } from 'otamajakushi/dist/Variation';
 import { Word } from 'otamajakushi/dist/Word';
 import React from 'react';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      flexWrap: 'wrap',
-      margin: theme.spacing(1.5),
-      '& > *': {
-        margin: theme.spacing(0.25),
-      },
-    },
-    translationTitle: {
-      margin: theme.spacing(0.25),
-    },
-    content: {
-      margin: theme.spacing(0.75),
-      '&:last-child': {
-        marginBottom: theme.spacing(0),
-      },
-    },
-    divider: {
-      margin: theme.spacing(0.5),
-    },
-  }),
-);
+// const useStyles = makeStyles((theme: Theme) =>
+//   createStyles({
+//     root: {
+//       flexWrap: 'wrap',
+//       margin: theme.spacing(1.5),
+//       '& > *': {
+//         margin: theme.spacing(0.25),
+//       },
+//     },
+//     translationTitle: {
+//       margin: theme.spacing(0.25),
+//     },
+//     content: {
+//       margin: theme.spacing(0.75),
+//       '&:last-child': {
+//         marginBottom: theme.spacing(0),
+//       },
+//     },
+//     divider: {
+//       margin: theme.spacing(0.5),
+//     },
+//   }),
+// );
 
 interface Props {
   word: Word;
 }
 
 export default function WordCard({ word }: Props): JSX.Element {
-  const classes = useStyles();
   return (
     <div>
       <Typography variant="h5" component="h2">
         {word.entry.form}
-        <span className={classes.root}>
+        <span>
           {word.tags.map((tag: string) => (
             <Chip size="small" label={tag} key={tag} />
           ))}
@@ -60,15 +57,14 @@ export default function WordCard({ word }: Props): JSX.Element {
             variant="outlined"
             size="small"
             label={translation.title}
-            className={classes.translationTitle}
             component="h3"
           />
           {translation.forms.join(', ')}
         </Typography>
       ))}
-      {word.contents.length > 0 ? <Divider className={classes.divider} /> : ''}
+      {word.contents.length > 0 ? <Divider /> : ''}
       {word.contents.map((content: Content) => (
-        <Box key={content.title} className={classes.content}>
+        <Box key={content.title}>
           <Typography variant="h6" component="h3">
             {content.title}
           </Typography>
@@ -77,8 +73,8 @@ export default function WordCard({ word }: Props): JSX.Element {
       ))}
       {word.variations.length > 0 ? (
         <>
-          <Divider className={classes.divider} />
-          <Box className={classes.content}>
+          <Divider />
+          <Box>
             <Typography variant="h6" component="h3">
               変化形
             </Typography>
@@ -88,7 +84,6 @@ export default function WordCard({ word }: Props): JSX.Element {
                   variant="outlined"
                   size="small"
                   label={variation.title}
-                  className={classes.translationTitle}
                   component="h3"
                 />
                 {variation.form}
@@ -101,8 +96,8 @@ export default function WordCard({ word }: Props): JSX.Element {
       )}
       {word.relations.length > 0 ? (
         <>
-          <Divider className={classes.divider} />
-          <Box className={classes.content}>
+          <Divider />
+          <Box>
             <Typography variant="h6" component="h3">
               関連項目
             </Typography>
@@ -112,7 +107,6 @@ export default function WordCard({ word }: Props): JSX.Element {
                   variant="outlined"
                   size="small"
                   label={relation.title}
-                  className={classes.translationTitle}
                   component="h3"
                 />
                 {relation.entry.form}

@@ -1,13 +1,8 @@
 import { actionCreatorFactory } from 'typescript-fsa';
 
-import Bookshelf from '../states/Bookshelf';
+import Book from '../states/Book';
 
 const actionCreator = actionCreatorFactory('bookshelf-action');
 
-export const addBookAction = actionCreator<Partial<Bookshelf>>(
-  'add-book',
-);
-
-export const removeBookAction = actionCreator<Partial<Bookshelf>>(
-  'remove-book',
-);
+export const addBookAction = actionCreator<Book>('add-book');
+export const removeBookAction = actionCreator<Book>('remove-book');
