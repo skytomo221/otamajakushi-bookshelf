@@ -80,7 +80,7 @@ const createOtamaTheme = (param: ThemeParameter): Theme =>
   });
 
 export interface Props {
-  children?: ReactNode;
+  children: ReactNode;
 }
 
 export default function OtamaThemeProvider({ children }: Props): JSX.Element {
