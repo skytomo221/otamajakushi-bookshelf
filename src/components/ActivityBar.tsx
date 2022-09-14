@@ -1,5 +1,3 @@
-import BookIcon from '@mui/icons-material/Book';
-import MailIcon from '@mui/icons-material/Mail';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import Divider from '@mui/material/Divider';
 import MuiDrawer from '@mui/material/Drawer';
@@ -16,6 +14,8 @@ import { changePrimarySidebarAction } from '../actions/PrimarySidebarActions';
 import { changeSecondarySidebarAction } from '../actions/SecondarySidebarActions';
 import Book from '../states/Book';
 import { State } from '../states/State';
+
+import BookViewContainer from './BookViewContainer';
 
 export const activityBarWidth = 240;
 
@@ -122,30 +122,7 @@ export default function ActivityBar(): JSX.Element {
       <Divider />
       <List>
         {books.map(book => (
-          <ListItem
-            onClick={() =>
-              onPrimarySidebarChange(primarySidebar === null ? book.path : null)
-            }
-            key={book.path}
-            disablePadding
-            sx={{ display: 'block' }}>
-            <ListItemButton
-              sx={{
-                minHeight: 48,
-                justifyContent: 'center',
-                px: 2.5,
-              }}>
-              <ListItemIcon
-                sx={{
-                  minWidth: 0,
-                  mr: 'auto',
-                  justifyContent: 'center',
-                }}>
-                <BookIcon />
-              </ListItemIcon>
-              <ListItemText primary={book.path} sx={{ opacity: 0 }} />
-            </ListItemButton>
-          </ListItem>
+          <BookViewContainer key={book.path} book={book} />
         ))}
       </List>
     </Drawer>
