@@ -10,6 +10,7 @@ import {
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { removeBookAction } from '../actions/BookshelfActions';
 import { changePrimarySidebarAction } from '../actions/PrimarySidebarActions';
 import Book from '../states/Book';
 import { State } from '../states/State';
@@ -83,9 +84,19 @@ export default function BookViewContainer({ book }: Props): JSX.Element {
             ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
             : undefined
         }>
-        <MenuItem onClick={handleClose}>Profile</MenuItem>
-        <MenuItem onClick={handleClose}>My account</MenuItem>
-        <MenuItem onClick={handleClose}>Logout</MenuItem>
+        <MenuItem
+          onClick={() => {
+            handleClose();
+          }}>
+          編集する
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            dispatch(removeBookAction(book));
+            handleClose();
+          }}>
+          閉じる
+        </MenuItem>
       </Menu>
     </ListItem>
   );
