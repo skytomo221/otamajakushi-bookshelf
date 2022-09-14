@@ -51,8 +51,9 @@ export default function BookViewContainer({ book }: Props): JSX.Element {
   return (
     <ListItem
       onClick={() => {
-        onPrimarySidebarChange(primarySidebar === null ? book.path : null)}
-      }
+        if (contextMenu === null)
+          onPrimarySidebarChange(primarySidebar === null ? book.path : null);
+      }}
       onContextMenu={handleClick}
       key={book.path}
       disablePadding
