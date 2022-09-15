@@ -15,7 +15,7 @@ const selectedWordsReducer = reducerWithInitialState<null | SelectedWord[]>(
   .case(addSelectedWordAction, (state, payload) => [...(state ?? []), payload])
   .case(removeSelectedWordAction, (state, payload) =>
     (state ?? []).filter(
-      word => word.id !== payload.id && word.path !== payload.path,
+      word => !(word.id === payload.id && word.path === payload.path),
     ),
   )
   .build();

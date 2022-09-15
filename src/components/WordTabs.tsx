@@ -1,13 +1,16 @@
+import CloseIcon from '@mui/icons-material/Close';
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Typography from '@mui/material/Typography';
 import * as React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { removeSelectedWordAction } from '../actions/SelectedWordsActions';
+
 import Book from '../states/Book';
 import SelectedWord from '../states/SelectedWord';
-
 import { State } from '../states/State';
+
 import WordCard from './WordCard';
 
 interface TabPanelProps {
@@ -38,6 +41,7 @@ function TabPanel(props: TabPanelProps) {
 }
 
 export default function WordTabs() {
+  const dispatch = useDispatch();
   const [value, setValue] = React.useState(0);
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -48,6 +52,9 @@ export default function WordTabs() {
   const selectedWords = useSelector<State, null | SelectedWord[]>(
     (state: State) => state.selectedWords,
   );
+  const removeSelectedWord = React.useCallback((selectedWord: SelectedWord) => {
+    dispatch(removeSelectedWordAction(selectedWord));
+  }, []);
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -60,7 +67,22 @@ export default function WordTabs() {
             const word = books
               .find(book => book.path === path)
               ?.dictionary.words.find(w => w.entry.id === id);
-            return <Tab label={word?.entry.form} key={`${path}/${id}`} />;
+            return (
+              <Tab
+                label={word?.entry.form}
+                icon={
+                  <CloseIcon
+                    fontSize="small"
+                    onClick={() => {
+                      console.log({ id, path });
+                      removeSelectedWord({ id, path });
+                    }}
+                  />
+                }
+                iconPosition="end"
+                key={`${path}/${id}`}
+              />
+            );
           })}
         </Tabs>
       </Box>
