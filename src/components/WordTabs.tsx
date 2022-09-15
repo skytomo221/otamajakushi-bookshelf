@@ -74,7 +74,6 @@ export default function WordTabs() {
                   <CloseIcon
                     fontSize="small"
                     onClick={() => {
-                      console.log({ id, path });
                       removeSelectedWord({ id, path });
                     }}
                   />
