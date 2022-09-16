@@ -4,7 +4,7 @@
   "description": "OTM-JSONファイルで書かれた辞書が開けるアプリ",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "eslint": "eslint ./src --fix",
     "start": "electron ./dist/main.js",
     "build": "tsc && webpack",
@@ -66,6 +66,7 @@
     "typescript-fsa-reducers": "^1.2.2"
   },
   "devDependencies": {
+    "@types/jest": "^29.0.3",
     "@types/material-ui": "^0.21.8",
     "@types/react": "^17.0.10",
     "@types/react-dom": "^17.0.7",
@@ -88,6 +89,7 @@
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-react-hooks": "^4.2.0",
     "html-webpack-plugin": "^5.3.1",
+    "jest": "^29.0.3",
     "prettier": "^2.3.1",
     "ts-loader": "^9.2.3",
     "typescript": "^4.3.2",
