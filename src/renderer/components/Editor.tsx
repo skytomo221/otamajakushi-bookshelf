@@ -1,5 +1,3 @@
-import { ipcRenderer } from 'electron';
-
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import FileOpenIcon from '@mui/icons-material/FileOpen';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
@@ -25,6 +23,8 @@ import { State } from '../states/State';
 import { primarySidebarWidth } from './PrimarySidebar';
 import { secondarySidebarWidth } from './SecondarySidebar';
 import WordTabs from './WordTabs';
+
+const { api } = window;
 
 export default function Editor(): JSX.Element {
   const dispatch = useDispatch();
@@ -94,23 +94,28 @@ export default function Editor(): JSX.Element {
             <ListItem disablePadding>
               <ListItemButton
                 onClick={() => {
-                  ipcRenderer
-                    .invoke('file-open')
+                  api
+                    .fileOpen()
                     .then(data => {
-                      if (data.status === undefined) {
-                        return false;
+                      switch (data.status) {
+                        case 'cancel':
+                          return false;
+                        case 'failure':
+                          enqueueSnackbar(
+                            `ファイルが開けませんでした\n${data.message}`,
+                          );
+                          return false;
+                        case 'success':
+                          dispatch(
+                            addBookAction({
+                              path: data.path,
+                              dictionary: OTMJSON.parse(data.text),
+                            }),
+                          );
+                          return true;
+                        default:
+                          return false;
                       }
-                      if (!data.status) {
-                        enqueueSnackbar(
-                          `ファイルが開けませんでした\n${data.message}`,
-                        );
-                        return false;
-                      }
-                      const otm = OTMJSON.parse(data.text);
-                      dispatch(
-                        addBookAction({ path: data.path, dictionary: otm }),
-                      );
-                      return true;
                     })
                     .catch(err => {
                       // eslint-disable-next-line no-console

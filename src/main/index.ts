@@ -3,18 +3,15 @@
 import { app, BrowserWindow, dialog, ipcMain } from 'electron';
 import { readFileSync } from 'fs';
 
-// セキュアな Electron の構成
-// 参考: https://qiita.com/pochman/items/64b34e9827866664d436
+import { FileOpenReturn } from '../types/api';
 
 const createWindow = () => {
+  const path = require('path');
   const win = new BrowserWindow({
     width: 1200,
     height: 675,
     webPreferences: {
-      nodeIntegration: true,
-      nodeIntegrationInWorker: true,
-      contextIsolation: false,
-      // preload: `${__dirname}/preload.js`
+      preload: path.join(app.getAppPath(), 'preload.js'),
     },
     frame: false,
     resizable: true,
@@ -22,7 +19,6 @@ const createWindow = () => {
 
   // 読み込む index.html。
   // tsc でコンパイルするので、出力先の dist の相対パスで指定する。
-  const path = require('path');
   win.loadFile(path.join(__dirname, './index.html'));
 
   if (process.argv.find(arg => arg === '--debug')) {
@@ -43,37 +39,29 @@ const createWindow = () => {
     app.quit();
   });
 
-  ipcMain.handle('file-open', async () => {
-    // ファイルを選択
+  ipcMain.handle('file-open', async (): Promise<FileOpenReturn> => {
     const paths = dialog.showOpenDialogSync(win, {
-      buttonLabel: '開く', // 確認ボタンのラベル
+      buttonLabel: '開く',
       filters: [{ name: 'OTM-JSON', extensions: ['json'] }],
-      properties: [
-        'openFile', // ファイルの選択を許可
-        'createDirectory', // ディレクトリの作成を許可 (macOS)
-      ],
+      properties: ['openFile', 'createDirectory'],
     });
-
-    // キャンセルで閉じた場合
     if (paths === undefined) {
-      return { status: undefined };
+      return { status: 'cancel' };
     }
-
-    // ファイルの内容を返却
     try {
       const filePath = paths[0];
       const buff = readFileSync(filePath);
       return {
-        status: true,
+        status: 'success',
         path: filePath,
         text: buff.toString(),
       };
     } catch (error) {
       if (error instanceof Error) {
-        return { status: false, message: error.message };
+        return { status: 'failure', message: error.message };
       }
     }
-    return { status: undefined };
+    return { status: 'cancel' };
   });
 };
 

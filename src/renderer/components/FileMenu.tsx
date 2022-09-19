@@ -1,14 +1,13 @@
-import { ipcRenderer } from 'electron';
-
 import { useSnackbar } from 'notistack';
 import OTMJSON from 'otamajakushi';
 import React from 'react';
 import { useDispatch } from 'react-redux';
 
 import { addBookAction } from '../actions/BookshelfActions';
-import { windowClose } from '../windowControl';
 
 import { OtamaMenu } from './OtamaMenu';
+
+const { api } = window;
 
 export default function FileMenu(): JSX.Element {
   const dispatch = useDispatch();
@@ -25,21 +24,28 @@ export default function FileMenu(): JSX.Element {
           key: 'open',
           name: '辞書を開く',
           onClick: () => {
-            ipcRenderer
-              .invoke('file-open')
+            api
+              .fileOpen()
               .then(data => {
-                if (data.status === undefined) {
-                  return false;
+                switch (data.status) {
+                  case 'cancel':
+                    return false;
+                  case 'failure':
+                    enqueueSnackbar(
+                      `ファイルが開けませんでした\n${data.message}`,
+                    );
+                    return false;
+                  case 'success':
+                    dispatch(
+                      addBookAction({
+                        path: data.path,
+                        dictionary: OTMJSON.parse(data.text),
+                      }),
+                    );
+                    return true;
+                  default:
+                    return false;
                 }
-                if (!data.status) {
-                  enqueueSnackbar(
-                    `ファイルが開けませんでした\n${data.message}`,
-                  );
-                  return false;
-                }
-                const otm = OTMJSON.parse(data.text);
-                dispatch(addBookAction({ path: data.path, dictionary: otm }));
-                return true;
               })
               .catch(err => {
                 // eslint-disable-next-line no-console
@@ -61,7 +67,7 @@ export default function FileMenu(): JSX.Element {
         {
           key: 'exit',
           name: '終了',
-          onClick: windowClose,
+          onClick: api.windowClose,
         },
       ]}
     />

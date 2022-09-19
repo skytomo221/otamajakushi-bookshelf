@@ -5,7 +5,7 @@ import MinimizeIcon from '@mui/icons-material/Minimize';
 import { IconButton, styled } from '@mui/material';
 import React from 'react';
 
-import { windowMinimize, windowMaximize, windowClose } from '../windowControl';
+const { api } = window;
 
 const CustomIconButton = styled(IconButton)(({ theme }) => ({
   '-webkit-app-region': theme.iconButton['-webkit-app-region'],
@@ -13,7 +13,7 @@ const CustomIconButton = styled(IconButton)(({ theme }) => ({
 
 function MinimizeIconButton(): JSX.Element {
   return (
-    <CustomIconButton color="inherit" onClick={windowMinimize}>
+    <CustomIconButton color="inherit" onClick={api.windowMinimize}>
       <MinimizeIcon />
     </CustomIconButton>
   );
@@ -21,7 +21,7 @@ function MinimizeIconButton(): JSX.Element {
 
 function MaximizeIconButton(): JSX.Element {
   return (
-    <CustomIconButton color="inherit" onClick={windowMaximize}>
+    <CustomIconButton color="inherit" onClick={api.windowMaximize}>
       <Icon path={mdiWindowMaximize} title="Window Maximize" size={1} />
     </CustomIconButton>
   );
@@ -29,7 +29,7 @@ function MaximizeIconButton(): JSX.Element {
 
 function CloseIconButton(): JSX.Element {
   return (
-    <CustomIconButton color="inherit" onClick={windowClose}>
+    <CustomIconButton color="inherit" onClick={api.windowClose}>
       <CloseIcon />
     </CustomIconButton>
   );
