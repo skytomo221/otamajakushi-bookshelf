@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest",
     "eslint": "eslint ./src --fix",
-    "start": "electron ./dist/main.js",
+    "start": "electron ./dist/index.js",
     "build": "tsc && webpack",
     "build:main": "tsc",
     "build:render": "webpack",
@@ -24,7 +24,7 @@
       "./icon/**/*"
     ],
     "extraMetadata": {
-      "main": "./dist/main.js"
+      "main": "./dist/index.js"
     },
     "dmg": {
       "contents": [

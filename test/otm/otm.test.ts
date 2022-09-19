@@ -1,4 +1,4 @@
-import { initOtm, OtmController } from '../src/otm/index';
+import { initOtm, OtmController } from '../../src/otm/index';
 
 test('initOtm to equal initOtm', () => {
   expect(new OtmController().load(JSON.stringify(initOtm)).otm).toEqual(

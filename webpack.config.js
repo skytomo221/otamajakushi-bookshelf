@@ -4,7 +4,7 @@ const path = require('path');
 module.exports = {
   target: 'electron-renderer',
   // 起点となるファイル
-  entry: './src/index.tsx',
+  entry: './src/renderer/index.tsx',
   // webpack watch したときに差分ビルドができる
   cache: true,
   // development は、 source map file を作成、再ビルド時間の短縮などの設定となる
