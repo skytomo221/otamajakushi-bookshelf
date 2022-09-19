@@ -36,15 +36,24 @@ function BookListItem({ book }: BookListItemProps): JSX.Element {
   const onSelectedWordAdd = React.useCallback((selectedWord: SelectedWord) => {
     dispatch(addSelectedWordAction(selectedWord));
   }, []);
+  const selectedWords = useSelector<State, null | SelectedWord[]>(
+    (state: State) => state.selectedWords,
+  );
 
   return (
     <>
       {book.dictionary.words.map(word => (
         <ListItem key={word.entry.id} disablePadding>
           <ListItemButton
-            onClick={() =>
-              onSelectedWordAdd({ path: book.path, id: word.entry.id })
-            }>
+            onClick={() => {
+              if (
+                (selectedWords ?? []).every(
+                  w => w.id !== word.entry.id || w.path !== book.path,
+                )
+              ) {
+                onSelectedWordAdd({ path: book.path, id: word.entry.id });
+              }
+            }}>
             <ListItemText primary={word.entry.form} />
           </ListItemButton>
         </ListItem>
