@@ -1,19 +1,15 @@
-import MailIcon from '@mui/icons-material/Mail';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
 import { styled, useTheme } from '@mui/material';
-import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+
 import { addSelectedWordAction } from '../actions/SelectedWordsActions';
 import Book from '../states/Book';
 import SelectedWord from '../states/SelectedWord';
-
 import { State } from '../states/State';
 
 export const primarySidebarWidth = 240;

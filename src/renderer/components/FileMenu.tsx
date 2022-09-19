@@ -4,8 +4,8 @@ import { useSnackbar } from 'notistack';
 import OTMJSON from 'otamajakushi';
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { addBookAction } from '../actions/BookshelfActions';
 
+import { addBookAction } from '../actions/BookshelfActions';
 import { windowClose } from '../windowControl';
 
 import { OtamaMenu } from './OtamaMenu';

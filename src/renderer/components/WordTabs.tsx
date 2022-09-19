@@ -5,8 +5,8 @@ import Tabs from '@mui/material/Tabs';
 import Typography from '@mui/material/Typography';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { removeSelectedWordAction } from '../actions/SelectedWordsActions';
 
+import { removeSelectedWordAction } from '../actions/SelectedWordsActions';
 import Book from '../states/Book';
 import SelectedWord from '../states/SelectedWord';
 import { State } from '../states/State';
