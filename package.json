@@ -53,6 +53,8 @@
     "@mui/icons-material": "^5.10.3",
     "@mui/material": "^5.10.4",
     "electron-squirrel-startup": "^1.0.0",
+    "fp-ts": "^2.12.3",
+    "io-ts": "^2.2.18",
     "notistack": "^2.0.5",
     "otamajakushi": "^1.2.0",
     "path": "^0.12.7",
@@ -62,6 +64,7 @@
     "react-redux": "^7.2.4",
     "react-window": "^1.8.6",
     "redux": "^4.1.0",
+    "ts-jest": "^29.0.1",
     "typescript-fsa": "^3.0.0",
     "typescript-fsa-reducers": "^1.2.2"
   },
