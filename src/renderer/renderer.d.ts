@@ -1,3 +1,9 @@
+declare global {
+  interface Window {
+    api: Api;
+  }
+}
+
 export interface Api {
   fileOpen: () => Promise<FileOpenReturn>;
   windowMinimize: () => void;

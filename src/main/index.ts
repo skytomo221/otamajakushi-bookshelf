@@ -3,7 +3,7 @@
 import { app, BrowserWindow, dialog, ipcMain } from 'electron';
 import { readFileSync } from 'fs';
 
-import { FileOpenReturn } from '../types/api';
+import { FileOpenReturn } from '../renderer/renderer.d';
 
 const createWindow = () => {
   const path = require('path');
