@@ -7,7 +7,7 @@ import { FileOpenReturn } from '../renderer/renderer.d';
 
 const createWindow = () => {
   const path = require('path');
-  const win = new BrowserWindow({
+  const mainWindow = new BrowserWindow({
     width: 1200,
     height: 675,
     webPreferences: {
@@ -19,20 +19,20 @@ const createWindow = () => {
 
   // 読み込む index.html。
   // tsc でコンパイルするので、出力先の dist の相対パスで指定する。
-  win.loadFile(path.join(__dirname, './index.html'));
+  mainWindow.loadFile(path.join(__dirname, './index.html'));
 
   if (process.argv.find(arg => arg === '--debug')) {
-    win.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
   }
 
   ipcMain.handle('window-minimize', () => {
-    win.minimize();
+    mainWindow.minimize();
   });
 
   let fullScreen = false;
 
   ipcMain.handle('window-maximize', () => {
-    win.setFullScreen((fullScreen = !fullScreen));
+    mainWindow.setFullScreen((fullScreen = !fullScreen));
   });
 
   ipcMain.handle('window-close', () => {
@@ -40,7 +40,7 @@ const createWindow = () => {
   });
 
   ipcMain.handle('file-open', async (): Promise<FileOpenReturn> => {
-    const paths = dialog.showOpenDialogSync(win, {
+    const paths = dialog.showOpenDialogSync(mainWindow, {
       buttonLabel: '開く',
       filters: [{ name: 'OTM-JSON', extensions: ['json'] }],
       properties: ['openFile', 'createDirectory'],
