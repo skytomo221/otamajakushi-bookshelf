@@ -1,22 +1,26 @@
-import { initOtm, OtmController } from '../../src/otm/index';
+import { initOtm, Otm } from '../../src/otm/Otm';
 
 test('initOtm to equal initOtm', () => {
-  expect(new OtmController().load(JSON.stringify(initOtm)).otm).toEqual(
+  expect(new Otm().fromString(JSON.stringify(initOtm)).toPlain()).toEqual(
     initOtm,
   );
 });
 
 test('42 to equal error', () => {
-  expect(() => new OtmController().load(JSON.stringify(42)).otm).toThrowError();
+  expect(() =>
+    new Otm().fromString(JSON.stringify(42)).toPlain(),
+  ).toThrowError();
 });
 
 test('addWord', () => {
   expect(
-    new OtmController().addWord({
-      entry: {
-        form: 'word',
-      },
-    }).otm.words,
+    new Otm()
+      .addWord({
+        entry: {
+          form: 'word',
+        },
+      })
+      .toPlain().words,
   ).toStrictEqual([
     {
       entry: {
@@ -34,7 +38,7 @@ test('addWord', () => {
 
 test('renumber', () => {
   expect(
-    new OtmController()
+    new Otm()
       .addWord({
         entry: {
           id: 2,
@@ -47,7 +51,8 @@ test('renumber', () => {
           form: 'world',
         },
       })
-      .renumber().otm.words,
+      .renumber()
+      .toPlain().words,
   ).toStrictEqual([
     {
       entry: {
@@ -76,7 +81,7 @@ test('renumber', () => {
 
 test('updateWord', () => {
   expect(
-    new OtmController()
+    new Otm()
       .addWord({
         entry: {
           form: 'word',
@@ -95,7 +100,8 @@ test('updateWord', () => {
             },
           ],
         }),
-      }).otm.words,
+      })
+      .toPlain().words,
   ).toStrictEqual([
     {
       entry: {
@@ -118,7 +124,7 @@ test('updateWord', () => {
 
 test('updateWord cannot change word id', () => {
   expect(
-    new OtmController()
+    new Otm()
       .addWord({
         entry: {
           form: 'word',
@@ -130,7 +136,8 @@ test('updateWord cannot change word id', () => {
           ...word,
           entry: { id: 2 },
         }),
-      }).otm.words[0].entry,
+      })
+      .toPlain().words[0].entry,
   ).toStrictEqual({
     id: 1,
     form: 'word',
