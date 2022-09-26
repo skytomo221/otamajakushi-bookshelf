@@ -5,12 +5,18 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { LayoutCard } from '../LayoutCard';
+import { SummaryWord } from '../SummaryWord';
 import { addSelectedWordAction } from '../actions/SelectedWordsActions';
 import Book from '../states/Book';
-import SelectedWord from '../states/SelectedWord';
 import { State } from '../states/State';
+
+import '../renderer';
+
+const { api } = window;
 
 export const primarySidebarWidth = 240;
 
@@ -29,28 +35,46 @@ interface BookListItemProps {
 
 function BookListItem({ book }: BookListItemProps): JSX.Element {
   const dispatch = useDispatch();
-  const onSelectedWordAdd = React.useCallback((selectedWord: SelectedWord) => {
+  const onSelectedWordAdd = React.useCallback((selectedWord: LayoutCard) => {
     dispatch(addSelectedWordAction(selectedWord));
   }, []);
-  const selectedWords = useSelector<State, null | SelectedWord[]>(
+  const selectedWords = useSelector<State, null | LayoutCard[]>(
     (state: State) => state.selectedWords,
   );
+  const [words, setWords] = useState<SummaryWord[]>();
+  const [clickedWord, setClickedWord] = useState<SummaryWord>();
+  useEffect(() => {
+    const process = async () => {
+      setWords(await api.words(book.path));
+    };
+    process();
+  }, []);
+  useEffect(() => {
+    const process = async () => {
+      if (clickedWord) {
+        onSelectedWordAdd(await api.word(clickedWord));
+      }
+    };
+    process();
+  }, [clickedWord]);
 
   return (
     <>
-      {book.dictionary.words.map(word => (
-        <ListItem key={word.entry.id} disablePadding>
+      {(words ?? []).map(word => (
+        <ListItem key={word.id} disablePadding>
           <ListItemButton
             onClick={() => {
               if (
                 (selectedWords ?? []).every(
-                  w => w.id !== word.entry.id || w.path !== book.path,
+                  card =>
+                    card.word.id !== word.id ||
+                    card.word.bookPath !== book.path,
                 )
               ) {
-                onSelectedWordAdd({ path: book.path, id: word.entry.id });
+                setClickedWord(word);
               }
             }}>
-            <ListItemText primary={word.entry.form} />
+            <ListItemText primary={word.form} />
           </ListItemButton>
         </ListItem>
       ))}

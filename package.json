@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest",
     "eslint": "eslint ./src --fix",
-    "start": "electron ./dist/index.js",
+    "start": "electron ./dist/main/index.js",
     "build": "tsc && webpack",
     "build:main": "tsc",
     "build:render": "webpack",
@@ -24,7 +24,7 @@
       "./icon/**/*"
     ],
     "extraMetadata": {
-      "main": "./dist/index.js"
+      "main": "./dist/main/index.js"
     },
     "dmg": {
       "contents": [
@@ -52,6 +52,7 @@
     "@mdi/react": "^1.5.0",
     "@mui/icons-material": "^5.10.3",
     "@mui/material": "^5.10.4",
+    "electron-log": "^4.4.8",
     "electron-squirrel-startup": "^1.0.0",
     "events": "^3.3.0",
     "fp-ts": "^2.12.3",

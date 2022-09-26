@@ -1,16 +1,13 @@
-import {
-  Box,
-  Chip,
-  Divider,
-  Theme,
-  Typography,
-} from '@mui/material';
+import { Box, Chip, Divider, Theme, Typography } from '@mui/material';
 import { Content } from 'otamajakushi/dist/Content';
 import { Relation } from 'otamajakushi/dist/Relation';
 import { Translation } from 'otamajakushi/dist/Translation';
 import { Variation } from 'otamajakushi/dist/Variation';
 import { Word } from 'otamajakushi/dist/Word';
 import React from 'react';
+import { LayoutCard, LayoutComponent } from '../LayoutCard';
+
+const { api } = window;
 
 // const useStyles = makeStyles((theme: Theme) =>
 //   createStyles({
@@ -37,86 +34,65 @@ import React from 'react';
 // );
 
 interface Props {
-  word: Word;
+  card: LayoutCard;
 }
 
-export default function WordCard({ word }: Props): JSX.Element {
+function OtamaRecursion({
+  contents,
+}: {
+  contents: LayoutComponent[];
+}): JSX.Element {
   return (
-    <div>
-      <Typography variant="h5" component="h2">
-        {word.entry.form}
-        <span>
-          {word.tags.map((tag: string) => (
-            <Chip size="small" label={tag} key={tag} />
-          ))}
-        </span>
-      </Typography>
-      {word.translations.map((translation: Translation) => (
-        <Typography key={translation.title + translation.forms} variant="body2">
-          <Chip
-            variant="outlined"
-            size="small"
-            label={translation.title}
-            component="h3"
-          />
-          {translation.forms.join(', ')}
-        </Typography>
-      ))}
-      {word.contents.length > 0 ? <Divider /> : ''}
-      {word.contents.map((content: Content) => (
-        <Box key={content.title}>
-          <Typography variant="h6" component="h3">
-            {content.title}
-          </Typography>
-          <Typography variant="body2">{content.text}</Typography>
-        </Box>
-      ))}
-      {word.variations.length > 0 ? (
-        <>
-          <Divider />
-          <Box>
-            <Typography variant="h6" component="h3">
-              変化形
-            </Typography>
-            {word.variations.map((variation: Variation) => (
-              <Typography key={variation.form} variant="body2">
-                <Chip
-                  variant="outlined"
-                  size="small"
-                  label={variation.title}
-                  component="h3"
-                />
-                {variation.form}
-              </Typography>
-            ))}
-          </Box>
-        </>
-      ) : (
-        ''
-      )}
-      {word.relations.length > 0 ? (
-        <>
-          <Divider />
-          <Box>
-            <Typography variant="h6" component="h3">
-              関連項目
-            </Typography>
-            {word.relations.map((relation: Relation) => (
-              <Typography key={relation.entry.id} variant="body2">
-                <Chip
-                  variant="outlined"
-                  size="small"
-                  label={relation.title}
-                  component="h3"
-                />
-                {relation.entry.form}
-              </Typography>
-            ))}
-          </Box>
-        </>
-      ) : (
-        ''
-      )}
-    </div>
+    <>
+      {contents.map(child => {
+        switch (child.component) {
+          case 'recursion':
+            return <OtamaRecursion contents={child.contents} />;
+          case 'form':
+            return <OtamaForm form={child.form} />;
+          case 'title':
+            return <OtamaTitle title={child.title} />;
+          case 'text':
+            return <OtamaText text={child.text} />;
+          default:
+            return <></>;
+        }
+      })}
+    </>
   );
+}
+
+function OtamaForm({ form }: { form: string }): JSX.Element {
+  return (
+    <Typography variant="h5" component="h2">
+      {form}
+    </Typography>
+  );
+}
+
+function OtamaTitle({ title }: { title: string }): JSX.Element {
+  return (
+    <Typography variant="h6" component="h3">
+      {title}
+    </Typography>
+  );
+}
+
+function OtamaText({ text }: { text: string }): JSX.Element {
+  return <Typography variant="body2">{text}</Typography>;
+}
+
+export default function WordCard({ card }: Props): JSX.Element {
+  switch (card.layout.component) {
+    case 'recursion':
+      return <OtamaRecursion contents={card.layout.contents} />;
+    case 'form':
+      return <OtamaForm form={card.layout.form} />;
+    case 'title':
+      return <OtamaTitle title={card.layout.title} />;
+    case 'text':
+      return <OtamaText text={card.layout.text} />;
+    default:
+      return <></>;
+  }
 }

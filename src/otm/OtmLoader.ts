@@ -25,6 +25,12 @@ export default class OtmLoader extends Loader {
       });
   }
 
+  // ? See https://github.com/typescript-eslint/typescript-eslint/issues/948
+  // eslint-disable-next-line no-useless-constructor
+  public constructor(path: string) {
+    super(path);
+  }
+
   private async loadDictionary(): Promise<Otm> {
     const buff = readFileSync(this.path);
     const json = buff.toString();

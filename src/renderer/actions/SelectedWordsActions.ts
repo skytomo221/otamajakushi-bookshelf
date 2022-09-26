@@ -1,13 +1,11 @@
-import { Word } from 'otamajakushi/dist/Word';
 import { actionCreatorFactory } from 'typescript-fsa';
 
-import SelectedWord from '../states/SelectedWord';
+import { LayoutCard } from '../LayoutCard';
 
 const actionCreator = actionCreatorFactory('selected-word-action');
 
-export const addSelectedWordAction = actionCreator<SelectedWord>(
-  'selected-word/add',
-);
-export const removeSelectedWordAction = actionCreator<SelectedWord>(
+export const addSelectedWordAction =
+  actionCreator<LayoutCard>('selected-word/add');
+export const removeSelectedWordAction = actionCreator<LayoutCard>(
   'selected-word/remove',
 );

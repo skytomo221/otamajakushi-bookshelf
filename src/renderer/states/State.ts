@@ -1,7 +1,8 @@
 import { Word } from 'otamajakushi/dist/Word';
 
+import { LayoutCard } from '../LayoutCard';
+
 import Bookshelf from './Bookshelf';
-import SelectedWord from './SelectedWord';
 import ThemeParameter from './ThemeParameter';
 
 export interface State {
@@ -10,5 +11,5 @@ export interface State {
   theme: ThemeParameter;
   primarySidebar: null | string;
   secondarySidebar: null | string;
-  selectedWords: null | SelectedWord[];
+  selectedWords: null | LayoutCard[];
 }

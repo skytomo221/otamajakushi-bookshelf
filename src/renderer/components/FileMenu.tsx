@@ -1,11 +1,12 @@
 import { useSnackbar } from 'notistack';
-import OTMJSON from 'otamajakushi';
 import React from 'react';
 import { useDispatch } from 'react-redux';
 
 import { addBookAction } from '../actions/BookshelfActions';
 
 import { OtamaMenu } from './OtamaMenu';
+
+import '../renderer';
 
 const { api } = window;
 
@@ -36,11 +37,12 @@ export default function FileMenu(): JSX.Element {
                     );
                     return false;
                   case 'success':
-                    dispatch(
-                      addBookAction({
-                        path: data.path,
-                        dictionary: OTMJSON.parse(data.text),
-                      }),
+                    data.paths.forEach(path =>
+                      dispatch(
+                        addBookAction({
+                          path,
+                        }),
+                      ),
                     );
                     return true;
                   default:
@@ -48,8 +50,6 @@ export default function FileMenu(): JSX.Element {
                 }
               })
               .catch(err => {
-                // eslint-disable-next-line no-console
-                console.log(err);
                 if ('at' in err && 'kind' in err && 'message' in err) {
                   enqueueSnackbar(
                     `場所：${err.at}, 種類：${err.kind}, エラーメッセージ：${err.message}`,

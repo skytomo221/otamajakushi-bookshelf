@@ -4,14 +4,18 @@ import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Typography from '@mui/material/Typography';
 import * as React from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { LayoutCard } from '../LayoutCard';
+import { SummaryWord } from '../SummaryWord';
 import { removeSelectedWordAction } from '../actions/SelectedWordsActions';
 import Book from '../states/Book';
-import SelectedWord from '../states/SelectedWord';
 import { State } from '../states/State';
 
 import WordCard from './WordCard';
+
+const { api } = window;
 
 interface TabPanelProps {
   // eslint-disable-next-line react/require-default-props
@@ -42,17 +46,14 @@ function TabPanel(props: TabPanelProps) {
 
 export default function WordTabs() {
   const dispatch = useDispatch();
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = useState(0);
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
-  const books = useSelector<State, Book[]>(
-    (state: State) => state.bookshelf.books,
-  );
-  const selectedWords = useSelector<State, null | SelectedWord[]>(
+  const selectedWords = useSelector<State, null | LayoutCard[]>(
     (state: State) => state.selectedWords,
   );
-  const removeSelectedWord = React.useCallback((selectedWord: SelectedWord) => {
+  const removeSelectedWord = useCallback((selectedWord: LayoutCard) => {
     dispatch(removeSelectedWordAction(selectedWord));
   }, []);
 
@@ -63,40 +64,31 @@ export default function WordTabs() {
           value={value}
           onChange={handleChange}
           aria-label="basic tabs example">
-          {selectedWords?.map(({ id, path }) => {
-            const word = books
-              .find(book => book.path === path)
-              ?.dictionary.words.find(w => w.entry.id === id);
-            return (
-              <Tab
-                label={word?.entry.form}
-                icon={
-                  <CloseIcon
-                    fontSize="small"
-                    onClick={() => {
-                      removeSelectedWord({ id, path });
-                    }}
-                  />
-                }
-                iconPosition="end"
-                key={`${path}/${id}`}
-              />
-            );
-          })}
+          {selectedWords?.map(card => (
+            <Tab
+              label={card.word.form}
+              icon={
+                <CloseIcon
+                  fontSize="small"
+                  onClick={() => {
+                    removeSelectedWord(card);
+                  }}
+                />
+              }
+              iconPosition="end"
+              key={`${card.word.bookPath}/${card.word.id}`}
+            />
+          ))}
         </Tabs>
       </Box>
-      {selectedWords?.map(({ id, path }, index) => {
-        const word = books
-          .find(book => book.path === path)
-          ?.dictionary?.words?.find(w => w.entry.id === id);
-        return word ? (
-          <TabPanel value={value} index={index} key={`${path}/${id}`}>
-            <WordCard word={word} />
-          </TabPanel>
-        ) : (
-          <></>
-        );
-      })}
+      {(selectedWords ?? []).map((card, index) => (
+        <TabPanel
+          value={value}
+          index={index}
+          key={`${card.word.bookPath}/${card.word.id}`}>
+          <WordCard card={card} />
+        </TabPanel>
+      ))}
     </Box>
   );
 }

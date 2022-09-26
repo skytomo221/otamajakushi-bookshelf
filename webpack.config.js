@@ -1,21 +1,16 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 
-module.exports = {
-  target: 'electron-renderer',
-  // 起点となるファイル
-  entry: './src/renderer/index.tsx',
-  // webpack watch したときに差分ビルドができる
+const outputPath = path.join(__dirname, 'dist');
+const mainConfig = {
+  target: 'electron-main',
+  entry: './src/main/index.ts',
   cache: true,
-  // development は、 source map file を作成、再ビルド時間の短縮などの設定となる
-  // production は、コードの圧縮やモジュールの最適化が行われる設定となる
-  mode: 'development', // "production" | "development" | "none"
-  // ソースマップのタイプ
+  mode: 'development',
   devtool: 'source-map',
-  // 出力先設定 __dirname は node でのカレントディレクトリのパスが格納される変数
   output: {
-    path: path.join(__dirname, 'dist'),
-    filename: 'bundle.js',
+    path: outputPath,
+    filename: 'main.js',
   },
   module: {
     rules: [
@@ -31,11 +26,61 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: [
-      '.ts',
-      '.tsx',
-      '.js',
+    extensions: ['.ts', '.tsx', '.js'],
+  },
+};
+const preloadConfig = {
+  target: 'electron-preload',
+  entry: './src/renderer/preload.ts',
+  cache: true,
+  mode: 'development',
+  devtool: 'source-map',
+  output: {
+    path: outputPath,
+    filename: 'preload.js',
+  },
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        enforce: 'pre',
+        loader: 'eslint-loader',
+      },
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+      },
     ],
+  },
+  resolve: {
+    extensions: ['.ts', '.tsx', '.js'],
+  },
+};
+const rendererConfig = {
+  target: 'electron-renderer',
+  entry: './src/renderer/index.tsx',
+  cache: true,
+  mode: 'development',
+  devtool: 'source-map',
+  output: {
+    path: outputPath,
+    filename: 'renderer.js',
+  },
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        enforce: 'pre',
+        loader: 'eslint-loader',
+      },
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+      },
+    ],
+  },
+  resolve: {
+    extensions: ['.ts', '.tsx', '.js'],
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -44,3 +89,5 @@ module.exports = {
     }),
   ],
 };
+
+module.exports = [mainConfig, preloadConfig, rendererConfig];
