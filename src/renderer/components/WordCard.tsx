@@ -48,12 +48,16 @@ function OtamaRecursion({
         switch (child.component) {
           case 'recursion':
             return <OtamaRecursion contents={child.contents} />;
+          case 'chip':
+            return <OtamaChip label={child.label} />;
           case 'form':
-            return <OtamaForm form={child.form} />;
+            return <OtamaForm contents={child.contents} />;
           case 'title':
-            return <OtamaTitle title={child.title} />;
+            return <OtamaTitle contents={child.contents} />;
           case 'text':
-            return <OtamaText text={child.text} />;
+            return <OtamaText contents={child.contents} />;
+          case 'string':
+            return <OtamaString text={child.text} />;
           default:
             return <></>;
         }
@@ -62,37 +66,50 @@ function OtamaRecursion({
   );
 }
 
-function OtamaForm({ form }: { form: string }): JSX.Element {
+function OtamaChip({ label }: { label: string }): JSX.Element {
+  return <Chip variant="outlined" size="small" label={label} component="h3" />;
+}
+
+function OtamaForm({ contents }: { contents: LayoutComponent[] }): JSX.Element {
   return (
     <Typography variant="h5" component="h2">
-      {form}
+      <OtamaRecursion contents={contents} />
     </Typography>
   );
 }
 
-function OtamaTitle({ title }: { title: string }): JSX.Element {
+function OtamaTitle({
+  contents,
+}: {
+  contents: LayoutComponent[];
+}): JSX.Element {
   return (
     <Typography variant="h6" component="h3">
-      {title}
+      <OtamaRecursion contents={contents} />
     </Typography>
   );
 }
 
-function OtamaText({ text }: { text: string }): JSX.Element {
-  return <Typography variant="body2">{text}</Typography>;
+function OtamaText({ contents }: { contents: LayoutComponent[] }): JSX.Element {
+  return (
+    <Typography variant="body2">
+      <OtamaRecursion contents={contents} />
+    </Typography>
+  );
+}
+
+function OtamaString({ text }: { text: string }): JSX.Element {
+  return <span>{text}</span>;
 }
 
 export default function WordCard({ card }: Props): JSX.Element {
-  switch (card.layout.component) {
-    case 'recursion':
-      return <OtamaRecursion contents={card.layout.contents} />;
-    case 'form':
-      return <OtamaForm form={card.layout.form} />;
-    case 'title':
-      return <OtamaTitle title={card.layout.title} />;
-    case 'text':
-      return <OtamaText text={card.layout.text} />;
-    default:
-      return <></>;
-  }
+  return (
+    <OtamaRecursion
+      contents={
+        card.layout.component === 'recursion'
+          ? card.layout.contents
+          : [card.layout]
+      }
+    />
+  );
 }

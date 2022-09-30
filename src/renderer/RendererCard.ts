@@ -9,7 +9,7 @@ export interface RendererCard {
 
 export interface RendererTag {
   name: string;
-  value: string;
+  value?: string;
   option?: RendererOption;
 }
 

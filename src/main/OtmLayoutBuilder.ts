@@ -1,4 +1,8 @@
-import { LayoutCard, LayoutRecursion } from '../renderer/LayoutCard';
+import {
+  LayoutCard,
+  LayoutChip,
+  LayoutRecursion,
+} from '../renderer/LayoutCard';
 import {
   RendererCard,
   RendererContent,
@@ -14,11 +18,21 @@ export default class OtmLayoutBuilder {
         contents: [
           {
             component: 'title',
-            title: content.title,
+            contents: [
+              {
+                component: 'string',
+                text: content.title,
+              },
+            ],
           },
           {
             component: 'text',
-            text: content.description,
+            contents: [
+              {
+                component: 'string',
+                text: content.description,
+              },
+            ],
           },
         ],
       }),
@@ -28,12 +42,17 @@ export default class OtmLayoutBuilder {
         component: 'recursion',
         contents: [
           {
-            component: 'chip',
-            label: translation.partOfSpeech.join(', '),
-          },
-          {
             component: 'text',
-            text: translation.translatedWord.join(', '),
+            contents: [
+              {
+                component: 'chip',
+                label: translation.partOfSpeech.join(', '),
+              },
+              {
+                component: 'string',
+                text: translation.translatedWord.join(', '),
+              },
+            ],
           },
         ],
       }),
@@ -45,7 +64,18 @@ export default class OtmLayoutBuilder {
         contents: [
           {
             component: 'form',
-            form: renderer.form,
+            contents: [
+              {
+                component: 'string',
+                text: renderer.form,
+              },
+              ...(renderer.tags ?? []).map(
+                (tag): LayoutChip => ({
+                  component: 'chip',
+                  label: tag.name,
+                }),
+              ),
+            ],
           },
           ...translations,
           ...contents,
