@@ -1,10 +1,11 @@
-import { Box, Chip, Divider, Theme, Typography } from '@mui/material';
+import { Box, Chip, Divider, Theme, Typography, useTheme } from '@mui/material';
 import { Content } from 'otamajakushi/dist/Content';
 import { Relation } from 'otamajakushi/dist/Relation';
 import { Translation } from 'otamajakushi/dist/Translation';
 import { Variation } from 'otamajakushi/dist/Variation';
 import { Word } from 'otamajakushi/dist/Word';
 import React from 'react';
+
 import { LayoutCard, LayoutComponent } from '../LayoutCard';
 
 const { api } = window;
@@ -54,8 +55,10 @@ function OtamaRecursion({
             return <OtamaForm contents={child.contents} />;
           case 'title':
             return <OtamaTitle contents={child.contents} />;
-          case 'text':
-            return <OtamaText contents={child.contents} />;
+          case 'body1':
+            return <OtamaBody1 contents={child.contents} />;
+          case 'body2':
+            return <OtamaBody2 contents={child.contents} />;
           case 'string':
             return <OtamaString text={child.text} />;
           default:
@@ -72,7 +75,7 @@ function OtamaChip({ label }: { label: string }): JSX.Element {
 
 function OtamaForm({ contents }: { contents: LayoutComponent[] }): JSX.Element {
   return (
-    <Typography variant="h5" component="h2">
+    <Typography variant="h2">
       <OtamaRecursion contents={contents} />
     </Typography>
   );
@@ -84,15 +87,33 @@ function OtamaTitle({
   contents: LayoutComponent[];
 }): JSX.Element {
   return (
-    <Typography variant="h6" component="h3">
+    <Typography variant="h3">
       <OtamaRecursion contents={contents} />
     </Typography>
   );
 }
 
-function OtamaText({ contents }: { contents: LayoutComponent[] }): JSX.Element {
+function OtamaBody1({
+  contents,
+}: {
+  contents: LayoutComponent[];
+}): JSX.Element {
+  const theme = useTheme();
   return (
-    <Typography variant="body2">
+    <Typography variant="body1" sx={theme.text}>
+      <OtamaRecursion contents={contents} />
+    </Typography>
+  );
+}
+
+function OtamaBody2({
+  contents,
+}: {
+  contents: LayoutComponent[];
+}): JSX.Element {
+  const theme = useTheme();
+  return (
+    <Typography variant="body2" sx={theme.text}>
       <OtamaRecursion contents={contents} />
     </Typography>
   );

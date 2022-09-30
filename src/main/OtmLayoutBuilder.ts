@@ -26,7 +26,7 @@ export default class OtmLayoutBuilder {
             ],
           },
           {
-            component: 'text',
+            component: 'body2',
             contents: [
               {
                 component: 'string',
@@ -42,7 +42,7 @@ export default class OtmLayoutBuilder {
         component: 'recursion',
         contents: [
           {
-            component: 'text',
+            component: 'body1',
             contents: [
               {
                 component: 'chip',

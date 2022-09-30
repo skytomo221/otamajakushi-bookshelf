@@ -12,7 +12,8 @@ export type LayoutComponent =
   | LayoutChip
   | LayoutForm
   | LayoutTitle
-  | LayoutText
+  | LayoutBody1
+  | LayoutBody2
   | LayoutString;
 
 export interface LayoutBaseComponent {
@@ -44,8 +45,13 @@ export type LayoutTitle = LayoutBaseComponent & {
   contents: LayoutComponent[];
 };
 
-export type LayoutText = LayoutBaseComponent & {
-  component: 'text';
+export type LayoutBody1 = LayoutBaseComponent & {
+  component: 'body1';
+  contents: LayoutComponent[];
+};
+
+export type LayoutBody2 = LayoutBaseComponent & {
+  component: 'body2';
   contents: LayoutComponent[];
 };
 

@@ -6,6 +6,8 @@ import { useSelector } from 'react-redux';
 import { State } from '../states/State';
 import ThemeParameter from '../states/ThemeParameter';
 
+const plainTheme = createTheme();
+
 declare module '@mui/material/styles' {
   interface Theme {
     button: {
@@ -27,7 +29,13 @@ declare module '@mui/material/styles' {
       top: 'auto';
       bottom: 0;
       zIndex: number;
-    }
+    };
+    text: {
+      margin: string;
+      '&:last-child': {
+        marginBottom: string;
+      };
+    };
   }
   // allow configuration using `createTheme`
   interface ThemeOptions {
@@ -50,7 +58,13 @@ declare module '@mui/material/styles' {
       top: string;
       bottom: number;
       zIndex?: number;
-    }
+    };
+    text?: {
+      margin: string;
+      '&:last-child': {
+        marginBottom: string;
+      };
+    };
   }
 }
 
@@ -76,6 +90,12 @@ const createOtamaTheme = (param: ThemeParameter): Theme =>
       top: 'auto',
       bottom: 0,
       zIndex: 1201,
+    },
+    text: {
+      margin: plainTheme.spacing(0.75),
+      '&:last-child': {
+        marginBottom: plainTheme.spacing(0),
+      },
     },
   });
 
