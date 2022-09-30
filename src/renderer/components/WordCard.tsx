@@ -10,30 +10,6 @@ import { LayoutCard, LayoutComponent } from '../LayoutCard';
 
 const { api } = window;
 
-// const useStyles = makeStyles((theme: Theme) =>
-//   createStyles({
-//     root: {
-//       flexWrap: 'wrap',
-//       margin: theme.spacing(1.5),
-//       '& > *': {
-//         margin: theme.spacing(0.25),
-//       },
-//     },
-//     translationTitle: {
-//       margin: theme.spacing(0.25),
-//     },
-//     content: {
-//       margin: theme.spacing(0.75),
-//       '&:last-child': {
-//         marginBottom: theme.spacing(0),
-//       },
-//     },
-//     divider: {
-//       margin: theme.spacing(0.5),
-//     },
-//   }),
-// );
-
 interface Props {
   card: LayoutCard;
 }
@@ -70,7 +46,8 @@ function OtamaRecursion({
 }
 
 function OtamaChip({ label }: { label: string }): JSX.Element {
-  return <Chip variant="outlined" size="small" label={label} component="h3" />;
+  const theme = useTheme();
+  return <Chip variant="outlined" size="small" sx={theme.chip} label={label} />;
 }
 
 function OtamaForm({ contents }: { contents: LayoutComponent[] }): JSX.Element {
@@ -100,7 +77,7 @@ function OtamaBody1({
 }): JSX.Element {
   const theme = useTheme();
   return (
-    <Typography variant="body1" sx={theme.text}>
+    <Typography variant="body1" sx={theme.body1}>
       <OtamaRecursion contents={contents} />
     </Typography>
   );
@@ -113,14 +90,19 @@ function OtamaBody2({
 }): JSX.Element {
   const theme = useTheme();
   return (
-    <Typography variant="body2" sx={theme.text}>
+    <Typography variant="body2" sx={theme.body2}>
       <OtamaRecursion contents={contents} />
     </Typography>
   );
 }
 
 function OtamaString({ text }: { text: string }): JSX.Element {
-  return <span>{text}</span>;
+  const theme = useTheme();
+  return (
+    <Box component="span" sx={theme.string}>
+      {text}
+    </Box>
+  );
 }
 
 export default function WordCard({ card }: Props): JSX.Element {

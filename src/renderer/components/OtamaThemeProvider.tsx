@@ -10,9 +10,18 @@ const plainTheme = createTheme();
 
 declare module '@mui/material/styles' {
   interface Theme {
+    body1: {
+      margin: string;
+    };
+    body2: {
+      margin: string;
+    };
     button: {
-      '-webkit-app-region': string,
-    },
+      '-webkit-app-region': string;
+    };
+    chip: {
+      margin: string;
+    };
     grow: {
       flexGrow: number;
     };
@@ -30,18 +39,24 @@ declare module '@mui/material/styles' {
       bottom: 0;
       zIndex: number;
     };
-    text: {
+    string: {
       margin: string;
-      '&:last-child': {
-        marginBottom: string;
-      };
     };
   }
   // allow configuration using `createTheme`
   interface ThemeOptions {
+    body1?: {
+      margin: string;
+    };
+    body2?: {
+      margin: string;
+    };
     button?: {
-      '-webkit-app-region': string,
-    },
+      '-webkit-app-region': string;
+    };
+    chip?: {
+      margin: string;
+    };
     grow?: {
       flexGrow: number;
     };
@@ -59,11 +74,8 @@ declare module '@mui/material/styles' {
       bottom: number;
       zIndex?: number;
     };
-    text?: {
+    string?: {
       margin: string;
-      '&:last-child': {
-        marginBottom: string;
-      };
     };
   }
 }
@@ -71,8 +83,17 @@ declare module '@mui/material/styles' {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const createOtamaTheme = (param: ThemeParameter): Theme =>
   createTheme({
+    body1: {
+      margin: plainTheme.spacing(1.0),
+    },
+    body2: {
+      margin: plainTheme.spacing(0.75),
+    },
     button: {
       '-webkit-app-region': 'no-drag',
+    },
+    chip: {
+      margin: plainTheme.spacing(0.25),
     },
     grow: {
       flexGrow: 1,
@@ -91,11 +112,8 @@ const createOtamaTheme = (param: ThemeParameter): Theme =>
       bottom: 0,
       zIndex: 1201,
     },
-    text: {
+    string: {
       margin: plainTheme.spacing(0.75),
-      '&:last-child': {
-        marginBottom: plainTheme.spacing(0),
-      },
     },
   });
 
