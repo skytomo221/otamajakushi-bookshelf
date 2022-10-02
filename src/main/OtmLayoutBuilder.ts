@@ -4,16 +4,16 @@ import {
   LayoutRecursion,
 } from '../renderer/LayoutCard';
 import {
-  RendererCard,
-  RendererContent,
-  RendererTranslation,
-} from '../renderer/RendererCard';
+  WordCard,
+  Content,
+  Translation,
+} from '../renderer/WordCard';
 import { SummaryWord } from '../renderer/SummaryWord';
 
 export default class OtmLayoutBuilder {
-  public static layout(word: SummaryWord, renderer: RendererCard): LayoutCard {
+  public static layout(word: SummaryWord, renderer: WordCard): LayoutCard {
     const contents = (renderer.contents ?? []).map(
-      (content: RendererContent): LayoutRecursion => ({
+      (content: Content): LayoutRecursion => ({
         component: 'recursion',
         contents: [
           {
@@ -38,7 +38,7 @@ export default class OtmLayoutBuilder {
       }),
     );
     const translations = (renderer.translations ?? []).map(
-      (translation: RendererTranslation): LayoutRecursion => ({
+      (translation: Translation): LayoutRecursion => ({
         component: 'recursion',
         contents: [
           {

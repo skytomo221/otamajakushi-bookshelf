@@ -1,9 +1,9 @@
 import { Otm } from '../otm/Otm';
 import {
-  RendererCard,
-  RendererContent,
-  RendererTag,
-} from '../renderer/RendererCard';
+  WordCard,
+  Content,
+  Tag,
+} from '../renderer/WordCard';
 
 export default class OtmController {
   private otm: Otm;
@@ -12,7 +12,7 @@ export default class OtmController {
     this.otm = otm;
   }
 
-  public card(id: number): RendererCard {
+  public card(id: number): WordCard {
     const word = this.otm.toPlain().words.find(w => w.entry.id === id);
     if (!word) {
       throw new Error('card not found');
@@ -21,12 +21,12 @@ export default class OtmController {
       form: word.entry.form,
       id: word.entry.id.toString(),
       tags: word.tags.map(
-        (tag): RendererTag => ({
+        (tag): Tag => ({
           name: tag,
         }),
       ),
       contents: word.contents.map(
-        (content): RendererContent => ({
+        (content): Content => ({
           title: content.title,
           type: content.markdown ? 'text/markdown' : 'text/plain',
           description: content.text,
