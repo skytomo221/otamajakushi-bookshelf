@@ -13,7 +13,7 @@ import { removeSelectedWordAction } from '../actions/SelectedWordsActions';
 import Book from '../states/Book';
 import { State } from '../states/State';
 
-import WordCard from './WordCard';
+import CardRenderer from './CardRenderer';
 
 const { api } = window;
 
@@ -86,7 +86,7 @@ export default function WordTabs() {
           value={value}
           index={index}
           key={`${card.word.bookPath}/${card.word.id}`}>
-          <WordCard card={card} />
+          <CardRenderer card={card} />
         </TabPanel>
       ))}
     </Box>

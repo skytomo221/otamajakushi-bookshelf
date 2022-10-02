@@ -143,7 +143,7 @@ function OtamaString({
   );
 }
 
-export default function WordCard({ card }: Props): JSX.Element {
+export default function CardRenderer({ card }: Props): JSX.Element {
   const editable = useSelector<State, boolean>(
     (state: State) =>
       state.bookshelf.books.find(book => book.path === card.word.bookPath)
