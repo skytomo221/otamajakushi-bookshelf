@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { LayoutCard } from '../LayoutCard';
 import { SummaryWord } from '../SummaryWord';
-import { addSelectedWordAction } from '../actions/SelectedWordsActions';
+import { fetchSelectedWordAction } from '../actions/SelectedWordsActions';
 import Book from '../states/Book';
 import { State } from '../states/State';
 
@@ -35,28 +35,19 @@ interface BookListItemProps {
 
 function BookListItem({ book }: BookListItemProps): JSX.Element {
   const dispatch = useDispatch();
-  const onSelectedWordAdd = React.useCallback((selectedWord: LayoutCard) => {
-    dispatch(addSelectedWordAction(selectedWord));
+  const onSelectedWordFetch = React.useCallback((selectedWord: SummaryWord) => {
+    dispatch(fetchSelectedWordAction(selectedWord));
   }, []);
   const selectedWords = useSelector<State, null | LayoutCard[]>(
     (state: State) => state.selectedWords,
   );
   const [words, setWords] = useState<SummaryWord[]>();
-  const [clickedWord, setClickedWord] = useState<SummaryWord>();
   useEffect(() => {
     const process = async () => {
       setWords(await api.words(book.path));
     };
     process();
   }, []);
-  useEffect(() => {
-    const process = async () => {
-      if (clickedWord) {
-        onSelectedWordAdd(await api.word(clickedWord));
-      }
-    };
-    process();
-  }, [clickedWord]);
 
   return (
     <>
@@ -71,7 +62,7 @@ function BookListItem({ book }: BookListItemProps): JSX.Element {
                     card.word.bookPath !== book.path,
                 )
               ) {
-                setClickedWord(word);
+                onSelectedWordFetch(word);
               }
             }}>
             <ListItemText primary={word.form} />

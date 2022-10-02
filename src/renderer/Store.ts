@@ -1,4 +1,5 @@
-import { combineReducers, createStore } from 'redux';
+import { applyMiddleware, combineReducers, createStore } from 'redux';
+import createSagaMiddleware from 'redux-saga';
 
 import bookshelfReducer from './reducers/BookshelfReducer';
 import primarySidebarReducer from './reducers/PrimarySidebarReducer';
@@ -17,6 +18,11 @@ const combinedReducer = combineReducers<State>({
   secondarySidebar: secondarySidebarReducer,
 });
 
-export const store = createStore(combinedReducer);
+export const sagaMiddleware = createSagaMiddleware();
+
+export const store = createStore(
+  combinedReducer,
+  applyMiddleware(sagaMiddleware),
+);
 
 export default store;

@@ -18,6 +18,7 @@ parserOptions:
 plugins:
   - react
   - '@typescript-eslint'
+  - '@jambit/typed-redux-saga'
 rules:
   react/prop-types: off
   react/jsx-filename-extension:
@@ -52,3 +53,11 @@ settings:
   import/resolver: webpack
   import/core-modules:
   - electron
+overrides:
+  - files:
+    - "./**/*.ts"
+    excludedFiles:
+    - "./**/*.spec.ts"
+    rules:
+      '@jambit/typed-redux-saga/use-typed-effects': "error"
+      '@jambit/typed-redux-saga/delegate-effects': "error"
