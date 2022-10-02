@@ -1,6 +1,10 @@
 import { reducerWithInitialState } from 'typescript-fsa-reducers';
 
-import { addBookAction, removeBookAction } from '../actions/BookshelfActions';
+import {
+  addBookAction,
+  editBookAction,
+  removeBookAction,
+} from '../actions/BookshelfActions';
 import Bookshelf from '../states/Bookshelf';
 
 const initBookshelf: Bookshelf = {
@@ -10,11 +14,17 @@ const initBookshelf: Bookshelf = {
 const bookshelfReducer = reducerWithInitialState<Bookshelf>(initBookshelf)
   .case(addBookAction, (state, payload) => ({
     ...state,
-    books: [...state.books, payload]
+    books: [...state.books, payload],
   }))
   .case(removeBookAction, (state, payload) => ({
     ...state,
-    books: state.books.filter(book => book !== payload)
+    books: state.books.filter(book => book !== payload),
+  }))
+  .case(editBookAction, (state, payload) => ({
+    ...state,
+    books: state.books.map(book =>
+      book.path === payload.path ? { ...book, ...payload } : book,
+    ),
   }))
   .build();
 

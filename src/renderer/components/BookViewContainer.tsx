@@ -10,7 +10,7 @@ import {
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { removeBookAction } from '../actions/BookshelfActions';
+import { editBookAction, removeBookAction } from '../actions/BookshelfActions';
 import { changePrimarySidebarAction } from '../actions/PrimarySidebarActions';
 import Book from '../states/Book';
 import { State } from '../states/State';
@@ -86,6 +86,7 @@ export default function BookViewContainer({ book }: Props): JSX.Element {
         }>
         <MenuItem
           onClick={() => {
+            dispatch(editBookAction({ ...book, editable: true }));
             handleClose();
           }}>
           編集する

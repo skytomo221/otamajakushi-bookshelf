@@ -41,6 +41,7 @@ export default function FileMenu(): JSX.Element {
                       dispatch(
                         addBookAction({
                           path,
+                          editable: false,
                         }),
                       ),
                     );

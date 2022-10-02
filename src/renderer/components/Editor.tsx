@@ -109,6 +109,7 @@ export default function Editor(): JSX.Element {
                             dispatch(
                               addBookAction({
                                 path,
+                                editable: false,
                               }),
                             ),
                           );
