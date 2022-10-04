@@ -14,6 +14,7 @@ import Book from './Book';
 import OtmController from './OtmController';
 import OtmLayoutBuilder from './OtmLayoutBuilder';
 import { State } from './State';
+import { WordCard } from '../renderer/WordCard';
 
 const createWindow = () => {
   const path = require('path');
@@ -125,15 +126,30 @@ const createWindow = () => {
 
   ipcMain.handle(
     'dictionary-word',
-    async (_, word: SummaryWord): Promise<LayoutCard> => {
-      const book = state.bookshelf.books.find(b => b.path === word.bookPath);
+    async (_, summary: SummaryWord): Promise<LayoutCard> => {
+      const book = state.bookshelf.books.find(b => b.path === summary.bookPath);
       if (book) {
-        const renderer = new OtmController(book.dictionary).card(
-          Number(word.id),
+        const word = new OtmController(book.dictionary).card(
+          Number(summary.id),
         );
-        return OtmLayoutBuilder.layout(word, renderer);
+        return OtmLayoutBuilder.layout(summary, word);
       }
-      throw new Error(`Invalid word: ${word}`);
+      throw new Error(`Invalid word: ${summary}`);
+    },
+  );
+
+  ipcMain.handle(
+    'dictionary-word-update',
+    async (_, summary: SummaryWord, word: WordCard): Promise<LayoutCard> => {
+      const book = state.bookshelf.books.find(b => b.path === summary.bookPath);
+      if (book) {
+        new OtmController(book.dictionary).update(word);
+        const newWord = new OtmController(book.dictionary).card(
+          Number(summary.id),
+        );
+        return OtmLayoutBuilder.layout(summary, newWord);
+      }
+      throw new Error(`Invalid word: ${summary} ${word}`);
     },
   );
 };

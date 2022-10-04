@@ -58,8 +58,8 @@ function BookListItem({ book }: BookListItemProps): JSX.Element {
               if (
                 (selectedWords ?? []).every(
                   card =>
-                    card.word.id !== word.id ||
-                    card.word.bookPath !== book.path,
+                    card.summary.id !== word.id ||
+                    card.summary.bookPath !== book.path,
                 )
               ) {
                 onSelectedWordFetch(word);

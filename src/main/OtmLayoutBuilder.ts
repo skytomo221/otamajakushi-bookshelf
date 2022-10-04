@@ -2,17 +2,14 @@ import {
   LayoutCard,
   LayoutChip,
   LayoutRecursion,
+  LayoutString,
 } from '../renderer/LayoutCard';
-import {
-  WordCard,
-  Content,
-  Translation,
-} from '../renderer/WordCard';
 import { SummaryWord } from '../renderer/SummaryWord';
+import { WordCard, Content, Translation } from '../renderer/WordCard';
 
 export default class OtmLayoutBuilder {
-  public static layout(word: SummaryWord, renderer: WordCard): LayoutCard {
-    const contents = (renderer.contents ?? []).map(
+  public static layout(summary: SummaryWord, word: WordCard): LayoutCard {
+    const contents = (word.contents ?? []).map(
       (content: Content): LayoutRecursion => ({
         component: 'recursion',
         contents: [
@@ -37,8 +34,8 @@ export default class OtmLayoutBuilder {
         ],
       }),
     );
-    const translations = (renderer.translations ?? []).map(
-      (translation: Translation): LayoutRecursion => ({
+    const translations = (word.translations ?? []).map(
+      (translation: Translation, index: number): LayoutRecursion => ({
         component: 'recursion',
         contents: [
           {
@@ -48,16 +45,19 @@ export default class OtmLayoutBuilder {
                 component: 'chip',
                 label: translation.partOfSpeech.join(', '),
               },
-              {
-                component: 'string',
-                text: translation.translatedWord.join(', '),
-              },
+              ...translation.translatedWord.map(
+                (_, twIndex): LayoutString => ({
+                  component: 'string',
+                  reference: `translations.${index}.translatedWord.${twIndex}`,
+                }),
+              ),
             ],
           },
         ],
       }),
     );
     return {
+      summary,
       word,
       layout: {
         component: 'recursion',
@@ -67,9 +67,9 @@ export default class OtmLayoutBuilder {
             contents: [
               {
                 component: 'string',
-                text: renderer.form,
+                reference: 'form',
               },
-              ...(renderer.tags ?? []).map(
+              ...(word.tags ?? []).map(
                 (tag): LayoutChip => ({
                   component: 'chip',
                   label: tag.name,

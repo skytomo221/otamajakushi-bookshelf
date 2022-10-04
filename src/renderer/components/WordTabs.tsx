@@ -66,7 +66,7 @@ export default function WordTabs() {
           aria-label="basic tabs example">
           {selectedWords?.map(card => (
             <Tab
-              label={card.word.form}
+              label={card.summary.form}
               icon={
                 <CloseIcon
                   fontSize="small"
@@ -76,7 +76,7 @@ export default function WordTabs() {
                 />
               }
               iconPosition="end"
-              key={`${card.word.bookPath}/${card.word.id}`}
+              key={`${card.summary.bookPath}/${card.summary.id}`}
             />
           ))}
         </Tabs>
@@ -85,7 +85,7 @@ export default function WordTabs() {
         <TabPanel
           value={value}
           index={index}
-          key={`${card.word.bookPath}/${card.word.id}`}>
+          key={`${card.summary.bookPath}/${card.summary.id}`}>
           <CardRenderer card={card} />
         </TabPanel>
       ))}

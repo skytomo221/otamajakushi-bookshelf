@@ -4,6 +4,7 @@ import log from 'electron-log';
 
 import { LayoutCard } from './LayoutCard';
 import { SummaryWord } from './SummaryWord';
+import { WordCard } from './WordCard';
 
 contextBridge.exposeInMainWorld('api', {
   windowMinimize: () => ipcRenderer.invoke('window-minimize'),
@@ -14,5 +15,7 @@ contextBridge.exposeInMainWorld('api', {
     ipcRenderer.invoke('dictionary-words', path),
   word: (word: SummaryWord): Promise<LayoutCard> =>
     ipcRenderer.invoke('dictionary-word', word),
+  wordUpdate: (summary: SummaryWord, word: WordCard): Promise<LayoutCard> =>
+    ipcRenderer.invoke('dictionary-word-update', summary, word),
   log,
 });

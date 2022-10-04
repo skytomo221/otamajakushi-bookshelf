@@ -1,9 +1,5 @@
 import { Otm } from '../otm/Otm';
-import {
-  WordCard,
-  Content,
-  Tag,
-} from '../renderer/WordCard';
+import { WordCard, Content, Tag } from '../renderer/WordCard';
 
 export default class OtmController {
   private otm: Otm;
@@ -37,5 +33,32 @@ export default class OtmController {
         translatedWord: translation.forms,
       })),
     };
+  }
+
+  public update(word: WordCard): number {
+    this.otm.updateWord({
+      filter: w => w.entry.id === parseInt(word.id, 10),
+      map: () => ({
+        entry: {
+          form: word.form,
+        },
+        tags: word.tags?.map(tag => tag.name) ?? [],
+        contents:
+          word.contents?.map(content => ({
+            title: content.title,
+            markdown:
+              content.type === 'text/markdown'
+                ? content.description
+                : undefined,
+            text: content.description,
+          })) ?? [],
+        translations:
+          word.translations?.map(translation => ({
+            title: translation.partOfSpeech.join('・'),
+            forms: translation.translatedWord,
+          })) ?? [],
+      }),
+    });
+    return parseInt(word.id, 10);
   }
 }

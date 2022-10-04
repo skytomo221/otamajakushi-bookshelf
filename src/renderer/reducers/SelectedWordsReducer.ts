@@ -4,6 +4,7 @@ import { LayoutCard } from '../LayoutCard';
 import {
   addSelectedWordAction,
   removeSelectedWordAction,
+  updateSelectedWordAction,
 } from '../actions/SelectedWordsActions';
 
 const initWord: null | LayoutCard[] = null;
@@ -18,8 +19,8 @@ const selectedWordsReducer = reducerWithInitialState<null | LayoutCard[]>(
     if (
       state.some(
         card =>
-          card.word.id === payload.word.id &&
-          card.word.bookPath === payload.word.bookPath,
+          card.summary.id === payload.summary.id &&
+          card.summary.bookPath === payload.summary.bookPath,
       )
     ) {
       return state;
@@ -30,9 +31,17 @@ const selectedWordsReducer = reducerWithInitialState<null | LayoutCard[]>(
     (state ?? []).filter(
       card =>
         !(
-          card.word.id === payload.word.id &&
-          card.word.bookPath === payload.word.bookPath
+          card.summary.id === payload.summary.id &&
+          card.summary.bookPath === payload.summary.bookPath
         ),
+    ),
+  )
+  .case(updateSelectedWordAction, (state, payload) =>
+    (state ?? []).map(card =>
+      card.summary.id === payload.summary.id &&
+      card.summary.bookPath === payload.summary.bookPath
+        ? payload
+        : card,
     ),
   )
   .build();

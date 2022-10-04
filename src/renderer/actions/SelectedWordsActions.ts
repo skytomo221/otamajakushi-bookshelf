@@ -10,4 +10,8 @@ export const addSelectedWordAction =
 export const removeSelectedWordAction = actionCreator<LayoutCard>(
   'selected-word/remove',
 );
+export const updateSelectedWordAction = actionCreator<LayoutCard>(
+  'selected-word/update',
+);
 export const fetchSelectedWordAction = actionCreator<SummaryWord>("selected-word/fetch");
+export const pushSelectedWordAction = actionCreator<LayoutCard>("selected-word/push");

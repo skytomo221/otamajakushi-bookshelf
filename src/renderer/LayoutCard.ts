@@ -1,7 +1,9 @@
-import { SummaryWord } from "./SummaryWord";
+import { SummaryWord } from './SummaryWord';
+import { WordCard } from './WordCard';
 
 export interface LayoutCard {
-  word: SummaryWord;
+  summary: SummaryWord;
+  word: WordCard;
   layout: LayoutComponent;
   option?: LayoutOption;
 }
@@ -55,10 +57,17 @@ export type LayoutBody2 = LayoutBaseComponent & {
   contents: LayoutComponent[];
 };
 
-export type LayoutString = LayoutBaseComponent & {
-  component: 'string';
-  text: string;
-};
+export type LayoutString = LayoutBaseComponent &
+  (
+    | {
+        component: 'string';
+        text: string;
+      }
+    | {
+        component: 'string';
+        reference: string;
+      }
+  );
 
 export type LayoutOption = {
   [key: string]: string | number | boolean;
