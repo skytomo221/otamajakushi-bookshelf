@@ -12,10 +12,10 @@ contextBridge.exposeInMainWorld('api', {
   windowClose: () => ipcRenderer.invoke('window-close'),
   fileOpen: (): Promise<string> => ipcRenderer.invoke('file-open'),
   words: (path: string): Promise<{ form: string; id: string | number }[]> =>
-    ipcRenderer.invoke('dictionary-words', path),
+    ipcRenderer.invoke('dictionary-controller:words:read', path),
   word: (word: SummaryWord): Promise<LayoutCard> =>
-    ipcRenderer.invoke('dictionary-word', word),
+    ipcRenderer.invoke('dictionary-controller:word:read', word),
   wordUpdate: (summary: SummaryWord, word: WordCard): Promise<LayoutCard> =>
-    ipcRenderer.invoke('dictionary-word-update', summary, word),
+    ipcRenderer.invoke('dictionary-controller:word:update', summary, word),
   log,
 });

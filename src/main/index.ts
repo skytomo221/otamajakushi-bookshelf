@@ -113,7 +113,7 @@ const createWindow = () => {
   });
 
   ipcMain.handle(
-    'dictionary-words',
+    'dictionary-controller:words:read',
     async (_, filePath: string): Promise<SummaryWord[]> => {
       const book = state.bookshelf.books.find(b => b.path === filePath);
       return (
@@ -125,7 +125,7 @@ const createWindow = () => {
   );
 
   ipcMain.handle(
-    'dictionary-word',
+    'dictionary-controller:word:read',
     async (_, summary: SummaryWord): Promise<LayoutCard> => {
       const book = state.bookshelf.books.find(b => b.path === summary.bookPath);
       if (book) {
@@ -139,7 +139,7 @@ const createWindow = () => {
   );
 
   ipcMain.handle(
-    'dictionary-word-update',
+    'dictionary-controller:word:update',
     async (_, summary: SummaryWord, word: WordCard): Promise<LayoutCard> => {
       const book = state.bookshelf.books.find(b => b.path === summary.bookPath);
       if (book) {
