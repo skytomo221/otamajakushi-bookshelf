@@ -1,6 +1,5 @@
 import { actionCreatorFactory } from 'typescript-fsa';
 
-import { LayoutCard } from '../LayoutCard';
 import { Mediator } from '../Mediator';
 import { SummaryWord } from '../SummaryWord';
 

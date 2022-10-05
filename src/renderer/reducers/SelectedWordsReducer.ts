@@ -1,6 +1,5 @@
 import { reducerWithInitialState } from 'typescript-fsa-reducers';
 
-import { LayoutCard } from '../LayoutCard';
 import { Mediator } from '../Mediator';
 import {
   addSelectedWordAction,

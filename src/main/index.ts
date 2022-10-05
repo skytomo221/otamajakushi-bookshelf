@@ -5,7 +5,6 @@ import { app, BrowserWindow, dialog, ipcMain } from 'electron';
 import log from 'electron-log';
 
 import OtmLoader from '../otm/OtmLoader';
-import { LayoutCard } from '../renderer/LayoutCard';
 import { Mediator } from '../renderer/Mediator';
 import { SummaryWord } from '../renderer/SummaryWord';
 import { WordCard } from '../renderer/WordCard';

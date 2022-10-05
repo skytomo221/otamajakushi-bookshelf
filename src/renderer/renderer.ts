@@ -1,6 +1,5 @@
 import log from 'electron-log';
 
-import { LayoutCard } from './LayoutCard';
 import { Mediator } from './Mediator';
 import { SummaryWord } from './SummaryWord';
 import { WordCard } from './WordCard';

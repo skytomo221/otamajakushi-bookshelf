@@ -1,5 +1,3 @@
-import { Word } from 'otamajakushi/dist/Word';
-
 import { Mediator } from '../Mediator';
 
 import Bookshelf from './Bookshelf';

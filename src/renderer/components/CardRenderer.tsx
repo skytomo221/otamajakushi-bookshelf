@@ -12,10 +12,10 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { LayoutCard, LayoutComponent } from '../LayoutCard';
 import { Mediator } from '../Mediator';
+import { SummaryWord } from '../SummaryWord';
 import { WordCard } from '../WordCard';
 import { pushSelectedWordAction } from '../actions/SelectedWordsActions';
 import { State } from '../states/State';
-import { SummaryWord } from '../SummaryWord';
 
 const { api } = window;
 

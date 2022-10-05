@@ -4,17 +4,14 @@ import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Typography from '@mui/material/Typography';
 import * as React from 'react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { LayoutCard } from '../LayoutCard';
-import { SummaryWord } from '../SummaryWord';
+import { Mediator } from '../Mediator';
 import { removeSelectedWordAction } from '../actions/SelectedWordsActions';
-import Book from '../states/Book';
 import { State } from '../states/State';
 
 import CardRenderer from './CardRenderer';
-import { Mediator } from '../Mediator';
 
 const { api } = window;
 
