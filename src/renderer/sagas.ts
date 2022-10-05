@@ -20,7 +20,7 @@ export function* addSelectedWordAsnyc(
   action: Action<PayloadOf<typeof fetchSelectedWordAction>>,
 ): SagaIterator {
   const summaryWord = action.payload;
-  const layoutCard = yield* call(api.word, summaryWord);
+  const layoutCard = yield* call(api.readWord, summaryWord);
   yield* put(addSelectedWordAction(layoutCard));
 }
 
@@ -33,7 +33,7 @@ export function* updateSelectedWordAsnyc(
 ): SagaIterator {
   const layoutCard = action.payload;
   api.log.info('updateSelectedWordAsnyc', layoutCard);
-  const newLayoutCard = yield* call(api.wordUpdate, layoutCard.summary, layoutCard.word);
+  const newLayoutCard = yield* call(api.updateWord, layoutCard.summary, layoutCard.word);
   api.log.info('newLayoutCard', newLayoutCard);
   yield* put(updateSelectedWordAction(newLayoutCard));
 }

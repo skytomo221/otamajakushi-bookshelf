@@ -15,9 +15,9 @@ export interface Api {
   windowMinimize: () => void;
   windowMaximize: () => void;
   windowClose: () => void;
-  words: (path: string) => Promise<SummaryWord[]>;
-  word: (word: SummaryWord) => Promise<LayoutCard>;
-  wordUpdate: (summary: SummaryWord, word: WordCard) => Promise<LayoutCard>;
+  readWords: (path: string) => Promise<SummaryWord[]>;
+  readWord: (word: SummaryWord) => Promise<LayoutCard>;
+  updateWord: (summary: SummaryWord, word: WordCard) => Promise<LayoutCard>;
   log: log.ElectronLog & {
     default: log.ElectronLog;
   };

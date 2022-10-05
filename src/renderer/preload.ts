@@ -11,11 +11,11 @@ contextBridge.exposeInMainWorld('api', {
   windowMaximize: () => ipcRenderer.invoke('window-maximize'),
   windowClose: () => ipcRenderer.invoke('window-close'),
   fileOpen: (): Promise<string> => ipcRenderer.invoke('file-open'),
-  words: (path: string): Promise<{ form: string; id: string | number }[]> =>
+  readWords: (path: string): Promise<{ form: string; id: string | number }[]> =>
     ipcRenderer.invoke('dictionary-controller:words:read', path),
-  word: (word: SummaryWord): Promise<LayoutCard> =>
+  readWord: (word: SummaryWord): Promise<LayoutCard> =>
     ipcRenderer.invoke('dictionary-controller:word:read', word),
-  wordUpdate: (summary: SummaryWord, word: WordCard): Promise<LayoutCard> =>
+  updateWord: (summary: SummaryWord, word: WordCard): Promise<LayoutCard> =>
     ipcRenderer.invoke('dictionary-controller:word:update', summary, word),
   log,
 });
