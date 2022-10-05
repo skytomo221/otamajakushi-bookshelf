@@ -57,8 +57,6 @@ export default class OtmLayoutBuilder {
       }),
     );
     return {
-      summary,
-      word,
       layout: {
         component: 'recursion',
         contents: [

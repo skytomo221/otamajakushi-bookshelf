@@ -1,6 +1,6 @@
-import { Otm } from '../otm/Otm';
+import DictionaryController from './DictionaryController';
 
 export default interface Book {
   path: string;
-  dictionary: Otm;
+  dictionaryController: DictionaryController;
 }

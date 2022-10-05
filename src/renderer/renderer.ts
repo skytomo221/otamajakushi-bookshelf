@@ -1,6 +1,7 @@
 import log from 'electron-log';
 
 import { LayoutCard } from './LayoutCard';
+import { Mediator } from './Mediator';
 import { SummaryWord } from './SummaryWord';
 import { WordCard } from './WordCard';
 
@@ -16,8 +17,8 @@ export interface Api {
   windowMaximize: () => void;
   windowClose: () => void;
   readWords: (path: string) => Promise<SummaryWord[]>;
-  readWord: (word: SummaryWord) => Promise<LayoutCard>;
-  updateWord: (summary: SummaryWord, word: WordCard) => Promise<LayoutCard>;
+  readWord: (word: SummaryWord) => Promise<Mediator>;
+  updateWord: (summary: SummaryWord, word: WordCard) => Promise<Mediator>;
   log: log.ElectronLog & {
     default: log.ElectronLog;
   };

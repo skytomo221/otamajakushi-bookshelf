@@ -1,9 +1,4 @@
-import { SummaryWord } from './SummaryWord';
-import { WordCard } from './WordCard';
-
 export interface LayoutCard {
-  summary: SummaryWord;
-  word: WordCard;
   layout: LayoutComponent;
   option?: LayoutOption;
 }

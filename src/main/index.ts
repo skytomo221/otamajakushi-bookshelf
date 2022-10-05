@@ -1,20 +1,20 @@
 /* eslint-disable global-require */
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { app, BrowserWindow, dialog, ipcMain } from 'electron';
-import { readFileSync } from 'fs';
 
 import log from 'electron-log';
 
 import OtmLoader from '../otm/OtmLoader';
 import { LayoutCard } from '../renderer/LayoutCard';
+import { Mediator } from '../renderer/Mediator';
 import { SummaryWord } from '../renderer/SummaryWord';
+import { WordCard } from '../renderer/WordCard';
 import { FileOpenReturn } from '../renderer/renderer';
 
 import Book from './Book';
 import OtmController from './OtmController';
 import OtmLayoutBuilder from './OtmLayoutBuilder';
 import { State } from './State';
-import { WordCard } from '../renderer/WordCard';
 
 const createWindow = () => {
   const path = require('path');
@@ -89,7 +89,7 @@ const createWindow = () => {
               .then(otm =>
                 resolve({
                   path: filePath,
-                  dictionary: otm,
+                  dictionaryController: new OtmController(otm),
                 }),
               )
               .catch(error => {
@@ -116,23 +116,23 @@ const createWindow = () => {
     'dictionary-controller:words:read',
     async (_, filePath: string): Promise<SummaryWord[]> => {
       const book = state.bookshelf.books.find(b => b.path === filePath);
-      return (
-        book?.dictionary
-          ?.toPlain()
-          .words.map(word => ({ bookPath: book.path, ...word.entry })) ?? []
-      );
+      if (book) {
+        return book.dictionaryController
+          .readWords()
+          .map(word => ({ bookPath: book.path, ...word }));
+      }
+      throw new Error(`Invalid path: ${filePath}`);
     },
   );
 
   ipcMain.handle(
     'dictionary-controller:word:read',
-    async (_, summary: SummaryWord): Promise<LayoutCard> => {
+    async (_, summary: SummaryWord): Promise<Mediator> => {
       const book = state.bookshelf.books.find(b => b.path === summary.bookPath);
       if (book) {
-        const word = new OtmController(book.dictionary).card(
-          Number(summary.id),
-        );
-        return OtmLayoutBuilder.layout(summary, word);
+        const word = book.dictionaryController.readWord(Number(summary.id));
+        const layout = OtmLayoutBuilder.layout(summary, word);
+        return { summary, word, layout };
       }
       throw new Error(`Invalid word: ${summary}`);
     },
@@ -140,14 +140,13 @@ const createWindow = () => {
 
   ipcMain.handle(
     'dictionary-controller:word:update',
-    async (_, summary: SummaryWord, word: WordCard): Promise<LayoutCard> => {
+    async (_, summary: SummaryWord, word: WordCard): Promise<Mediator> => {
       const book = state.bookshelf.books.find(b => b.path === summary.bookPath);
       if (book) {
-        new OtmController(book.dictionary).update(word);
-        const newWord = new OtmController(book.dictionary).card(
-          Number(summary.id),
-        );
-        return OtmLayoutBuilder.layout(summary, newWord);
+        book.dictionaryController.updateWord(word);
+        const newWord = book.dictionaryController.readWord(Number(summary.id));
+        const layout = OtmLayoutBuilder.layout(summary, newWord);
+        return { summary, word: newWord, layout };
       }
       throw new Error(`Invalid word: ${summary} ${word}`);
     },

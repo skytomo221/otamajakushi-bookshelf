@@ -11,23 +11,26 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { LayoutCard, LayoutComponent } from '../LayoutCard';
+import { Mediator } from '../Mediator';
+import { WordCard } from '../WordCard';
 import { pushSelectedWordAction } from '../actions/SelectedWordsActions';
 import { State } from '../states/State';
+import { SummaryWord } from '../SummaryWord';
 
 const { api } = window;
-
-interface Props {
-  card: LayoutCard;
-}
 
 function OtamaRecursion({
   contents,
   editable,
-  card,
+  summary,
+  layout,
+  word,
 }: {
   contents: LayoutComponent[];
   editable: boolean;
-  card: LayoutCard;
+  summary: SummaryWord;
+  layout: LayoutCard;
+  word: WordCard;
 }): JSX.Element {
   return (
     <>
@@ -38,19 +41,29 @@ function OtamaRecursion({
               <OtamaRecursion
                 contents={child.contents}
                 editable={editable}
-                card={card}
+                summary={summary}
+                layout={layout}
+                word={word}
               />
             );
           case 'chip':
             return (
-              <OtamaChip label={child.label} editable={editable} card={card} />
+              <OtamaChip
+                label={child.label}
+                editable={editable}
+                summary={summary}
+                layout={layout}
+                word={word}
+              />
             );
           case 'form':
             return (
               <OtamaForm
                 contents={child.contents}
                 editable={editable}
-                card={card}
+                summary={summary}
+                layout={layout}
+                word={word}
               />
             );
           case 'title':
@@ -58,7 +71,9 @@ function OtamaRecursion({
               <OtamaTitle
                 contents={child.contents}
                 editable={editable}
-                card={card}
+                summary={summary}
+                layout={layout}
+                word={word}
               />
             );
           case 'body1':
@@ -66,7 +81,9 @@ function OtamaRecursion({
               <OtamaBody1
                 contents={child.contents}
                 editable={editable}
-                card={card}
+                summary={summary}
+                layout={layout}
+                word={word}
               />
             );
           case 'body2':
@@ -74,17 +91,25 @@ function OtamaRecursion({
               <OtamaBody2
                 contents={child.contents}
                 editable={editable}
-                card={card}
+                summary={summary}
+                layout={layout}
+                word={word}
               />
             );
           case 'string':
             return 'text' in child ? (
-              <OtamaString text={child.text} editable={editable} card={card} />
+              <OtamaString
+                text={child.text}
+                editable={editable}
+                layout={layout}
+              />
             ) : (
               <OtamaString
                 reference={child.reference}
                 editable={editable}
-                card={card}
+                summary={summary}
+                layout={layout}
+                word={word}
               />
             );
           default:
@@ -98,11 +123,15 @@ function OtamaRecursion({
 function OtamaChip({
   label,
   editable,
-  card,
+  summary,
+  layout,
+  word,
 }: {
   label: string;
   editable: boolean;
-  card: LayoutCard;
+  summary: SummaryWord;
+  layout: LayoutCard;
+  word: WordCard;
 }): JSX.Element {
   const theme = useTheme();
   return <Chip variant="outlined" size="small" sx={theme.chip} label={label} />;
@@ -111,15 +140,25 @@ function OtamaChip({
 function OtamaForm({
   contents,
   editable,
-  card,
+  summary,
+  layout,
+  word,
 }: {
   contents: LayoutComponent[];
   editable: boolean;
-  card: LayoutCard;
+  summary: SummaryWord;
+  layout: LayoutCard;
+  word: WordCard;
 }): JSX.Element {
   return (
     <Typography variant="h2">
-      <OtamaRecursion contents={contents} editable={editable} card={card} />
+      <OtamaRecursion
+        contents={contents}
+        editable={editable}
+        summary={summary}
+        layout={layout}
+        word={word}
+      />
     </Typography>
   );
 }
@@ -127,15 +166,25 @@ function OtamaForm({
 function OtamaTitle({
   contents,
   editable,
-  card,
+  summary,
+  layout,
+  word,
 }: {
   contents: LayoutComponent[];
   editable: boolean;
-  card: LayoutCard;
+  summary: SummaryWord;
+  layout: LayoutCard;
+  word: WordCard;
 }): JSX.Element {
   return (
     <Typography variant="h3">
-      <OtamaRecursion contents={contents} editable={editable} card={card} />
+      <OtamaRecursion
+        contents={contents}
+        editable={editable}
+        summary={summary}
+        layout={layout}
+        word={word}
+      />
     </Typography>
   );
 }
@@ -143,16 +192,26 @@ function OtamaTitle({
 function OtamaBody1({
   contents,
   editable,
-  card,
+  summary,
+  layout,
+  word,
 }: {
   contents: LayoutComponent[];
   editable: boolean;
-  card: LayoutCard;
+  summary: SummaryWord;
+  layout: LayoutCard;
+  word: WordCard;
 }): JSX.Element {
   const theme = useTheme();
   return (
     <Typography variant="body1" sx={theme.body1}>
-      <OtamaRecursion contents={contents} editable={editable} card={card} />
+      <OtamaRecursion
+        contents={contents}
+        editable={editable}
+        summary={summary}
+        layout={layout}
+        word={word}
+      />
     </Typography>
   );
 }
@@ -160,16 +219,26 @@ function OtamaBody1({
 function OtamaBody2({
   contents,
   editable,
-  card,
+  summary,
+  layout,
+  word,
 }: {
   contents: LayoutComponent[];
   editable: boolean;
-  card: LayoutCard;
+  summary: SummaryWord;
+  layout: LayoutCard;
+  word: WordCard;
 }): JSX.Element {
   const theme = useTheme();
   return (
     <Typography variant="body2" sx={theme.body2}>
-      <OtamaRecursion contents={contents} editable={editable} card={card} />
+      <OtamaRecursion
+        contents={contents}
+        editable={editable}
+        summary={summary}
+        layout={layout}
+        word={word}
+      />
     </Typography>
   );
 }
@@ -217,18 +286,20 @@ function OtamaString(
     | {
         text: string;
         editable: boolean;
-        card: LayoutCard;
+        layout: LayoutCard;
       }
     | {
         reference: string;
         editable: boolean;
-        card: LayoutCard;
+        summary: SummaryWord;
+        layout: LayoutCard;
+        word: WordCard;
       },
 ): JSX.Element {
   const theme = useTheme();
   const dispatch = useDispatch();
-  const onSelectedWordPush = React.useCallback((selectedWord: LayoutCard) => {
-    dispatch(pushSelectedWordAction(selectedWord));
+  const onSelectedWordPush = React.useCallback((mediator: Mediator) => {
+    dispatch(pushSelectedWordAction(mediator));
   }, []);
   const { editable } = props;
   if ('text' in props) {
@@ -241,18 +312,18 @@ function OtamaString(
       );
   }
   if ('reference' in props) {
-    const { reference, card } = props;
-    const flattenCard = flatten(card.word) as { [key: string]: string };
+    const { reference, summary, word, layout } = props;
+    const flattenCard = flatten(word) as { [key: string]: string };
     if (typeof flattenCard !== 'object') {
-      api.log.error('Layout card is invalid.', card, flattenCard);
+      api.log.error('Layout layout is invalid.', layout, flattenCard);
       return <></>;
     }
     if (!flattenCard) {
-      api.log.error('Layout card is null.', card, flattenCard);
+      api.log.error('Layout layout is null.', layout, flattenCard);
       return <></>;
     }
     if (!(reference in flattenCard)) {
-      api.log.error('Reference is null.', card, flattenCard, reference);
+      api.log.error('Reference is null.', layout, flattenCard, reference);
       return <></>;
     }
     if (
@@ -261,7 +332,7 @@ function OtamaString(
     ) {
       api.log.error(
         'Reference is not string.',
-        card,
+        layout,
         flattenCard,
         flattenCard[reference],
       );
@@ -274,10 +345,11 @@ function OtamaString(
             value={flattenCard[reference]}
             onChange={value => {
               onSelectedWordPush({
-                ...card,
+                summary,
+                layout,
                 word: unflatten({
                   // eslint-disable-next-line @typescript-eslint/ban-types
-                  ...(flatten(card.word) as object),
+                  ...(flatten(word) as object),
                   [reference]: value,
                 }),
               });
@@ -297,19 +369,25 @@ OtamaString.defaultProps = {
   reference: undefined,
 };
 
-export default function CardRenderer({ card }: Props): JSX.Element {
+export default function CardRenderer({
+  summary,
+  word,
+  layout,
+}: Mediator): JSX.Element {
   const editable = useSelector<State, boolean>(
     (state: State) =>
-      state.bookshelf.books.find(book => book.path === card.summary.bookPath)
+      state.bookshelf.books.find(book => book.path === summary.bookPath)
         ?.editable ?? false,
   );
   return (
     <OtamaRecursion
-      card={card}
+      layout={layout}
+      summary={summary}
+      word={word}
       contents={
-        card.layout.component === 'recursion'
-          ? card.layout.contents
-          : [card.layout]
+        layout.layout.component === 'recursion'
+          ? layout.layout.contents
+          : [layout.layout]
       }
       editable={editable}
     />

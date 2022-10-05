@@ -20,8 +20,8 @@ export function* addSelectedWordAsnyc(
   action: Action<PayloadOf<typeof fetchSelectedWordAction>>,
 ): SagaIterator {
   const summaryWord = action.payload;
-  const layoutCard = yield* call(api.readWord, summaryWord);
-  yield* put(addSelectedWordAction(layoutCard));
+  const mediator = yield* call(api.readWord, summaryWord);
+  yield* put(addSelectedWordAction(mediator));
 }
 
 export function* fetchWordAsync(): SagaIterator {
@@ -31,11 +31,11 @@ export function* fetchWordAsync(): SagaIterator {
 export function* updateSelectedWordAsnyc(
   action: Action<PayloadOf<typeof pushSelectedWordAction>>,
 ): SagaIterator {
-  const layoutCard = action.payload;
-  api.log.info('updateSelectedWordAsnyc', layoutCard);
-  const newLayoutCard = yield* call(api.updateWord, layoutCard.summary, layoutCard.word);
-  api.log.info('newLayoutCard', newLayoutCard);
-  yield* put(updateSelectedWordAction(newLayoutCard));
+  const mediator = action.payload;
+  api.log.info('updateSelectedWordAsnyc', mediator);
+  const newMediator = yield* call(api.updateWord, mediator.summary, mediator.word);
+  api.log.info('newMediator', newMediator);
+  yield* put(updateSelectedWordAction(newMediator));
 }
 
 export function* pushWordAsync(): SagaIterator {

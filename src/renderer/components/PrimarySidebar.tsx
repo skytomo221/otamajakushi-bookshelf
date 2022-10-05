@@ -15,6 +15,7 @@ import Book from '../states/Book';
 import { State } from '../states/State';
 
 import '../renderer';
+import { Mediator } from '../Mediator';
 
 const { api } = window;
 
@@ -38,13 +39,13 @@ function BookListItem({ book }: BookListItemProps): JSX.Element {
   const onSelectedWordFetch = React.useCallback((selectedWord: SummaryWord) => {
     dispatch(fetchSelectedWordAction(selectedWord));
   }, []);
-  const selectedWords = useSelector<State, null | LayoutCard[]>(
+  const selectedWords = useSelector<State, null | Mediator[]>(
     (state: State) => state.selectedWords,
   );
   const [words, setWords] = useState<SummaryWord[]>();
   useEffect(() => {
     const process = async () => {
-      setWords(await api.words(book.path));
+      setWords(await api.readWords(book.path));
     };
     process();
   }, []);
@@ -57,9 +58,9 @@ function BookListItem({ book }: BookListItemProps): JSX.Element {
             onClick={() => {
               if (
                 (selectedWords ?? []).every(
-                  card =>
-                    card.summary.id !== word.id ||
-                    card.summary.bookPath !== book.path,
+                  mediator =>
+                    mediator.summary.id !== word.id ||
+                    mediator.summary.bookPath !== book.path,
                 )
               ) {
                 onSelectedWordFetch(word);

@@ -1,15 +1,16 @@
 import { reducerWithInitialState } from 'typescript-fsa-reducers';
 
 import { LayoutCard } from '../LayoutCard';
+import { Mediator } from '../Mediator';
 import {
   addSelectedWordAction,
   removeSelectedWordAction,
   updateSelectedWordAction,
 } from '../actions/SelectedWordsActions';
 
-const initWord: null | LayoutCard[] = null;
+const initWord: null | Mediator[] = null;
 
-const selectedWordsReducer = reducerWithInitialState<null | LayoutCard[]>(
+const selectedWordsReducer = reducerWithInitialState<null | Mediator[]>(
   initWord,
 )
   .case(addSelectedWordAction, (state, payload) => {
@@ -18,9 +19,9 @@ const selectedWordsReducer = reducerWithInitialState<null | LayoutCard[]>(
     }
     if (
       state.some(
-        card =>
-          card.summary.id === payload.summary.id &&
-          card.summary.bookPath === payload.summary.bookPath,
+        mediator =>
+          mediator.summary.id === payload.summary.id &&
+          mediator.summary.bookPath === payload.summary.bookPath,
       )
     ) {
       return state;
@@ -29,19 +30,19 @@ const selectedWordsReducer = reducerWithInitialState<null | LayoutCard[]>(
   })
   .case(removeSelectedWordAction, (state, payload) =>
     (state ?? []).filter(
-      card =>
+      mediator =>
         !(
-          card.summary.id === payload.summary.id &&
-          card.summary.bookPath === payload.summary.bookPath
+          mediator.summary.id === payload.summary.id &&
+          mediator.summary.bookPath === payload.summary.bookPath
         ),
     ),
   )
   .case(updateSelectedWordAction, (state, payload) =>
-    (state ?? []).map(card =>
-      card.summary.id === payload.summary.id &&
-      card.summary.bookPath === payload.summary.bookPath
+    (state ?? []).map(mediator =>
+      mediator.summary.id === payload.summary.id &&
+      mediator.summary.bookPath === payload.summary.bookPath
         ? payload
-        : card,
+        : mediator,
     ),
   )
   .build();

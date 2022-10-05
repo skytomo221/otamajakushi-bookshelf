@@ -14,6 +14,7 @@ import Book from '../states/Book';
 import { State } from '../states/State';
 
 import CardRenderer from './CardRenderer';
+import { Mediator } from '../Mediator';
 
 const { api } = window;
 
@@ -50,10 +51,10 @@ export default function WordTabs() {
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
-  const selectedWords = useSelector<State, null | LayoutCard[]>(
+  const selectedWords = useSelector<State, null | Mediator[]>(
     (state: State) => state.selectedWords,
   );
-  const removeSelectedWord = useCallback((selectedWord: LayoutCard) => {
+  const removeSelectedWord = useCallback((selectedWord: Mediator) => {
     dispatch(removeSelectedWordAction(selectedWord));
   }, []);
 
@@ -64,29 +65,33 @@ export default function WordTabs() {
           value={value}
           onChange={handleChange}
           aria-label="basic tabs example">
-          {selectedWords?.map(card => (
+          {selectedWords?.map(mediator => (
             <Tab
-              label={card.summary.form}
+              label={mediator.summary.form}
               icon={
                 <CloseIcon
                   fontSize="small"
                   onClick={() => {
-                    removeSelectedWord(card);
+                    removeSelectedWord(mediator);
                   }}
                 />
               }
               iconPosition="end"
-              key={`${card.summary.bookPath}/${card.summary.id}`}
+              key={`${mediator.summary.bookPath}/${mediator.summary.id}`}
             />
           ))}
         </Tabs>
       </Box>
-      {(selectedWords ?? []).map((card, index) => (
+      {(selectedWords ?? []).map((mediator, index) => (
         <TabPanel
           value={value}
           index={index}
-          key={`${card.summary.bookPath}/${card.summary.id}`}>
-          <CardRenderer card={card} />
+          key={`${mediator.summary.bookPath}/${mediator.summary.id}`}>
+          <CardRenderer
+            word={mediator.word}
+            summary={mediator.summary}
+            layout={mediator.layout}
+          />
         </TabPanel>
       ))}
     </Box>
