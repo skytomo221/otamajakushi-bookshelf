@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest",
     "eslint": "eslint ./src --fix",
-    "start": "electron ./dist/main.js",
+    "start": "electron ./dist/main/index.js",
     "build": "tsc && webpack",
     "build:main": "tsc",
     "build:render": "webpack",
@@ -24,7 +24,7 @@
       "./icon/**/*"
     ],
     "extraMetadata": {
-      "main": "./dist/main.js"
+      "main": "./dist/main/index.js"
     },
     "dmg": {
       "contents": [
@@ -52,7 +52,10 @@
     "@mdi/react": "^1.5.0",
     "@mui/icons-material": "^5.10.3",
     "@mui/material": "^5.10.4",
+    "electron-log": "^4.4.8",
     "electron-squirrel-startup": "^1.0.0",
+    "events": "^3.3.0",
+    "flat": "^5.0.2",
     "fp-ts": "^2.12.3",
     "io-ts": "^2.2.18",
     "notistack": "^2.0.5",
@@ -64,11 +67,15 @@
     "react-redux": "^7.2.4",
     "react-window": "^1.8.6",
     "redux": "^4.1.0",
+    "redux-saga": "^1.2.1",
     "ts-jest": "^29.0.1",
+    "typed-redux-saga": "^1.5.0",
     "typescript-fsa": "^3.0.0",
     "typescript-fsa-reducers": "^1.2.2"
   },
   "devDependencies": {
+    "@jambit/eslint-plugin-typed-redux-saga": "^0.4.0",
+    "@types/flat": "^5.0.2",
     "@types/jest": "^29.0.3",
     "@types/material-ui": "^0.21.8",
     "@types/react": "^17.0.10",
