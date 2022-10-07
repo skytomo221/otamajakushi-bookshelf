@@ -1,4 +1,3 @@
-import { SummaryWord } from '../renderer/SummaryWord';
 import { WordCard } from '../renderer/WordCard';
 
 export default abstract class DictionaryController {
@@ -6,5 +5,5 @@ export default abstract class DictionaryController {
 
   abstract updateWord(word: WordCard): void;
 
-  abstract readWords(): Omit<SummaryWord, 'bookPath'>[];
+  abstract readWords(): WordCard[];
 }
