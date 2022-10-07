@@ -1,4 +1,5 @@
 import { Otm } from '../otm/Otm';
+import { Word } from '../otm/Word';
 import { SummaryWord } from '../renderer/SummaryWord';
 import { WordCard, Content, Tag } from '../renderer/WordCard';
 
@@ -12,15 +13,7 @@ export default class OtmController extends DictionaryController {
     this.otm = otm;
   }
 
-  public readWords(): Omit<SummaryWord, 'bookPath'>[] {
-    return this.otm.toPlain().words.map(word => ({ ...word.entry }));
-  }
-
-  public readWord(id: number): WordCard {
-    const word = this.otm.toPlain().words.find(w => w.entry.id === id);
-    if (!word) {
-      throw new Error('card not found');
-    }
+  protected static toWordCard(word: Word): WordCard {
     return {
       form: word.entry.form,
       id: word.entry.id.toString(),
@@ -41,6 +34,18 @@ export default class OtmController extends DictionaryController {
         translatedWord: translation.forms,
       })),
     };
+  }
+
+  public readWords(): WordCard[] {
+    return this.otm.toPlain().words.map(word => OtmController.toWordCard(word));
+  }
+
+  public readWord(id: number): WordCard {
+    const word = this.otm.toPlain().words.find(w => w.entry.id === id);
+    if (!word) {
+      throw new Error('card not found');
+    }
+    return OtmController.toWordCard(word);
   }
 
   public updateWord(word: WordCard): number {
