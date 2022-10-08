@@ -1,4 +1,4 @@
-import { styled, useTheme } from '@mui/material';
+import { Box, styled, useTheme } from '@mui/material';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -20,15 +20,6 @@ import { Mediator } from '../Mediator';
 const { api } = window;
 
 export const primarySidebarWidth = 240;
-
-const DrawerHeader = styled('div')(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'flex-end',
-  padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
-  ...theme.mixins.toolbar,
-}));
 
 interface BookListItemProps {
   book: Book;
@@ -75,7 +66,6 @@ function BookListItem({ book }: BookListItemProps): JSX.Element {
 }
 
 export default function PrimarySidebar(): JSX.Element {
-  const theme = useTheme();
   const books = useSelector<State, Book[]>(
     (state: State) => state.bookshelf.books,
   );
@@ -84,31 +74,18 @@ export default function PrimarySidebar(): JSX.Element {
   );
   const open = primarySidebar !== null;
 
-  return (
-    <Drawer
-      sx={{
-        width: primarySidebarWidth,
-        flexShrink: 0,
-        '& .MuiDrawer-paper': {
-          marginLeft: `calc(${theme.spacing(8)} + 1px)`,
-          width: primarySidebarWidth,
-          boxSizing: 'border-box',
-          zIndex: 1199,
-        },
-      }}
-      variant="persistent"
-      anchor="left"
-      open={open}>
-      <DrawerHeader />
-      {books.some(book => book.path === primarySidebar) ? (
+  if (open) {
+    return books.some(book => book.path === primarySidebar) ? (
+      <Box sx={{ overflow: 'auto', height: '100%' }}>
         <List>
           <BookListItem
             book={books.find(book => book.path === primarySidebar) as Book}
           />
         </List>
-      ) : (
-        <></>
-      )}
-    </Drawer>
-  );
+      </Box>
+    ) : (
+      <></>
+    );
+  }
+  return <></>;
 }
