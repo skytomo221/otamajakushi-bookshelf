@@ -1,4 +1,5 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const path = require('path');
 
 const outputPath = path.join(__dirname, 'dist');
@@ -22,6 +23,10 @@ const mainConfig = {
       {
         test: /\.tsx?$/,
         use: 'ts-loader',
+      },
+      {
+        test: /\.css$/,
+        use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader'],
       },
     ],
   },
@@ -50,6 +55,10 @@ const preloadConfig = {
         test: /\.tsx?$/,
         use: 'ts-loader',
       },
+      {
+        test: /\.css$/,
+        use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader'],
+      },
     ],
   },
   resolve: {
@@ -77,6 +86,10 @@ const rendererConfig = {
         test: /\.tsx?$/,
         use: 'ts-loader',
       },
+      {
+        test: /\.css$/,
+        use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader'],
+      },
     ],
   },
   resolve: {
@@ -86,6 +99,9 @@ const rendererConfig = {
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: './index.html',
+    }),
+    new MiniCssExtractPlugin({
+      filename: './css/style.css',
     }),
   ],
 };

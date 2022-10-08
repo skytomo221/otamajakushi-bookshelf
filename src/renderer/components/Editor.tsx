@@ -9,6 +9,7 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  Typography,
   useTheme,
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
@@ -43,7 +44,7 @@ export default function Editor(): JSX.Element {
 
   return (
     <Box
-      component="main"
+      component="div"
       sx={{
         flexGrow: 1,
         padding: theme.spacing(3),
@@ -51,28 +52,13 @@ export default function Editor(): JSX.Element {
           easing: theme.transitions.easing.sharp,
           duration: theme.transitions.duration.leavingScreen,
         }),
-        marginLeft: `calc(${theme.spacing(8)} + 1px)`,
-        ...((primarySidebarOpen || secondarySidebarOpen) && {
-          transition: theme.transitions.create('margin', {
-            easing: theme.transitions.easing.easeOut,
-            duration: theme.transitions.duration.enteringScreen,
-          }),
-        }),
-        ...(primarySidebarOpen && {
-          marginLeft: `calc(${theme.spacing(8)} + ${
-            1 + primarySidebarWidth
-          }px)`,
-        }),
-        ...(secondarySidebarOpen && {
-          marginRight: `${1 + secondarySidebarWidth}px`,
-        }),
       }}>
       {books.some(book => book.path === primarySidebar) ? (
         <WordTabs />
       ) : (
         <Container maxWidth="md">
-          <h1>Otamajakushi Bookshelf</h1>
-          <h2>手軽に開発、便利な検索</h2>
+          <Typography variant="h2">Otamajakushi Bookshelf</Typography>
+          <Typography variant="h3">手軽に開発、便利な検索</Typography>
           <List>
             <ListItem disablePadding>
               <ListItemButton>

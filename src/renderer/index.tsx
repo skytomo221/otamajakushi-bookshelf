@@ -6,6 +6,8 @@ import Store, { sagaMiddleware } from './Store';
 import BookshelfForm from './components/BookshelfForm';
 import rootSaga from './sagas';
 
+import '../../index.css';
+
 const container = document.getElementById('contents');
 
 sagaMiddleware.run(rootSaga);
