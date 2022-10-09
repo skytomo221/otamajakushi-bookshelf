@@ -16,12 +16,11 @@ import { useSnackbar } from 'notistack';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { Mediator } from '../Mediator';
 import { addBookAction } from '../actions/BookshelfActions';
 import Book from '../states/Book';
 import { State } from '../states/State';
 
-import { primarySidebarWidth } from './PrimarySidebar';
-import { secondarySidebarWidth } from './SecondarySidebar';
 import WordTabs from './WordTabs';
 
 const { api } = window;
@@ -38,9 +37,10 @@ export default function Editor(): JSX.Element {
   const secondarySidebar = useSelector<State, null | string>(
     (state: State) => state.secondarySidebar,
   );
-  const primarySidebarOpen = primarySidebar !== null;
-  const secondarySidebarOpen = secondarySidebar !== null;
   const { enqueueSnackbar } = useSnackbar();
+  const selectedWords = useSelector<State, null | Mediator[]>(
+    (state: State) => state.selectedWords,
+  );
 
   return (
     <Box
@@ -53,7 +53,7 @@ export default function Editor(): JSX.Element {
           duration: theme.transitions.duration.leavingScreen,
         }),
       }}>
-      {books.some(book => book.path === primarySidebar) ? (
+      {selectedWords?.length ? (
         <WordTabs />
       ) : (
         <Container maxWidth="md">
