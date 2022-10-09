@@ -92,7 +92,7 @@ export default function BookshelfForm(): JSX.Element {
               100,
               secondarySidebar ? 100 : 0,
             ]}
-            sizes={[primarySidebar ? 15 : 0, 85, secondarySidebar ? 15 : 0]}>
+            sizes={[primarySidebar ? 20 : 0, 80, secondarySidebar ? 20 : 0]}>
             <div>
               <PrimarySidebar />
             </div>
