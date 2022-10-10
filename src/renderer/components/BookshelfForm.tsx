@@ -62,9 +62,16 @@ export default function BookshelfForm(): JSX.Element {
               flexDirection: 'row',
               height: '100%',
             }}
+            elementStyle={(_dimension, size, gutterSize, index) => ({
+              width: `calc(${size}% - ${
+                (index === 1 && primarySidebar) ||
+                (index === 2 && secondarySidebar)
+                  ? gutterSize
+                  : 0
+              }px)`,
+            })}
             gutter={() => {
               const gutterElement = document.createElement('div');
-              gutterElement.className = 'gutter';
               gutterElement.className = `w-[2px]
                                          mx-[2px]
                                          bg-indigo-500
@@ -81,18 +88,18 @@ export default function BookshelfForm(): JSX.Element {
             gutterStyle={(_dimention, _gutterSize, index: number) => ({
               backgroundColor: theme.palette.divider,
               cursor: 'col-resize',
-              visibility:
+              display:
                 (index === 1 && primarySidebar) ||
                 (index === 2 && secondarySidebar)
-                  ? 'visible'
-                  : 'hidden',
+                  ? 'inherit'
+                  : 'none',
             })}
             minSize={[
               primarySidebar ? 100 : 0,
               100,
               secondarySidebar ? 100 : 0,
             ]}
-            sizes={[primarySidebar ? 20 : 0, 80, secondarySidebar ? 20 : 0]}>
+            sizes={[primarySidebar ? 25 : 0, 100, secondarySidebar ? 25 : 0]}>
             <div>
               <PrimarySidebar />
             </div>
