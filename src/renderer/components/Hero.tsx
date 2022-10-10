@@ -9,6 +9,7 @@ import {
   ListItemText,
   ListItem,
   List,
+  useTheme,
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import React from 'react';
@@ -19,11 +20,21 @@ import { addBookAction } from '../actions/BookshelfActions';
 const { api } = window;
 
 export default function Hero(): JSX.Element {
+  const theme = useTheme();
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
 
   return (
-    <Container maxWidth="md">
+    <Container
+      maxWidth="md"
+      sx={{
+        flexGrow: 1,
+        padding: theme.spacing(3),
+        transition: theme.transitions.create('margin', {
+          easing: theme.transitions.easing.sharp,
+          duration: theme.transitions.duration.leavingScreen,
+        }),
+      }}>
       <Typography variant="h2">Otamajakushi Bookshelf</Typography>
       <Typography variant="h3">手軽に開発、便利な検索</Typography>
       <List>
