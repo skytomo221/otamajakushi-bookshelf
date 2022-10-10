@@ -62,7 +62,7 @@ export default function WordTabs() {
           {selectedWords?.map(mediator => (
             <Tab
               label={mediator.summary.form}
-              sx={{ minHeight: '48px' }}
+              sx={{ minHeight: '48px', textTransform: 'none' }}
               icon={
                 <CloseIcon
                   fontSize="small"
