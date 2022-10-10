@@ -26,11 +26,12 @@ function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
 
   return (
-    <div
+    <Box
       role="tabpanel"
       hidden={value !== index}
       id={`simple-tabpanel-${index}`}
       aria-labelledby={`simple-tab-${index}`}
+      sx={{ height: '100%', overflow: 'auto' }}
       // eslint-disable-next-line react/jsx-props-no-spreading
       {...other}>
       {value === index && (
@@ -38,7 +39,7 @@ function TabPanel(props: TabPanelProps) {
           <Typography>{children}</Typography>
         </Box>
       )}
-    </div>
+    </Box>
   );
 }
 
@@ -56,15 +57,19 @@ export default function WordTabs() {
   }, []);
 
   return (
-    <Box sx={{ width: '100%' }}>
+    <Box
+      sx={{
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+      }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs
-          value={value}
-          onChange={handleChange}
-          aria-label="basic tabs example">
+        <Tabs value={value} onChange={handleChange} sx={{ minHeight: 'auto' }}>
           {selectedWords?.map(mediator => (
             <Tab
               label={mediator.summary.form}
+              sx={{ minHeight: '48px', textTransform: 'none' }}
               icon={
                 <CloseIcon
                   fontSize="small"
