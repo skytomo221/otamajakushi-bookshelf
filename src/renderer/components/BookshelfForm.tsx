@@ -8,6 +8,7 @@ import { State } from '../states/State';
 
 import ActivityBar from './ActivityBar';
 import Editor from './Editor';
+import On from './On';
 import OtamaMenuBar from './OtamaMenuBar';
 import OtamaThemeProvider from './OtamaThemeProvider';
 import PrimarySidebar from './PrimarySidebar';
@@ -43,6 +44,7 @@ export default function BookshelfForm(): JSX.Element {
   return (
     <OtamaThemeProvider>
       <SnackbarProvider maxSnack={3}>
+        <On />
         <CssBaseline />
         <ElevationScroll>
           <OtamaMenuBar />

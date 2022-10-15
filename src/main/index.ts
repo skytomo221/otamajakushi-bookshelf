@@ -5,12 +5,14 @@ import { app, BrowserWindow, dialog, ipcMain } from 'electron';
 import log from 'electron-log';
 
 import OtmLoader from '../otm/OtmLoader';
+import { ExtensionInfo } from '../renderer/ExtensionInfo';
 import { Mediator } from '../renderer/Mediator';
 import { SummaryWord } from '../renderer/SummaryWord';
 import { WordCard } from '../renderer/WordCard';
 import { FileOpenReturn } from '../renderer/renderer';
 
 import Book from './Book';
+import BookController from './BookController';
 import OtmController from './OtmController';
 import OtmLayoutBuilder from './OtmLayoutBuilder';
 import { State } from './State';
@@ -30,6 +32,7 @@ const createWindow = () => {
     bookshelf: {
       books: [],
     },
+    extensions: [() => new OtmController(), () => new OtmLayoutBuilder()],
   };
 
   (() => {
@@ -55,6 +58,29 @@ const createWindow = () => {
     mainWindow.webContents.openDevTools();
   }
 
+  mainWindow.webContents.on('did-finish-load', () => {
+    mainWindow.webContents.send(
+      'extensions:send',
+      state.extensions.map(extension => {
+        const ext = extension();
+        return ext instanceof BookController
+          ? {
+              name: ext.name,
+              id: ext.id,
+              version: ext.version,
+              type: ext.extensionType,
+              filters: ext.filters,
+            }
+          : {
+              name: ext.name,
+              id: ext.id,
+              version: ext.version,
+              type: ext.extensionType,
+            };
+      }),
+    );
+  });
+
   ipcMain.handle('window-minimize', () => {
     mainWindow.minimize();
   });
@@ -69,54 +95,63 @@ const createWindow = () => {
     app.quit();
   });
 
-  ipcMain.handle('file-open', async (): Promise<FileOpenReturn> => {
-    const paths = dialog.showOpenDialogSync(mainWindow, {
-      buttonLabel: '開く',
-      filters: [{ name: 'OTM-JSON', extensions: ['json'] }],
-      properties: ['openFile', 'createDirectory'],
-    });
-    if (paths === undefined) {
-      return { status: 'cancel' };
+  ipcMain.handle('open', async (_, id: string): Promise<string[]> => {
+    const bookController = state.extensions
+      .filter(
+        (ext): ext is () => BookController => ext() instanceof BookController,
+      )
+      .find(ext => ext().id === id);
+    if (!bookController) {
+      mainWindow.webContents.send('log:error', `Extension ${id} not found.`);
+      return [];
     }
+    const paths =
+      bookController().format === 'file'
+        ? dialog.showOpenDialogSync(mainWindow, {
+            buttonLabel: '開く',
+            filters: bookController().filters,
+            properties: ['openFile', 'createDirectory'],
+          })
+        : dialog.showOpenDialogSync(mainWindow, {
+            buttonLabel: '開く',
+            filters: bookController().filters,
+            properties: ['openDirectory', 'createDirectory'],
+          });
+    if (!paths) return [];
     try {
       const results: Array<Promise<Book>> = paths.map(
         filePath =>
           new Promise((resolve, reject) => {
-            const loader = new OtmLoader(filePath);
-            loader
-              .asPromise()
-              .then(otm =>
+            const bc = bookController();
+            bc.load(filePath)
+              .then(() => {
                 resolve({
                   path: filePath,
-                  dictionaryController: new OtmController(otm),
-                }),
-              )
+                  bookController: bc,
+                });
+              })
               .catch(error => {
                 reject(error);
               });
           }),
       );
-      (await Promise.all(results)).forEach(book =>
-        state.bookshelf.books.push(book),
-      );
-      return {
-        status: 'success',
-        paths,
-      };
+      const books = await Promise.all(results);
+      state.bookshelf.books.push(...books);
+      return books.map(book => book.path);
     } catch (error) {
       if (error instanceof Error) {
-        return { status: 'failure', message: error.message };
+        mainWindow.webContents.send('log:error', error.message);
       }
     }
-    return { status: 'cancel' };
+    return [];
   });
 
   ipcMain.handle(
-    'dictionary-controller:words:read',
+    'book-controller:words:read',
     async (_, filePath: string): Promise<SummaryWord[]> => {
       const book = state.bookshelf.books.find(b => b.path === filePath);
       if (book) {
-        return book.dictionaryController
+        return book.bookController
           .readWords()
           .map(word => ({ bookPath: book.path, ...word }));
       }
@@ -125,12 +160,12 @@ const createWindow = () => {
   );
 
   ipcMain.handle(
-    'dictionary-controller:word:read',
+    'book-controller:word:read',
     async (_, summary: SummaryWord): Promise<Mediator> => {
       const book = state.bookshelf.books.find(b => b.path === summary.bookPath);
       if (book) {
-        const word = book.dictionaryController.readWord(Number(summary.id));
-        const layout = OtmLayoutBuilder.layout(summary, word);
+        const word = book.bookController.readWord(Number(summary.id));
+        const layout = new OtmLayoutBuilder().layout(word);
         return { summary, word, layout };
       }
       throw new Error(`Invalid word: ${summary}`);
@@ -138,13 +173,13 @@ const createWindow = () => {
   );
 
   ipcMain.handle(
-    'dictionary-controller:word:update',
+    'book-controller:word:update',
     async (_, summary: SummaryWord, word: WordCard): Promise<Mediator> => {
       const book = state.bookshelf.books.find(b => b.path === summary.bookPath);
       if (book) {
-        book.dictionaryController.updateWord(word);
-        const newWord = book.dictionaryController.readWord(Number(summary.id));
-        const layout = OtmLayoutBuilder.layout(summary, newWord);
+        book.bookController.updateWord(word);
+        const newWord = book.bookController.readWord(Number(summary.id));
+        const layout = new OtmLayoutBuilder().layout(newWord);
         return { summary, word: newWord, layout };
       }
       throw new Error(`Invalid word: ${summary} ${word}`);

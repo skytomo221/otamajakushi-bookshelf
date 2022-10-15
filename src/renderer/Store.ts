@@ -2,6 +2,7 @@ import { applyMiddleware, combineReducers, createStore } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 
 import bookshelfReducer from './reducers/BookshelfReducer';
+import extensionsReducer from './reducers/ExtensionsReducer';
 import primarySidebarReducer from './reducers/PrimarySidebarReducer';
 import searchWordReducer from './reducers/SearchWordReducer';
 import secondarySidebarReducer from './reducers/SecondarySidebarReducer';
@@ -16,6 +17,7 @@ const combinedReducer = combineReducers<State>({
   theme: themeReducer,
   primarySidebar: primarySidebarReducer,
   secondarySidebar: secondarySidebarReducer,
+  extensions: extensionsReducer,
 });
 
 export const sagaMiddleware = createSagaMiddleware();
