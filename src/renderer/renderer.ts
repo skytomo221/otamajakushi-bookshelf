@@ -1,5 +1,6 @@
 import log from 'electron-log';
 
+import { ExtensionInfo } from './ExtensionInfo';
 import { Mediator } from './Mediator';
 import { SummaryWord } from './SummaryWord';
 import { WordCard } from './WordCard';
@@ -11,16 +12,34 @@ declare global {
 }
 
 export interface Api {
-  fileOpen: () => Promise<FileOpenReturn>;
+  open: (id: string) => Promise<string[]>;
   windowMinimize: () => void;
   windowMaximize: () => void;
   windowClose: () => void;
   readWords: (path: string) => Promise<SummaryWord[]>;
   readWord: (word: SummaryWord) => Promise<Mediator>;
   updateWord: (summary: SummaryWord, word: WordCard) => Promise<Mediator>;
+  onExtensions: (
+    channel: 'extensions:send',
+    callback: (
+      event: Electron.IpcRendererEvent,
+      extensions: ExtensionInfo[],
+    ) => void,
+  ) => Electron.IpcRenderer;
+  onErrorLog: (
+    channel: 'log:error',
+    callback: (
+      event: Electron.IpcRendererEvent,
+      log: string,
+    ) => void,
+  ) => Electron.IpcRenderer;
   log: log.ElectronLog & {
     default: log.ElectronLog;
   };
+  on: (
+    channel: string,
+    callback: (event: Electron.IpcRendererEvent, ...argv: unknown[]) => void,
+  ) => Electron.IpcRenderer;
 }
 
 export type FileOpenReturn =

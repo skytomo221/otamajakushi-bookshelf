@@ -1,6 +1,6 @@
-import DictionaryController from './DictionaryController';
+import BookController from './BookController';
 
 export default interface Book {
   path: string;
-  dictionaryController: DictionaryController;
+  bookController: BookController;
 }

@@ -1,76 +1,100 @@
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { Button, Menu, MenuItem, Typography, useTheme } from '@mui/material';
+import { NestedMenuItem } from 'mui-nested-menu';
 import { useSnackbar } from 'notistack';
-import React from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
+import { BookControllerInfo, ExtensionInfo } from '../ExtensionInfo';
 import { addBookAction } from '../actions/BookshelfActions';
-
-import { OtamaMenu } from './OtamaMenu';
+import { updateExtensionsAction } from '../actions/ExtensionsActions';
+import Book from '../states/Book';
+import { State } from '../states/State';
 
 import '../renderer';
 
 const { api } = window;
 
 export default function FileMenu(): JSX.Element {
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  const theme = useTheme();
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
+  const extensions = useSelector<State, ExtensionInfo[]>(
+    (state: State) => state.extensions,
+  );
+  const onBookUpdate = useCallback((book: Book) => {
+    dispatch(addBookAction(book));
+  }, []);
+
+  const openBook = (extension: ExtensionInfo) => () => {
+    api
+      .open(extension.id)
+      .then(paths => {
+        paths.forEach(path =>
+          onBookUpdate({
+            path,
+            editable: false,
+          }),
+        );
+      })
+      .catch(err => {
+        if (err instanceof Error) {
+          enqueueSnackbar(err.message);
+          api.log.error(err.message);
+        } else {
+          enqueueSnackbar('原因不明のエラー');
+          api.log.error('原因不明のエラー');
+        }
+      });
+  };
 
   return (
-    <OtamaMenu
-      menuItems={[
-        {
-          key: 'new',
-          name: '辞書の新規作成',
-        },
-        {
-          key: 'open',
-          name: '辞書を開く',
-          onClick: () => {
-            api
-              .fileOpen()
-              .then(data => {
-                switch (data.status) {
-                  case 'cancel':
-                    return false;
-                  case 'failure':
-                    enqueueSnackbar(
-                      `ファイルが開けませんでした\n${data.message}`,
-                    );
-                    return false;
-                  case 'success':
-                    data.paths.forEach(path =>
-                      dispatch(
-                        addBookAction({
-                          path,
-                          editable: false,
-                        }),
-                      ),
-                    );
-                    return true;
-                  default:
-                    return false;
-                }
-              })
-              .catch(err => {
-                if ('at' in err && 'kind' in err && 'message' in err) {
-                  enqueueSnackbar(
-                    `場所：${err.at}, 種類：${err.kind}, エラーメッセージ：${err.message}`,
-                  );
-                } else {
-                  enqueueSnackbar('原因不明のエラー');
-                }
-              });
-          },
-        },
-        {
-          key: 'divider',
-          name: 'divider',
-        },
-        {
-          key: 'exit',
-          name: '終了',
-          onClick: api.windowClose,
-        },
-      ]}
-    />
+    <div>
+      <Button color="inherit" onClick={handleClick} sx={theme.button}>
+        <Typography variant="button" noWrap>
+          ファイル
+        </Typography>
+      </Button>
+      <Menu
+        id="file-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        MenuListProps={{
+          'aria-labelledby': 'file-button',
+        }}>
+        <MenuItem>辞書の新規作成</MenuItem>
+        <NestedMenuItem
+          rightIcon={<ChevronRightIcon />}
+          label="辞書を開く"
+          parentMenuOpen={open}>
+          {extensions
+            .filter(
+              (ext): ext is BookControllerInfo =>
+                ext.type === 'book-controller',
+            )
+            .map(ext => (
+              <MenuItem
+                key={ext.id}
+                onClick={openBook(ext)}>
+                {ext.filters.map(
+                  f =>
+                    `${f.name} (${f.extensions.map(e => `*.${e}`).join(', ')})`,
+                )}
+                形式で開く
+              </MenuItem>
+            ))}
+        </NestedMenuItem>
+        <MenuItem onClick={api.windowClose}>終了</MenuItem>
+      </Menu>
+    </div>
   );
 }

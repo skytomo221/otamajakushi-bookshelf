@@ -1,17 +1,26 @@
 import { Otm } from '../otm/Otm';
+import OtmLoader from '../otm/OtmLoader';
+import OtmSaver from '../otm/OtmSaver';
 import { Word } from '../otm/Word';
 import { SummaryWord } from '../renderer/SummaryWord';
 import { WordCard, Content, Tag } from '../renderer/WordCard';
 
-import DictionaryController from './DictionaryController';
+import BookController from './BookController';
 
-export default class OtmController extends DictionaryController {
-  private otm: Otm;
+export default class OtmController extends BookController {
+  public readonly name = 'OTM Controller';
 
-  public constructor(otm: Otm) {
-    super();
-    this.otm = otm;
-  }
+  public readonly author = 'skytomo221';
+
+  public readonly id = 'otm-controller';
+
+  public readonly version = '0.1.0';
+
+  public readonly format = 'file';
+
+  public readonly filters = [{ name: 'OTM-JSON', extensions: ['json'] }];
+
+  private otm: Otm | undefined;
 
   protected static toWordCard(word: Word): WordCard {
     return {
@@ -37,10 +46,16 @@ export default class OtmController extends DictionaryController {
   }
 
   public readWords(): WordCard[] {
+    if (this.otm === undefined) {
+      throw new Error('otm is undefined');
+    }
     return this.otm.toPlain().words.map(word => OtmController.toWordCard(word));
   }
 
   public readWord(id: number): WordCard {
+    if (this.otm === undefined) {
+      throw new Error('otm is undefined');
+    }
     const word = this.otm.toPlain().words.find(w => w.entry.id === id);
     if (!word) {
       throw new Error('card not found');
@@ -49,6 +64,9 @@ export default class OtmController extends DictionaryController {
   }
 
   public updateWord(word: WordCard): number {
+    if (this.otm === undefined) {
+      throw new Error('otm is undefined');
+    }
     this.otm.updateWord({
       filter: w => w.entry.id === parseInt(word.id, 10),
       map: () => ({
@@ -73,5 +91,27 @@ export default class OtmController extends DictionaryController {
       }),
     });
     return parseInt(word.id, 10);
+  }
+
+  public async load(path: string): Promise<BookController> {
+    const loader = new OtmLoader(path);
+    return loader
+      .asPromise()
+      .then(otm => {
+        this.otm = otm;
+        return this;
+      })
+      .catch(error => {
+        throw error;
+      });
+  }
+
+  public async save(path: string): Promise<BookController> {
+    if (this.otm === undefined) {
+      throw new Error('otm is undefined');
+    }
+    const saver = new OtmSaver(this.otm, path);
+    await saver.asPromise();
+    return this;
   }
 }

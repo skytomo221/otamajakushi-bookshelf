@@ -4,11 +4,20 @@ import {
   LayoutRecursion,
   LayoutString,
 } from '../renderer/LayoutCard';
-import { SummaryWord } from '../renderer/SummaryWord';
 import { WordCard, Content, Translation } from '../renderer/WordCard';
 
-export default class OtmLayoutBuilder {
-  public static layout(summary: SummaryWord, word: WordCard): LayoutCard {
+import LayoutBuilder from './LayoutBuilder';
+
+export default class OtmLayoutBuilder extends LayoutBuilder {
+  public readonly name = 'OTM Layout Builder';
+
+  public readonly author = 'skytomo221';
+
+  public readonly id = 'otm-layout-builder';
+
+  public readonly version = '0.1.0';
+
+  public readonly layout = (word: WordCard): LayoutCard => {
     const contents = (word.contents ?? []).map(
       (content: Content): LayoutRecursion => ({
         component: 'recursion',
@@ -80,5 +89,5 @@ export default class OtmLayoutBuilder {
         ],
       },
     };
-  }
+  };
 }

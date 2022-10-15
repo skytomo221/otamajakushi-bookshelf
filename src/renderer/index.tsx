@@ -11,6 +11,7 @@ import '../../index.css';
 const container = document.getElementById('contents');
 
 sagaMiddleware.run(rootSaga);
+
 ReactDOM.render(
   <Provider store={Store}>
     <BookshelfForm />
