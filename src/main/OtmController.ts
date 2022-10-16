@@ -111,7 +111,11 @@ export default class OtmController extends BookController {
       throw new Error('otm is undefined');
     }
     const saver = new OtmSaver(this.otm, path);
-    await saver.asPromise();
-    return this;
+    return saver
+      .asPromise()
+      .then(() => this)
+      .catch(error => {
+        throw error;
+      });
   }
 }

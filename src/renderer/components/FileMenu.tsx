@@ -27,6 +27,9 @@ export default function FileMenu(): JSX.Element {
   const theme = useTheme();
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
+  const books = useSelector<State, Book[]>(
+    (state: State) => state.bookshelf.books,
+  );
   const extensions = useSelector<State, ExtensionInfo[]>(
     (state: State) => state.extensions,
   );
@@ -82,9 +85,7 @@ export default function FileMenu(): JSX.Element {
                 ext.type === 'book-controller',
             )
             .map(ext => (
-              <MenuItem
-                key={ext.id}
-                onClick={openBook(ext)}>
+              <MenuItem key={ext.id} onClick={openBook(ext)}>
                 {ext.filters.map(
                   f =>
                     `${f.name} (${f.extensions.map(e => `*.${e}`).join(', ')})`,
@@ -93,6 +94,12 @@ export default function FileMenu(): JSX.Element {
               </MenuItem>
             ))}
         </NestedMenuItem>
+        <MenuItem
+          onClick={() => {
+            books.map(book => api.save(book.path));
+          }}>
+          保存
+        </MenuItem>
         <MenuItem onClick={api.windowClose}>終了</MenuItem>
       </Menu>
     </div>

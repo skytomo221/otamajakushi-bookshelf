@@ -146,6 +146,24 @@ const createWindow = () => {
     return [];
   });
 
+  ipcMain.handle('save', async (_, filePath: string): Promise<boolean> => {
+    const book = state.bookshelf.books.find(b => b.path === filePath);
+    if (!book) {
+      mainWindow.webContents.send(
+        'log:error',
+        `File path ${filePath} not found.`,
+      );
+      return false;
+    }
+    return book.bookController
+      .save(filePath)
+      .then(() => true)
+      .catch(error => {
+        mainWindow.webContents.send('log:error', error.message);
+        return false;
+      });
+  });
+
   ipcMain.handle(
     'book-controller:words:read',
     async (_, filePath: string): Promise<SummaryWord[]> => {

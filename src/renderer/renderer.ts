@@ -13,6 +13,7 @@ declare global {
 
 export interface Api {
   open: (id: string) => Promise<string[]>;
+  save: (filePath: string) => Promise<boolean>;
   windowMinimize: () => void;
   windowMaximize: () => void;
   windowClose: () => void;

@@ -27,7 +27,10 @@ export default class OtmSaver extends Saver {
 
   private async saveDictionary(): Promise<void> {
     const { dictionary } = this;
-    writeFileSync(this.path, JSON.stringify(dictionary.toPlain()));
+    writeFileSync(
+      this.path,
+      JSON.stringify(dictionary.toPlain(), null, '    '),
+    );
     this.count += 1;
     this.emitProgress();
   }
