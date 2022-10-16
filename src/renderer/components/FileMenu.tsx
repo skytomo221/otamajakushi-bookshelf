@@ -96,7 +96,9 @@ export default function FileMenu(): JSX.Element {
         </NestedMenuItem>
         <MenuItem
           onClick={() => {
-            books.map(book => api.save(book.path));
+            books
+              .filter(book => book.editable)
+              .map(book => api.save(book.path));
           }}>
           保存
         </MenuItem>
