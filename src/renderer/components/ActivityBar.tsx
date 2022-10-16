@@ -74,60 +74,13 @@ export default function ActivityBar(): JSX.Element {
     <Drawer variant="permanent" open={false}>
       <DrawerHeader />
       <List>
-        <ListItem disablePadding sx={{ display: 'block' }}>
-          <ListItemButton
-            onClick={() =>
-              onPrimarySidebarChange(primarySidebar === null ? 'open' : null)
-            }
-            sx={{
-              minHeight: 48,
-              justifyContent: 'center',
-              px: 2.5,
-            }}>
-            <ListItemIcon
-              sx={{
-                minWidth: 0,
-                mr: 'auto',
-                justifyContent: 'center',
-              }}>
-              <InboxIcon />
-            </ListItemIcon>
-            <ListItemText primary="右" sx={{ opacity: 0 }} />
-          </ListItemButton>
-        </ListItem>
-        <ListItem disablePadding sx={{ display: 'block' }}>
-          <ListItemButton
-            onClick={() =>
-              onSecondarySidebarChange(
-                secondarySidebar === null ? 'open' : null,
-              )
-            }
-            sx={{
-              minHeight: 48,
-              justifyContent: 'center',
-              px: 2.5,
-            }}>
-            <ListItemIcon
-              sx={{
-                minWidth: 0,
-                mr: 'auto',
-                justifyContent: 'center',
-              }}>
-              <InboxIcon />
-            </ListItemIcon>
-            <ListItemText primary="左" sx={{ opacity: 0 }} />
-          </ListItemButton>
-        </ListItem>
-      </List>
-      <Divider />
-      <List>
         {books
           .filter(book => book.editable)
           .map(book => (
             <BookViewContainer key={book.path} book={book} />
           ))}
       </List>
-      <Divider />
+      {books.filter(book => book.editable).length > 0 ? <Divider /> : <></>}
       <List>
         {books
           .filter(book => !book.editable)
