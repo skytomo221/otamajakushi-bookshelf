@@ -121,9 +121,19 @@ export default function ActivityBar(): JSX.Element {
       </List>
       <Divider />
       <List>
-        {books.map(book => (
-          <BookViewContainer key={book.path} book={book} />
-        ))}
+        {books
+          .filter(book => book.editable)
+          .map(book => (
+            <BookViewContainer key={book.path} book={book} />
+          ))}
+      </List>
+      <Divider />
+      <List>
+        {books
+          .filter(book => !book.editable)
+          .map(book => (
+            <BookViewContainer key={book.path} book={book} />
+          ))}
       </List>
     </Drawer>
   );
