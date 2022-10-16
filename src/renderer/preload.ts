@@ -12,6 +12,8 @@ contextBridge.exposeInMainWorld('api', {
   windowMaximize: () => ipcRenderer.invoke('window-maximize'),
   windowClose: () => ipcRenderer.invoke('window-close'),
   open: (id: string): Promise<string[]> => ipcRenderer.invoke('open', id),
+  save: (filePath: string): Promise<boolean> =>
+    ipcRenderer.invoke('save', filePath),
   readWords: (path: string): Promise<{ form: string; id: string | number }[]> =>
     ipcRenderer.invoke('book-controller:words:read', path),
   readWord: (word: SummaryWord): Promise<LayoutCard> =>
