@@ -37,14 +37,14 @@ export default function FileMenu(): JSX.Element {
     dispatch(addBookAction(book));
   }, []);
 
-  const openBook = (extension: ExtensionInfo) => () => {
+  const openBook = (extension: ExtensionInfo, editable: boolean) => () => {
     api
       .open(extension.id)
       .then(paths => {
         paths.forEach(path =>
           onBookUpdate({
             path,
-            editable: false,
+            editable,
           }),
         );
       })
@@ -77,7 +77,7 @@ export default function FileMenu(): JSX.Element {
         <MenuItem>辞書の新規作成</MenuItem>
         <NestedMenuItem
           rightIcon={<ChevronRightIcon />}
-          label="辞書を開く"
+          label="開く"
           parentMenuOpen={open}>
           {extensions
             .filter(
@@ -85,12 +85,31 @@ export default function FileMenu(): JSX.Element {
                 ext.type === 'book-controller',
             )
             .map(ext => (
-              <MenuItem key={ext.id} onClick={openBook(ext)}>
+              <MenuItem key={ext.id} onClick={openBook(ext, false)}>
                 {ext.filters.map(
                   f =>
                     `${f.name} (${f.extensions.map(e => `*.${e}`).join(', ')})`,
                 )}
                 形式で開く
+              </MenuItem>
+            ))}
+        </NestedMenuItem>
+        <NestedMenuItem
+          rightIcon={<ChevronRightIcon />}
+          label="編集モードで開く"
+          parentMenuOpen={open}>
+          {extensions
+            .filter(
+              (ext): ext is BookControllerInfo =>
+                ext.type === 'book-controller',
+            )
+            .map(ext => (
+              <MenuItem key={ext.id} onClick={openBook(ext, true)}>
+                {ext.filters.map(
+                  f =>
+                    `${f.name} (${f.extensions.map(e => `*.${e}`).join(', ')})`,
+                )}
+                形式を編集モードで開く
               </MenuItem>
             ))}
         </NestedMenuItem>
