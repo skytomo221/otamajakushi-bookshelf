@@ -17,7 +17,19 @@ import { WordCard } from '../WordCard';
 import { pushSelectedWordAction } from '../actions/SelectedWordsActions';
 import { State } from '../states/State';
 
+import '../renderer';
+
 const { api } = window;
+
+function MarkdownRender({ src }: { src: string }): JSX.Element {
+  const innerHtml = api.markdown(src);
+  return (
+    <span
+      // eslint-disable-next-line react/no-danger
+      dangerouslySetInnerHTML={{ __html: innerHtml }}
+    />
+  );
+}
 
 function OtamaRecursion({
   contents,
@@ -105,6 +117,22 @@ function OtamaRecursion({
               />
             ) : (
               <OtamaString
+                reference={child.reference}
+                editable={editable}
+                summary={summary}
+                layout={layout}
+                word={word}
+              />
+            );
+          case 'text/markdown':
+            return 'text' in child ? (
+              <OtamaMarkdown
+                text={child.text}
+                editable={editable}
+                layout={layout}
+              />
+            ) : (
+              <OtamaMarkdown
                 reference={child.reference}
                 editable={editable}
                 summary={summary}
@@ -357,6 +385,89 @@ function OtamaString(
           />
         ) : (
           flattenCard[reference]
+        )}
+      </Box>
+    );
+  }
+  api.log.error('reference and text is undifined.');
+  return <></>;
+}
+OtamaString.defaultProps = {
+  text: undefined,
+  reference: undefined,
+};
+
+function OtamaMarkdown(
+  props:
+    | {
+        text: string;
+        editable: boolean;
+        layout: LayoutCard;
+      }
+    | {
+        reference: string;
+        editable: boolean;
+        summary: SummaryWord;
+        layout: LayoutCard;
+        word: WordCard;
+      },
+): JSX.Element {
+  const theme = useTheme();
+  const dispatch = useDispatch();
+  const onSelectedWordPush = React.useCallback((mediator: Mediator) => {
+    dispatch(pushSelectedWordAction(mediator));
+  }, []);
+  const { editable } = props;
+  if ('text' in props) {
+    const { text } = props;
+    if (text) return <MarkdownRender src={text} />;
+  }
+  if ('reference' in props) {
+    const { reference, summary, word, layout } = props;
+    const flattenCard = flatten(word) as { [key: string]: string };
+    if (typeof flattenCard !== 'object') {
+      api.log.error('Layout layout is invalid.', layout, flattenCard);
+      return <></>;
+    }
+    if (!flattenCard) {
+      api.log.error('Layout layout is null.', layout, flattenCard);
+      return <></>;
+    }
+    if (!(reference in flattenCard)) {
+      api.log.error('Reference is null.', layout, flattenCard, reference);
+      return <></>;
+    }
+    if (
+      reference in flattenCard &&
+      typeof flattenCard[reference] !== 'string'
+    ) {
+      api.log.error(
+        'Reference is not string.',
+        layout,
+        flattenCard,
+        flattenCard[reference],
+      );
+      return <></>;
+    }
+    return (
+      <Box component="span" sx={theme.string}>
+        {editable ? (
+          <OtamaTextFeild
+            value={flattenCard[reference]}
+            onChange={value => {
+              onSelectedWordPush({
+                summary,
+                layout,
+                word: unflatten({
+                  // eslint-disable-next-line @typescript-eslint/ban-types
+                  ...(flatten(word) as object),
+                  [reference]: value,
+                }),
+              });
+            }}
+          />
+        ) : (
+          <MarkdownRender src={flattenCard[reference]} />
         )}
       </Box>
     );

@@ -20,6 +20,7 @@ export interface Api {
   readWords: (path: string) => Promise<SummaryWord[]>;
   readWord: (word: SummaryWord) => Promise<Mediator>;
   updateWord: (summary: SummaryWord, word: WordCard) => Promise<Mediator>;
+  markdown: (text: string) => string,
   onExtensions: (
     channel: 'extensions:send',
     callback: (

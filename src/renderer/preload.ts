@@ -20,6 +20,7 @@ contextBridge.exposeInMainWorld('api', {
     ipcRenderer.invoke('book-controller:word:read', word),
   updateWord: (summary: SummaryWord, word: WordCard): Promise<LayoutCard> =>
     ipcRenderer.invoke('book-controller:word:update', summary, word),
+  markdown: (text: string) => ipcRenderer.sendSync('markdown', text),
   onExtensions: (
     channel: 'extensions:send',
     callback: (
