@@ -3,6 +3,7 @@
 import { app, BrowserWindow, dialog, ipcMain } from 'electron';
 
 import log from 'electron-log';
+import MarkdownIt from 'markdown-it';
 
 import OtmLoader from '../otm/OtmLoader';
 import { ExtensionInfo } from '../renderer/ExtensionInfo';
@@ -34,6 +35,7 @@ const createWindow = () => {
     },
     extensions: [() => new OtmController(), () => new OtmLayoutBuilder()],
   };
+  const md = new MarkdownIt();
 
   (() => {
     if (process.argv.find(arg => arg === '--debug')) {
@@ -203,6 +205,11 @@ const createWindow = () => {
       throw new Error(`Invalid word: ${summary} ${word}`);
     },
   );
+
+  ipcMain.on('markdown', (event: Electron.IpcMainEvent, text: string) => {
+    // eslint-disable-next-line no-param-reassign
+    event.returnValue = md.render(text);
+  });
 };
 
 // Electronの起動準備が終わったら、ウィンドウを作成する。

@@ -11,7 +11,8 @@ export type LayoutComponent =
   | LayoutTitle
   | LayoutBody1
   | LayoutBody2
-  | LayoutString;
+  | LayoutString
+  | LayoutMarkdown;
 
 export interface LayoutBaseComponent {
   component: string;
@@ -60,6 +61,18 @@ export type LayoutString = LayoutBaseComponent &
       }
     | {
         component: 'string';
+        reference: string;
+      }
+  );
+
+export type LayoutMarkdown = LayoutBaseComponent &
+  (
+    | {
+        component: 'text/markdown';
+        text: string;
+      }
+    | {
+        component: 'text/markdown';
         reference: string;
       }
   );
