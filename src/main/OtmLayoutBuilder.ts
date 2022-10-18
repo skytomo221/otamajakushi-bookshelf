@@ -20,7 +20,7 @@ export default class OtmLayoutBuilder extends LayoutBuilder {
 
   public readonly layout = (word: WordCard): LayoutCard => {
     const contents = (word.contents ?? []).map(
-      (content: Content): LayoutRecursion => ({
+      (content: Content, index: number): LayoutRecursion => ({
         component: 'recursion',
         contents: [
           {
@@ -38,7 +38,7 @@ export default class OtmLayoutBuilder extends LayoutBuilder {
               {
                 component:
                   content.type === 'text/markdown' ? 'text/markdown' : 'string',
-                text: content.description,
+                reference: `contents.${index}.description`,
               } as LayoutComponent,
             ],
           },

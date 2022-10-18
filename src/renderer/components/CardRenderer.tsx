@@ -397,6 +397,44 @@ OtamaString.defaultProps = {
   reference: undefined,
 };
 
+function OtamaMarkdownFeild({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  const [text, setText] = useState(value);
+  const [edit, setEdit] = useState(false);
+  return (
+    <>
+      {edit ? (
+        <TextField
+          value={text}
+          onChange={(
+            e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+          ) => {
+            setText(e.target.value);
+          }}
+          multiline
+        />
+      ) : (
+        <MarkdownRender src={text} />
+      )}
+      <Button
+        variant="text"
+        onClick={() => {
+          if (edit) {
+            onChange(text);
+          }
+          setEdit(!edit);
+        }}>
+        {edit ? '確定' : '編集'}
+      </Button>
+    </>
+  );
+}
+
 function OtamaMarkdown(
   props:
     | {
@@ -449,27 +487,25 @@ function OtamaMarkdown(
       );
       return <></>;
     }
-    return (
+    return editable ? (
       <Box component="span" sx={theme.string}>
-        {editable ? (
-          <OtamaTextFeild
-            value={flattenCard[reference]}
-            onChange={value => {
-              onSelectedWordPush({
-                summary,
-                layout,
-                word: unflatten({
-                  // eslint-disable-next-line @typescript-eslint/ban-types
-                  ...(flatten(word) as object),
-                  [reference]: value,
-                }),
-              });
-            }}
-          />
-        ) : (
-          <MarkdownRender src={flattenCard[reference]} />
-        )}
+        <OtamaMarkdownFeild
+          value={flattenCard[reference]}
+          onChange={value => {
+            onSelectedWordPush({
+              summary,
+              layout,
+              word: unflatten({
+                // eslint-disable-next-line @typescript-eslint/ban-types
+                ...(flatten(word) as object),
+                [reference]: value,
+              }),
+            });
+          }}
+        />
       </Box>
+    ) : (
+      <MarkdownRender src={flattenCard[reference]} />
     );
   }
   api.log.error('reference and text is undifined.');
