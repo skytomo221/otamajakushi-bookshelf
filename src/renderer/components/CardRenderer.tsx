@@ -10,10 +10,10 @@ import { flatten, unflatten } from 'flat';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { LayoutCard, LayoutComponent } from '../LayoutCard';
-import { Mediator } from '../Mediator';
-import { SummaryWord } from '../SummaryWord';
-import { WordCard } from '../WordCard';
+import { LayoutCard, LayoutComponent } from '../../common/LayoutCard';
+import { Mediator } from '../../common/Mediator';
+import { SummaryWord } from '../../common/SummaryWord';
+import { WordCard } from '../../common/WordCard';
 import { pushSelectedWordAction } from '../actions/SelectedWordsActions';
 import { State } from '../states/State';
 

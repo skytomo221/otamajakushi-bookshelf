@@ -2,10 +2,10 @@ import { useSnackbar } from 'notistack';
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { ExtensionInfo } from '../ExtensionInfo';
+import { ExtensionInfo } from '../../common/ExtensionInfo';
+import { addBookAction } from '../actions/BookshelfActions';
 import { updateExtensionsAction } from '../actions/ExtensionsActions';
 import { State } from '../states/State';
-import { addBookAction } from '../actions/BookshelfActions';
 
 const { api } = window;
 

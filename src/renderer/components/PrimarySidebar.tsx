@@ -15,8 +15,8 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Mediator } from '../Mediator';
-import { SummaryWord } from '../SummaryWord';
+import { Mediator } from '../../common/Mediator';
+import { SummaryWord } from '../../common/SummaryWord';
 import { fetchSelectedWordAction } from '../actions/SelectedWordsActions';
 import Book from '../states/Book';
 import { State } from '../states/State';

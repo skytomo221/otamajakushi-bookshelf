@@ -5,7 +5,7 @@ import { useSnackbar } from 'notistack';
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { BookControllerInfo, ExtensionInfo } from '../ExtensionInfo';
+import { BookControllerInfo, ExtensionInfo } from '../../common/ExtensionInfo';
 import { addBookAction } from '../actions/BookshelfActions';
 import { updateExtensionsAction } from '../actions/ExtensionsActions';
 import Book from '../states/Book';

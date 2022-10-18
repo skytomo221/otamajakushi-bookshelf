@@ -1,6 +1,6 @@
 import { reducerWithInitialState } from 'typescript-fsa-reducers';
 
-import { Mediator } from '../Mediator';
+import { Mediator } from '../../common/Mediator';
 import {
   addSelectedWordAction,
   removeSelectedWordAction,

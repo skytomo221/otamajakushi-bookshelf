@@ -1,13 +1,13 @@
+import LayoutBuilder from '../common/LayoutBuilder';
 import {
   LayoutCard,
   LayoutChip,
   LayoutComponent,
   LayoutRecursion,
   LayoutString,
-} from '../renderer/LayoutCard';
-import { WordCard, Content, Translation } from '../renderer/WordCard';
+} from '../common/LayoutCard';
+import { WordCard, Content, Translation } from '../common/WordCard';
 
-import LayoutBuilder from './LayoutBuilder';
 
 export default class OtmLayoutBuilder extends LayoutBuilder {
   public readonly name = 'OTM Layout Builder';

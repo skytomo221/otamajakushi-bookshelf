@@ -1,4 +1,4 @@
-import { WordCard } from '../renderer/WordCard';
+import { WordCard } from '../common/WordCard';
 
 import Extension from './Extension';
 

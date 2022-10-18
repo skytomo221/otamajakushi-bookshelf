@@ -1,7 +1,8 @@
-import { LayoutCard } from '../renderer/LayoutCard';
-import { WordCard } from '../renderer/WordCard';
+import Extension from '../main/Extension';
 
-import Extension from './Extension';
+import { LayoutCard } from './LayoutCard';
+import { WordCard } from './WordCard';
+
 
 export default abstract class LayoutBuilder extends Extension {
     public readonly extensionType = 'layout-builder';

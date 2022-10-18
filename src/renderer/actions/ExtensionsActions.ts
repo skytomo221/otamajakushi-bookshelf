@@ -1,6 +1,6 @@
 import { actionCreatorFactory } from 'typescript-fsa';
 
-import { ExtensionInfo } from '../ExtensionInfo';
+import { ExtensionInfo } from '../../common/ExtensionInfo';
 
 const actionCreator = actionCreatorFactory('extensions-action');
 

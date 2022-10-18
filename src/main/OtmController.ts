@@ -1,9 +1,8 @@
+import { WordCard, Content, Tag } from '../common/WordCard';
 import { Otm } from '../otm/Otm';
 import OtmLoader from '../otm/OtmLoader';
 import OtmSaver from '../otm/OtmSaver';
 import { Word } from '../otm/Word';
-import { SummaryWord } from '../renderer/SummaryWord';
-import { WordCard, Content, Tag } from '../renderer/WordCard';
 
 import BookController from './BookController';
 

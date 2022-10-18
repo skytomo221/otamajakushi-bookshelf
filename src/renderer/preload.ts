@@ -2,10 +2,11 @@ import { contextBridge, ipcRenderer } from 'electron';
 
 import log from 'electron-log';
 
-import { ExtensionInfo } from './ExtensionInfo';
-import { LayoutCard } from './LayoutCard';
-import { SummaryWord } from './SummaryWord';
-import { WordCard } from './WordCard';
+import { ExtensionInfo } from '../common/ExtensionInfo';
+import { LayoutCard } from '../common/LayoutCard';
+import { SummaryWord } from '../common/SummaryWord';
+import { WordCard } from '../common/WordCard';
+
 
 contextBridge.exposeInMainWorld('api', {
   windowMinimize: () => ipcRenderer.invoke('window-minimize'),

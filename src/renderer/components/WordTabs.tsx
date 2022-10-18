@@ -7,7 +7,7 @@ import * as React from 'react';
 import { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Mediator } from '../Mediator';
+import { Mediator } from '../../common/Mediator';
 import { removeSelectedWordAction } from '../actions/SelectedWordsActions';
 import { State } from '../states/State';
 

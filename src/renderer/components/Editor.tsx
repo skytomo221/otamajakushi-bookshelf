@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-import { Mediator } from '../Mediator';
+import { Mediator } from '../../common/Mediator';
 import { State } from '../states/State';
 
 import Hero from './Hero';

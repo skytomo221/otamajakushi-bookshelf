@@ -1,6 +1,6 @@
 import { reducerWithInitialState } from 'typescript-fsa-reducers';
 
-import { ExtensionInfo } from '../ExtensionInfo';
+import { ExtensionInfo } from '../../common/ExtensionInfo';
 import { updateExtensionsAction } from '../actions/ExtensionsActions';
 
 const updateExtensionsReducer = reducerWithInitialState<ExtensionInfo[]>([])
