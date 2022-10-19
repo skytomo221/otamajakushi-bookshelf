@@ -2,7 +2,7 @@ import { contextBridge, ipcRenderer } from 'electron';
 
 import log from 'electron-log';
 
-import { ExtensionInfo } from '../common/ExtensionInfo';
+import { ExtensionProperties } from '../common/ExtensionProperties';
 import { LayoutCard } from '../common/LayoutCard';
 import { WordCard } from '../common/WordCard';
 
@@ -27,7 +27,7 @@ contextBridge.exposeInMainWorld('api', {
     channel: 'extensions:send',
     callback: (
       event: Electron.IpcRendererEvent,
-      extensions: ExtensionInfo[],
+      extensions: ExtensionProperties[],
     ) => void,
   ) => ipcRenderer.on(channel, (event, argv) => callback(event, argv)),
   onErrorLog: (

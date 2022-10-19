@@ -2,7 +2,7 @@ import { useSnackbar } from 'notistack';
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { ExtensionInfo } from '../../common/ExtensionInfo';
+import { ExtensionProperties } from '../../common/ExtensionProperties';
 import { addBookAction } from '../actions/BookshelfActions';
 import { updateExtensionsAction } from '../actions/ExtensionsActions';
 import { State } from '../states/State';
@@ -11,11 +11,11 @@ const { api } = window;
 
 export default function On(): JSX.Element {
   const { enqueueSnackbar } = useSnackbar();
-  const extensions = useSelector<State, ExtensionInfo[]>(
+  const extensions = useSelector<State, ExtensionProperties[]>(
     (state: State) => state.extensions,
   );
   const dispatch = useDispatch();
-  const onExtensionsUpdate = useCallback((exts: ExtensionInfo[]) => {
+  const onExtensionsUpdate = useCallback((exts: ExtensionProperties[]) => {
     dispatch(updateExtensionsAction(exts));
   }, []);
 

@@ -1,6 +1,6 @@
 import { FileFilter } from "electron";
 
-export type ExtensionInfo = BookControllerInfo | LayoutBuilderInfo;
+export type ExtensionProperties = BookControllerInfo | LayoutBuilderInfo;
 
 export interface BookControllerInfo {
   name: string;

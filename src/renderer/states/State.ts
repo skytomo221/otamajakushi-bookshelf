@@ -1,5 +1,5 @@
 
-import { ExtensionInfo } from '../../common/ExtensionInfo';
+import { ExtensionProperties } from '../../common/ExtensionProperties';
 import { Mediator } from '../Mediator';
 
 import Bookshelf from './Bookshelf';
@@ -12,5 +12,5 @@ export interface State {
   primarySidebar: null | string;
   secondarySidebar: null | string;
   selectedWords: null | Mediator[];
-  extensions: ExtensionInfo[],
+  extensions: ExtensionProperties[],
 }
