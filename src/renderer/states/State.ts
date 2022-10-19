@@ -1,6 +1,6 @@
 
 import { ExtensionInfo } from '../../common/ExtensionInfo';
-import { Mediator } from '../../common/Mediator';
+import { Mediator } from '../Mediator';
 
 import Bookshelf from './Bookshelf';
 import ThemeParameter from './ThemeParameter';

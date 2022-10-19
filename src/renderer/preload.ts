@@ -4,8 +4,9 @@ import log from 'electron-log';
 
 import { ExtensionInfo } from '../common/ExtensionInfo';
 import { LayoutCard } from '../common/LayoutCard';
-import { SummaryWord } from '../common/SummaryWord';
 import { WordCard } from '../common/WordCard';
+
+import { SummaryWord } from './SummaryWord';
 
 
 contextBridge.exposeInMainWorld('api', {

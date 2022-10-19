@@ -1,7 +1,7 @@
 import { actionCreatorFactory } from 'typescript-fsa';
 
-import { Mediator } from '../../common/Mediator';
-import { SummaryWord } from '../../common/SummaryWord';
+import { Mediator } from '../Mediator';
+import { SummaryWord } from '../SummaryWord';
 
 const actionCreator = actionCreatorFactory('selected-word-action');
 
