@@ -1,9 +1,11 @@
 import log from 'electron-log';
 
-import { ExtensionInfo } from './ExtensionInfo';
+import { ExtensionInfo } from '../common/ExtensionInfo';
+import { WordCard } from '../common/WordCard';
+
 import { Mediator } from './Mediator';
 import { SummaryWord } from './SummaryWord';
-import { WordCard } from './WordCard';
+
 
 declare global {
   interface Window {

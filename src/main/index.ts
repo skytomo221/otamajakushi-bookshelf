@@ -5,12 +5,9 @@ import { app, BrowserWindow, dialog, ipcMain } from 'electron';
 import log from 'electron-log';
 import MarkdownIt from 'markdown-it';
 
-import OtmLoader from '../otm/OtmLoader';
-import { ExtensionInfo } from '../renderer/ExtensionInfo';
+import { WordCard } from '../common/WordCard';
 import { Mediator } from '../renderer/Mediator';
 import { SummaryWord } from '../renderer/SummaryWord';
-import { WordCard } from '../renderer/WordCard';
-import { FileOpenReturn } from '../renderer/renderer';
 
 import Book from './Book';
 import BookController from './BookController';

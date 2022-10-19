@@ -1,6 +1,6 @@
-import { WordCard } from '../renderer/WordCard';
+import Extension from '../common/Extension';
+import { WordCard } from '../common/WordCard';
 
-import Extension from './Extension';
 
 export interface FileFilter {
   // Docs: https://electronjs.org/docs/api/structures/file-filter

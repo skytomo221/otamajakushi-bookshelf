@@ -1,5 +1,5 @@
 
-import { ExtensionInfo } from '../ExtensionInfo';
+import { ExtensionInfo } from '../../common/ExtensionInfo';
 import { Mediator } from '../Mediator';
 
 import Bookshelf from './Bookshelf';
