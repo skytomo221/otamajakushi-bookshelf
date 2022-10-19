@@ -1,5 +1,4 @@
-import Extension from '../main/Extension';
-
+import Extension from './Extension';
 import { LayoutCard } from './LayoutCard';
 import { WordCard } from './WordCard';
 
