@@ -5,7 +5,7 @@ import { useSnackbar } from 'notistack';
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { BookControllerInfo, ExtensionProperties } from '../../common/ExtensionProperties';
+import { BookControllerProperties, ExtensionProperties } from '../../common/ExtensionProperties';
 import { addBookAction } from '../actions/BookshelfActions';
 import { updateExtensionsAction } from '../actions/ExtensionsActions';
 import Book from '../states/Book';
@@ -81,7 +81,7 @@ export default function FileMenu(): JSX.Element {
           parentMenuOpen={open}>
           {extensions
             .filter(
-              (ext): ext is BookControllerInfo =>
+              (ext): ext is BookControllerProperties =>
                 ext.type === 'book-controller',
             )
             .map(ext => (
@@ -100,7 +100,7 @@ export default function FileMenu(): JSX.Element {
           parentMenuOpen={open}>
           {extensions
             .filter(
-              (ext): ext is BookControllerInfo =>
+              (ext): ext is BookControllerProperties =>
                 ext.type === 'book-controller',
             )
             .map(ext => (
