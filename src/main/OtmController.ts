@@ -1,23 +1,21 @@
+import BookController from '../common/BookController';
+import { BookControllerProperties } from '../common/ExtensionProperties';
 import { WordCard, Content, Tag } from '../common/WordCard';
 import { Otm } from '../otm/Otm';
 import OtmLoader from '../otm/OtmLoader';
 import OtmSaver from '../otm/OtmSaver';
 import { Word } from '../otm/Word';
 
-import BookController from './BookController';
-
 export default class OtmController extends BookController {
-  public readonly name = 'OTM Controller';
-
-  public readonly author = 'skytomo221';
-
-  public readonly id = 'otm-controller';
-
-  public readonly version = '0.1.0';
-
-  public readonly format = 'file';
-
-  public readonly filters = [{ name: 'OTM-JSON', extensions: ['json'] }];
+  public readonly properties: BookControllerProperties = {
+    name: 'OTM Controller',
+    id: 'otm-controller',
+    version: '0.1.0',
+    type: 'book-controller',
+    author: 'skytomo221',
+    format: 'file',
+    filters: [{ name: 'OTM-JSON', extensions: ['json'] }],
+  };
 
   private otm: Otm | undefined;
 

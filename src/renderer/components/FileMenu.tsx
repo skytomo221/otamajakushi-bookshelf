@@ -5,7 +5,7 @@ import { useSnackbar } from 'notistack';
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { BookControllerInfo, ExtensionInfo } from '../../common/ExtensionInfo';
+import { BookControllerProperties, ExtensionProperties } from '../../common/ExtensionProperties';
 import { addBookAction } from '../actions/BookshelfActions';
 import { updateExtensionsAction } from '../actions/ExtensionsActions';
 import Book from '../states/Book';
@@ -30,14 +30,14 @@ export default function FileMenu(): JSX.Element {
   const books = useSelector<State, Book[]>(
     (state: State) => state.bookshelf.books,
   );
-  const extensions = useSelector<State, ExtensionInfo[]>(
+  const extensions = useSelector<State, ExtensionProperties[]>(
     (state: State) => state.extensions,
   );
   const onBookUpdate = useCallback((book: Book) => {
     dispatch(addBookAction(book));
   }, []);
 
-  const openBook = (extension: ExtensionInfo, editable: boolean) => () => {
+  const openBook = (extension: ExtensionProperties, editable: boolean) => () => {
     api
       .open(extension.id)
       .then(paths => {
@@ -81,7 +81,7 @@ export default function FileMenu(): JSX.Element {
           parentMenuOpen={open}>
           {extensions
             .filter(
-              (ext): ext is BookControllerInfo =>
+              (ext): ext is BookControllerProperties =>
                 ext.type === 'book-controller',
             )
             .map(ext => (
@@ -100,7 +100,7 @@ export default function FileMenu(): JSX.Element {
           parentMenuOpen={open}>
           {extensions
             .filter(
-              (ext): ext is BookControllerInfo =>
+              (ext): ext is BookControllerProperties =>
                 ext.type === 'book-controller',
             )
             .map(ext => (

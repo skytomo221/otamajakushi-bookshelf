@@ -5,12 +5,12 @@ import { app, BrowserWindow, dialog, ipcMain } from 'electron';
 import log from 'electron-log';
 import MarkdownIt from 'markdown-it';
 
+import BookController from '../common/BookController';
 import { WordCard } from '../common/WordCard';
 import { Mediator } from '../renderer/Mediator';
 import { SummaryWord } from '../renderer/SummaryWord';
 
 import Book from './Book';
-import BookController from './BookController';
 import OtmController from './OtmController';
 import OtmLayoutBuilder from './OtmLayoutBuilder';
 import { State } from './State';
@@ -62,20 +62,7 @@ const createWindow = () => {
       'extensions:send',
       state.extensions.map(extension => {
         const ext = extension();
-        return ext instanceof BookController
-          ? {
-              name: ext.name,
-              id: ext.id,
-              version: ext.version,
-              type: ext.extensionType,
-              filters: ext.filters,
-            }
-          : {
-              name: ext.name,
-              id: ext.id,
-              version: ext.version,
-              type: ext.extensionType,
-            };
+        return ext.properties;
       }),
     );
   });
@@ -99,21 +86,21 @@ const createWindow = () => {
       .filter(
         (ext): ext is () => BookController => ext() instanceof BookController,
       )
-      .find(ext => ext().id === id);
+      .find(ext => ext().properties.id === id);
     if (!bookController) {
       mainWindow.webContents.send('log:error', `Extension ${id} not found.`);
       return [];
     }
     const paths =
-      bookController().format === 'file'
+      bookController().properties.format === 'file'
         ? dialog.showOpenDialogSync(mainWindow, {
             buttonLabel: '開く',
-            filters: bookController().filters,
+            filters: bookController().properties.filters,
             properties: ['openFile', 'createDirectory'],
           })
         : dialog.showOpenDialogSync(mainWindow, {
             buttonLabel: '開く',
-            filters: bookController().filters,
+            filters: bookController().properties.filters,
             properties: ['openDirectory', 'createDirectory'],
           });
     if (!paths) return [];

@@ -1,3 +1,4 @@
+import { LayoutBuilderProperties } from '../common/ExtensionProperties';
 import LayoutBuilder from '../common/LayoutBuilder';
 import {
   LayoutCard,
@@ -10,13 +11,13 @@ import { WordCard, Content, Translation } from '../common/WordCard';
 
 
 export default class OtmLayoutBuilder extends LayoutBuilder {
-  public readonly name = 'OTM Layout Builder';
-
-  public readonly author = 'skytomo221';
-
-  public readonly id = 'otm-layout-builder';
-
-  public readonly version = '0.1.0';
+  public properties: LayoutBuilderProperties = {
+    name: 'OTM Layout Builder',
+    id: 'otm-layout-builder',
+    version: '0.1.0',
+    type: 'layout-builder',
+    author: 'skytomo221',
+  };
 
   public readonly layout = (word: WordCard): LayoutCard => {
     const contents = (word.contents ?? []).map(

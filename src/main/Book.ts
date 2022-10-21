@@ -1,4 +1,4 @@
-import BookController from './BookController';
+import BookController from '../common/BookController';
 
 export default interface Book {
   path: string;

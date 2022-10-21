@@ -1,6 +1,6 @@
 import log from 'electron-log';
 
-import { ExtensionInfo } from '../common/ExtensionInfo';
+import { ExtensionProperties } from '../common/ExtensionProperties';
 import { WordCard } from '../common/WordCard';
 
 import { Mediator } from './Mediator';
@@ -27,7 +27,7 @@ export interface Api {
     channel: 'extensions:send',
     callback: (
       event: Electron.IpcRendererEvent,
-      extensions: ExtensionInfo[],
+      extensions: ExtensionProperties[],
     ) => void,
   ) => Electron.IpcRenderer;
   onErrorLog: (

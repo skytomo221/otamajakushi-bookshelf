@@ -1,9 +1,9 @@
 import { reducerWithInitialState } from 'typescript-fsa-reducers';
 
-import { ExtensionInfo } from '../../common/ExtensionInfo';
+import { ExtensionProperties } from '../../common/ExtensionProperties';
 import { updateExtensionsAction } from '../actions/ExtensionsActions';
 
-const updateExtensionsReducer = reducerWithInitialState<ExtensionInfo[]>([])
+const updateExtensionsReducer = reducerWithInitialState<ExtensionProperties[]>([])
   .case(updateExtensionsAction, (_state, payload) => payload)
   .build();
 
