@@ -1,6 +1,7 @@
 import log from 'electron-log';
 
 import { ExtensionProperties } from '../common/ExtensionProperties';
+import StyleThemeParameters from '../common/StyleThemeParameters';
 import { WordCard } from '../common/WordCard';
 
 import { Mediator } from './Mediator';
@@ -22,6 +23,7 @@ export interface Api {
   readWords: (path: string) => Promise<SummaryWord[]>;
   readWord: (word: SummaryWord) => Promise<Mediator>;
   updateWord: (summary: SummaryWord, word: WordCard) => Promise<Mediator>;
+  applyStyleTheme: (id: string) => Promise<StyleThemeParameters>;
   markdown: (text: string) => string,
   onExtensions: (
     channel: 'extensions:send',

@@ -6,11 +6,15 @@ import log from 'electron-log';
 import MarkdownIt from 'markdown-it';
 
 import BookController from '../common/BookController';
+import StyleTheme from '../common/StyleTheme';
+import StyleThemeParameters from '../common/StyleThemeParameters';
 import { WordCard } from '../common/WordCard';
 import { Mediator } from '../renderer/Mediator';
 import { SummaryWord } from '../renderer/SummaryWord';
 
 import Book from './Book';
+import OtamaDarkTheme from './OtamaDarkTheme';
+import OtamaLightTheme from './OtamaLightTheme';
 import OtmController from './OtmController';
 import OtmLayoutBuilder from './OtmLayoutBuilder';
 import { State } from './State';
@@ -30,7 +34,12 @@ const createWindow = () => {
     bookshelf: {
       books: [],
     },
-    extensions: [() => new OtmController(), () => new OtmLayoutBuilder()],
+    extensions: [
+      () => new OtmController(),
+      () => new OtmLayoutBuilder(),
+      () => new OtamaLightTheme(),
+      () => new OtamaDarkTheme(),
+    ],
   };
   const md = new MarkdownIt();
 
@@ -189,6 +198,20 @@ const createWindow = () => {
       throw new Error(`Invalid word: ${summary} ${word}`);
     },
   );
+
+
+  ipcMain.handle('style-theme:apply', async (_, id: string): Promise<StyleThemeParameters> => {
+    const styleTheme = state.extensions
+      .filter(
+        (ext): ext is () => StyleTheme => ext() instanceof StyleTheme,
+      )
+      .find(ext => ext().properties.id === id);
+    if (!styleTheme) {
+      mainWindow.webContents.send('log:error', `Extension ${id} not found.`);
+      throw new Error(`Extension ${id} not found.`);
+    }
+    return styleTheme().style();
+  });
 
   ipcMain.on('markdown', (event: Electron.IpcMainEvent, text: string) => {
     // eslint-disable-next-line no-param-reassign
