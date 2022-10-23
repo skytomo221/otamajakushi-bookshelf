@@ -49,24 +49,10 @@ export default function BookshelfForm(): JSX.Element {
         <div className={parameter.style.main} style={{ height: '100%' }}>
           <On />
           <CssBaseline />
-          <ElevationScroll>
+          <main className="flex flex-col">
             <OtamaMenuBar />
-          </ElevationScroll>
-          <ActivityBar />
-          <Box component="div" sx={theme.mixins.toolbar} />
-          <Box
-            component="main"
-            sx={{
-              marginLeft: `calc(${theme.spacing(8)} + 1px)`,
-              marginTop: '-16px',
-              height: `calc(100% - 96px)`,
-            }}>
             <Split
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                height: '100%',
-              }}
+              className='flex flex-row grow'
               elementStyle={(_dimension, size, gutterSize, index) => ({
                 width: `calc(${size}% - ${
                   (index === 1 && primarySidebar) ||
@@ -115,7 +101,7 @@ export default function BookshelfForm(): JSX.Element {
                 <SecondarySidebar />
               </div>
             </Split>
-          </Box>
+          </main>
           <StatusBar />
         </div>
       </SnackbarProvider>

@@ -13,31 +13,46 @@ const CustomIconButton = styled(IconButton)(({ theme }) => ({
 
 function MinimizeIconButton(): JSX.Element {
   return (
-    <CustomIconButton color="inherit" onClick={api.windowMinimize}>
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events
+    <div
+      className="flex items-center justify-center w-10 hover:bg-slate-400/20"
+      onClick={api.windowMinimize}
+      tabIndex={-1}
+      role="button">
       <MinimizeIcon />
-    </CustomIconButton>
+    </div>
   );
 }
 
 function MaximizeIconButton(): JSX.Element {
   return (
-    <CustomIconButton color="inherit" onClick={api.windowMaximize}>
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events
+    <div
+      className="flex items-center justify-center w-10 hover:bg-slate-400/20"
+      onClick={api.windowMaximize}
+      tabIndex={-1}
+      role="button">
       <Icon path={mdiWindowMaximize} title="Window Maximize" size={1} />
-    </CustomIconButton>
+    </div>
   );
 }
 
 function CloseIconButton(): JSX.Element {
   return (
-    <CustomIconButton color="inherit" onClick={api.windowClose}>
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events
+    <div
+      className="flex items-center justify-center w-10 hover:bg-[#ff0000]"
+      onClick={api.windowClose}
+      tabIndex={-1}
+      role="button">
       <CloseIcon />
-    </CustomIconButton>
+    </div>
   );
 }
 
 export default function ControlBox(): JSX.Element {
   return (
-    <div>
+    <div className="flex [-webkit-app-region:no-drag]">
       <MinimizeIconButton />
       <MaximizeIconButton />
       <CloseIconButton />

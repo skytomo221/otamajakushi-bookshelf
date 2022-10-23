@@ -1,10 +1,5 @@
 import MenuIcon from '@mui/icons-material/Menu';
-import {
-  useScrollTrigger,
-  Zoom,
-  useTheme,
-  Box,
-} from '@mui/material';
+import { useScrollTrigger, Zoom, useTheme, Box } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
@@ -65,19 +60,16 @@ export default function OtamaMenuBar(): JSX.Element {
   const parameter = useSelector<State, ThemeParameter>(state => state.theme);
 
   return (
-    <AppBar position="static" className={parameter.style.menuBar} sx={theme.menuBar}>
-      <Toolbar variant="dense">
-        <IconButton edge="start" color="inherit" aria-label="open drawer">
-          <MenuIcon />
-        </IconButton>
-        <FileMenu />
-        <Box component="div" sx={theme.grow} />
-        <Typography variant="body1" noWrap>
-          Otamajakushi Bookshelf
-        </Typography>
-        <Box component="div" sx={theme.grow} />
-        <ControlBox />
-      </Toolbar>
-    </AppBar>
+    <header
+      className={`${parameter.style.menuBar} flex h-8 [-webkit-app-region:drag]`}>
+      <IconButton edge="start" color="inherit" aria-label="open drawer">
+        <MenuIcon />
+      </IconButton>
+      <FileMenu />
+      <div className="grow" />
+      <h1 className="p-1.5 text-sm">Otamajakushi Bookshelf</h1>
+      <div className="grow" />
+      <ControlBox />
+    </header>
   );
 }
