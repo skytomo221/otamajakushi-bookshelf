@@ -12,16 +12,16 @@ export default class OtamaDarkTheme extends StyleTheme {
   };
 
   readonly style = (): StyleThemeParameters => ({
-    main: '!bg-slate-900 !text-slate-50',
-    menuBar: 'bg-slate-900',
-    statuBar: 'bg-slate-900',
-    editor: 'bg-slate-800',
-    h2: 'text-5xl text-slate-50',
-    h3: 'text-4xl text-slate-50',
-    h4: 'text-3xl text-slate-50',
-    h5: 'text-2xl text-slate-50',
-    h6: 'text-xl text-slate-50',
-    lg: 'text-lg text-slate-100',
-    base: 'text-base text-slate-100',
+    main: '!bg-slate-800 !text-slate-300',
+    menuBar: 'bg-slate-800',
+    statuBar: 'bg-slate-700',
+    editor: 'bg-slate-900',
+    h2: 'text-5xl text-slate-100',
+    h3: 'text-4xl text-slate-100',
+    h4: 'text-3xl text-slate-100',
+    h5: 'text-2xl text-slate-100',
+    h6: 'text-xl text-slate-100',
+    lg: 'text-lg text-slate-300',
+    base: 'text-base text-slate-300',
   });
 }
