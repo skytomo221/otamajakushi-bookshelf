@@ -71,8 +71,7 @@ export default function ActivityBar(): JSX.Element {
   );
 
   return (
-    <Drawer variant="permanent" open={false}>
-      <DrawerHeader />
+    <div className="flex flex-col w-16">
       <List>
         {books
           .filter(book => book.editable)
@@ -88,6 +87,6 @@ export default function ActivityBar(): JSX.Element {
             <BookViewContainer key={book.path} book={book} />
           ))}
       </List>
-    </Drawer>
+    </div>
   );
 }

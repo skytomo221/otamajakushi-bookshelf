@@ -46,24 +46,26 @@ export default function BookshelfForm(): JSX.Element {
   return (
     <OtamaThemeProvider>
       <SnackbarProvider maxSnack={3}>
-        <div className={parameter.style.main} style={{ height: '100%' }}>
+        <div className={`${parameter.style.main} h-full`}>
           <On />
           <CssBaseline />
-          <main className="flex flex-col">
+          <main className="flex flex-col h-full">
             <OtamaMenuBar />
-            <Split
-              className='flex flex-row grow'
-              elementStyle={(_dimension, size, gutterSize, index) => ({
-                width: `calc(${size}% - ${
-                  (index === 1 && primarySidebar) ||
-                  (index === 2 && secondarySidebar)
-                    ? gutterSize
-                    : 0
-                }px)`,
-              })}
-              gutter={() => {
-                const gutterElement = document.createElement('div');
-                gutterElement.className = `w-[2px]
+            <div className="flex flex-row grow">
+              <ActivityBar />
+              <Split
+                className="flex flex-row grow"
+                elementStyle={(_dimension, size, gutterSize, index) => ({
+                  width: `calc(${size}% - ${
+                    (index === 1 && primarySidebar) ||
+                    (index === 2 && secondarySidebar)
+                      ? gutterSize
+                      : 0
+                  }px)`,
+                })}
+                gutter={() => {
+                  const gutterElement = document.createElement('div');
+                  gutterElement.className = `w-[2px]
                                          mx-[2px]
                                          bg-indigo-500
                                          hover:cursor-col-resize
@@ -74,33 +76,38 @@ export default function BookshelfForm(): JSX.Element {
                                          delay-75
                                          duration-300
                                          ease-in-out`;
-                return gutterElement;
-              }}
-              gutterStyle={(_dimention, _gutterSize, index: number) => ({
-                backgroundColor: theme.palette.divider,
-                cursor: 'col-resize',
-                display:
-                  (index === 1 && primarySidebar) ||
-                  (index === 2 && secondarySidebar)
-                    ? 'inherit'
-                    : 'none',
-              })}
-              minSize={[
-                primarySidebar ? 100 : 0,
-                100,
-                secondarySidebar ? 100 : 0,
-              ]}
-              sizes={[primarySidebar ? 25 : 0, 100, secondarySidebar ? 25 : 0]}>
-              <div>
-                <PrimarySidebar />
-              </div>
-              <div>
-                <Editor />
-              </div>
-              <div>
-                <SecondarySidebar />
-              </div>
-            </Split>
+                  return gutterElement;
+                }}
+                gutterStyle={(_dimention, _gutterSize, index: number) => ({
+                  backgroundColor: theme.palette.divider,
+                  cursor: 'col-resize',
+                  display:
+                    (index === 1 && primarySidebar) ||
+                    (index === 2 && secondarySidebar)
+                      ? 'inherit'
+                      : 'none',
+                })}
+                minSize={[
+                  primarySidebar ? 100 : 0,
+                  100,
+                  secondarySidebar ? 100 : 0,
+                ]}
+                sizes={[
+                  primarySidebar ? 25 : 0,
+                  100,
+                  secondarySidebar ? 25 : 0,
+                ]}>
+                <div>
+                  <PrimarySidebar />
+                </div>
+                <div>
+                  <Editor />
+                </div>
+                <div>
+                  <SecondarySidebar />
+                </div>
+              </Split>
+            </div>
           </main>
           <StatusBar />
         </div>

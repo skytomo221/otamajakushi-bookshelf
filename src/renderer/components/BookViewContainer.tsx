@@ -59,22 +59,9 @@ export default function BookViewContainer({ book }: Props): JSX.Element {
       key={book.path}
       disablePadding
       sx={{ display: 'block' }}>
-      <ListItemButton
-        sx={{
-          minHeight: 48,
-          justifyContent: 'center',
-          px: 2.5,
-        }}>
-        <ListItemIcon
-          sx={{
-            minWidth: 0,
-            mr: 'auto',
-            justifyContent: 'center',
-          }}>
-          <BookIcon />
-        </ListItemIcon>
-        <ListItemText primary={book.path} sx={{ opacity: 0 }} />
-      </ListItemButton>
+      <div className="flex items-center justify-center h-16 w-16">
+        <BookIcon />
+      </div>
       <Menu
         open={contextMenu !== null}
         onClose={handleClose}
