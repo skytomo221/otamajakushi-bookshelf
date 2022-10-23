@@ -49,12 +49,12 @@ export default function BookshelfForm(): JSX.Element {
         <div className={`${parameter.style.main} h-full`}>
           <On />
           <CssBaseline />
-          <main className="flex flex-col h-full">
+          <main className="flex flex-col h-full max-h-full">
             <OtamaMenuBar />
-            <div className="flex flex-row grow">
+            <div className="flex flex-row h-[calc(100%-56px)]">
               <ActivityBar />
               <Split
-                className="flex flex-row grow"
+                className="flex flex-row grow h-full"
                 elementStyle={(_dimension, size, gutterSize, index) => ({
                   width: `calc(${size}% - ${
                     (index === 1 && primarySidebar) ||
