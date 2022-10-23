@@ -108,8 +108,8 @@ export default function BookshelfForm(): JSX.Element {
                 </div>
               </Split>
             </div>
+            <StatusBar />
           </main>
-          <StatusBar />
         </div>
       </SnackbarProvider>
     </OtamaThemeProvider>
