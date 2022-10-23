@@ -1,4 +1,5 @@
 export default interface StyleThemeParameters {
+  main: string;
   menuBar: string;
   statuBar: string;
   editor: string;
