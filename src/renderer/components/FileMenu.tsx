@@ -1,17 +1,30 @@
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { Button, Menu, MenuItem, Typography, useTheme } from '@mui/material';
+import {
+  Button,
+  Menu,
+  MenuItem,
+  Typography,
+  useTheme,
+  Divider,
+} from '@mui/material';
 import { NestedMenuItem } from 'mui-nested-menu';
 import { useSnackbar } from 'notistack';
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { BookControllerProperties, ExtensionProperties } from '../../common/ExtensionProperties';
+import {
+  BookControllerProperties,
+  ExtensionProperties,
+  StyleThemeProperties,
+} from '../../common/ExtensionProperties';
+import StyleThemeParameters from '../../common/StyleThemeParameters';
 import { addBookAction } from '../actions/BookshelfActions';
-import { updateExtensionsAction } from '../actions/ExtensionsActions';
+import { applyStyleThemeAction } from '../actions/ThemeActions';
 import Book from '../states/Book';
 import { State } from '../states/State';
 
 import '../renderer';
+
 
 const { api } = window;
 
@@ -36,27 +49,37 @@ export default function FileMenu(): JSX.Element {
   const onBookUpdate = useCallback((book: Book) => {
     dispatch(addBookAction(book));
   }, []);
+  const onStyleThemeApply = useCallback((styleTheme: StyleThemeParameters) => {
+    dispatch(applyStyleThemeAction(styleTheme));
+  }, []);
 
-  const openBook = (extension: ExtensionProperties, editable: boolean) => () => {
+  const openBook =
+    (extension: ExtensionProperties, editable: boolean) => () => {
+      api
+        .open(extension.id)
+        .then(paths => {
+          paths.forEach(path =>
+            onBookUpdate({
+              path,
+              editable,
+            }),
+          );
+        })
+        .catch(err => {
+          if (err instanceof Error) {
+            enqueueSnackbar(err.message);
+            api.log.error(err.message);
+          } else {
+            enqueueSnackbar('原因不明のエラー');
+            api.log.error('原因不明のエラー');
+          }
+        });
+    };
+
+  const applyStyleTheme = (extension: StyleThemeProperties) => () => {
     api
-      .open(extension.id)
-      .then(paths => {
-        paths.forEach(path =>
-          onBookUpdate({
-            path,
-            editable,
-          }),
-        );
-      })
-      .catch(err => {
-        if (err instanceof Error) {
-          enqueueSnackbar(err.message);
-          api.log.error(err.message);
-        } else {
-          enqueueSnackbar('原因不明のエラー');
-          api.log.error('原因不明のエラー');
-        }
-      });
+      .applyStyleTheme(extension.id)
+      .then(styleTheme => onStyleThemeApply(styleTheme));
   };
 
   return (
@@ -121,6 +144,28 @@ export default function FileMenu(): JSX.Element {
           }}>
           保存
         </MenuItem>
+        <Divider />
+        <NestedMenuItem
+          rightIcon={<ChevronRightIcon />}
+          label="ユーザー設定"
+          parentMenuOpen={open}>
+          <NestedMenuItem
+            rightIcon={<ChevronRightIcon />}
+            label="スタイルテーマ"
+            parentMenuOpen={open}>
+            {extensions
+              .filter(
+                (ext): ext is StyleThemeProperties =>
+                  ext.type === 'style-theme',
+              )
+              .map(ext => (
+                <MenuItem key={ext.id} onClick={applyStyleTheme(ext)}>
+                  {ext.name}
+                </MenuItem>
+              ))}
+          </NestedMenuItem>
+        </NestedMenuItem>
+        <Divider />
         <MenuItem onClick={api.windowClose}>終了</MenuItem>
       </Menu>
     </div>

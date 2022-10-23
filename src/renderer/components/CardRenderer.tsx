@@ -18,13 +18,14 @@ import { pushSelectedWordAction } from '../actions/SelectedWordsActions';
 import { State } from '../states/State';
 
 import '../renderer';
+import ThemeParameter from '../states/ThemeParameter';
 
 const { api } = window;
 
 function MarkdownRender({ src }: { src: string }): JSX.Element {
   const innerHtml = api.markdown(src);
   return (
-    <span
+    <p
       // eslint-disable-next-line react/no-danger
       dangerouslySetInnerHTML={{ __html: innerHtml }}
     />
@@ -178,8 +179,9 @@ function OtamaForm({
   layout: LayoutCard;
   word: WordCard;
 }): JSX.Element {
+  const parameter = useSelector<State, ThemeParameter>(state => state.theme);
   return (
-    <Typography variant="h2">
+    <h2 className={parameter.style.h2}>
       <OtamaRecursion
         contents={contents}
         editable={editable}
@@ -187,7 +189,7 @@ function OtamaForm({
         layout={layout}
         word={word}
       />
-    </Typography>
+    </h2>
   );
 }
 
@@ -204,8 +206,9 @@ function OtamaTitle({
   layout: LayoutCard;
   word: WordCard;
 }): JSX.Element {
+  const parameter = useSelector<State, ThemeParameter>(state => state.theme);
   return (
-    <Typography variant="h3">
+    <h3 className={parameter.style.h3}>
       <OtamaRecursion
         contents={contents}
         editable={editable}
@@ -213,7 +216,7 @@ function OtamaTitle({
         layout={layout}
         word={word}
       />
-    </Typography>
+    </h3>
   );
 }
 
@@ -230,9 +233,9 @@ function OtamaBody1({
   layout: LayoutCard;
   word: WordCard;
 }): JSX.Element {
-  const theme = useTheme();
+  const parameter = useSelector<State, ThemeParameter>(state => state.theme);
   return (
-    <Typography variant="body1" sx={theme.body1}>
+    <span className={parameter.style.lg}>
       <OtamaRecursion
         contents={contents}
         editable={editable}
@@ -240,7 +243,7 @@ function OtamaBody1({
         layout={layout}
         word={word}
       />
-    </Typography>
+    </span>
   );
 }
 
@@ -257,9 +260,9 @@ function OtamaBody2({
   layout: LayoutCard;
   word: WordCard;
 }): JSX.Element {
-  const theme = useTheme();
+  const parameter = useSelector<State, ThemeParameter>(state => state.theme);
   return (
-    <Typography variant="body2" sx={theme.body2}>
+    <span className={parameter.style.base}>
       <OtamaRecursion
         contents={contents}
         editable={editable}
@@ -267,7 +270,7 @@ function OtamaBody2({
         layout={layout}
         word={word}
       />
-    </Typography>
+    </span>
   );
 }
 
@@ -367,7 +370,7 @@ function OtamaString(
       return <></>;
     }
     return (
-      <Box component="span" sx={theme.string}>
+      <span>
         {editable ? (
           <OtamaTextFeild
             value={flattenCard[reference]}
@@ -386,7 +389,7 @@ function OtamaString(
         ) : (
           flattenCard[reference]
         )}
-      </Box>
+      </span>
     );
   }
   api.log.error('reference and text is undifined.');

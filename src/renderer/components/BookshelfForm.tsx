@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import Split from 'react-split';
 
 import { State } from '../states/State';
+import ThemeParameter from '../states/ThemeParameter';
 
 import ActivityBar from './ActivityBar';
 import Editor from './Editor';
@@ -40,41 +41,43 @@ export default function BookshelfForm(): JSX.Element {
   const secondarySidebar = useSelector<State, null | string>(
     (state: State) => state.secondarySidebar,
   );
+  const parameter = useSelector<State, ThemeParameter>(state => state.theme);
 
   return (
     <OtamaThemeProvider>
       <SnackbarProvider maxSnack={3}>
-        <On />
-        <CssBaseline />
-        <ElevationScroll>
-          <OtamaMenuBar />
-        </ElevationScroll>
-        <ActivityBar />
-        <Box component="div" sx={theme.mixins.toolbar} />
-        <Box
-          component="main"
-          sx={{
-            marginLeft: `calc(${theme.spacing(8)} + 1px)`,
-            marginTop: '-16px',
-            height: `calc(100% - 96px)`,
-          }}>
-          <Split
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              height: '100%',
-            }}
-            elementStyle={(_dimension, size, gutterSize, index) => ({
-              width: `calc(${size}% - ${
-                (index === 1 && primarySidebar) ||
-                (index === 2 && secondarySidebar)
-                  ? gutterSize
-                  : 0
-              }px)`,
-            })}
-            gutter={() => {
-              const gutterElement = document.createElement('div');
-              gutterElement.className = `w-[2px]
+        <div className={parameter.style.main} style={{ height: '100%' }}>
+          <On />
+          <CssBaseline />
+          <ElevationScroll>
+            <OtamaMenuBar />
+          </ElevationScroll>
+          <ActivityBar />
+          <Box component="div" sx={theme.mixins.toolbar} />
+          <Box
+            component="main"
+            sx={{
+              marginLeft: `calc(${theme.spacing(8)} + 1px)`,
+              marginTop: '-16px',
+              height: `calc(100% - 96px)`,
+            }}>
+            <Split
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                height: '100%',
+              }}
+              elementStyle={(_dimension, size, gutterSize, index) => ({
+                width: `calc(${size}% - ${
+                  (index === 1 && primarySidebar) ||
+                  (index === 2 && secondarySidebar)
+                    ? gutterSize
+                    : 0
+                }px)`,
+              })}
+              gutter={() => {
+                const gutterElement = document.createElement('div');
+                gutterElement.className = `w-[2px]
                                          mx-[2px]
                                          bg-indigo-500
                                          hover:cursor-col-resize
@@ -85,35 +88,36 @@ export default function BookshelfForm(): JSX.Element {
                                          delay-75
                                          duration-300
                                          ease-in-out`;
-              return gutterElement;
-            }}
-            gutterStyle={(_dimention, _gutterSize, index: number) => ({
-              backgroundColor: theme.palette.divider,
-              cursor: 'col-resize',
-              display:
-                (index === 1 && primarySidebar) ||
-                (index === 2 && secondarySidebar)
-                  ? 'inherit'
-                  : 'none',
-            })}
-            minSize={[
-              primarySidebar ? 100 : 0,
-              100,
-              secondarySidebar ? 100 : 0,
-            ]}
-            sizes={[primarySidebar ? 25 : 0, 100, secondarySidebar ? 25 : 0]}>
-            <div>
-              <PrimarySidebar />
-            </div>
-            <div>
-              <Editor />
-            </div>
-            <div>
-              <SecondarySidebar />
-            </div>
-          </Split>
-        </Box>
-        <StatusBar />
+                return gutterElement;
+              }}
+              gutterStyle={(_dimention, _gutterSize, index: number) => ({
+                backgroundColor: theme.palette.divider,
+                cursor: 'col-resize',
+                display:
+                  (index === 1 && primarySidebar) ||
+                  (index === 2 && secondarySidebar)
+                    ? 'inherit'
+                    : 'none',
+              })}
+              minSize={[
+                primarySidebar ? 100 : 0,
+                100,
+                secondarySidebar ? 100 : 0,
+              ]}
+              sizes={[primarySidebar ? 25 : 0, 100, secondarySidebar ? 25 : 0]}>
+              <div>
+                <PrimarySidebar />
+              </div>
+              <div>
+                <Editor />
+              </div>
+              <div>
+                <SecondarySidebar />
+              </div>
+            </Split>
+          </Box>
+          <StatusBar />
+        </div>
       </SnackbarProvider>
     </OtamaThemeProvider>
   );

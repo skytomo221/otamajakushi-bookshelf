@@ -10,6 +10,10 @@ import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import React from 'react';
+import { useSelector } from 'react-redux';
+
+import { State } from '../states/State';
+import ThemeParameter from '../states/ThemeParameter';
 
 import ControlBox from './ControlBox';
 import FileMenu from './FileMenu';
@@ -58,9 +62,10 @@ function ScrollTop(props: ElevationScrollProps) {
 
 export default function OtamaMenuBar(): JSX.Element {
   const theme = useTheme();
+  const parameter = useSelector<State, ThemeParameter>(state => state.theme);
 
   return (
-    <AppBar position="static" sx={theme.menuBar}>
+    <AppBar position="static" className={parameter.style.menuBar} sx={theme.menuBar}>
       <Toolbar variant="dense">
         <IconButton edge="start" color="inherit" aria-label="open drawer">
           <MenuIcon />
