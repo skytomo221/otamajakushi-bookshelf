@@ -50,6 +50,7 @@
     "@mdi/font": "^5.9.55",
     "@mdi/js": "^5.9.55",
     "@mdi/react": "^1.5.0",
+    "@mui/base": "^5.0.0-alpha.102",
     "@mui/icons-material": "^5.10.3",
     "@mui/material": "^5.10.4",
     "electron-log": "^4.4.8",
