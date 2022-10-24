@@ -10,4 +10,8 @@ export default interface StyleThemeParameters {
   h6: string;
   lg: string;
   base: string;
+  ControlBox?: string;
+  'ControlBox.MinimizeButton'?: string;
+  'ControlBox.MaximizeButton'?: string;
+  'ControlBox.CloseButton'?: string;
 }
