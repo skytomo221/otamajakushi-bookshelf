@@ -10,8 +10,8 @@ const initTheme: ThemeParameter = {
   spacing: 8,
   style: {
     main: '',
-    menuBar: 'bg-red-400',
-    statuBar: '',
+    menuBar: 'bg-blue-500',
+    statuBar: 'bg-slate-300',
     editor: '',
     h2: 'text-5xl',
     h3: 'text-4xl',
