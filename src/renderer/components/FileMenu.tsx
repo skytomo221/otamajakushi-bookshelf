@@ -1,12 +1,6 @@
+import { MenuUnstyledActions } from '@mui/base/MenuUnstyled';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import {
-  Button,
-  Menu,
-  MenuItem,
-  Typography,
-  useTheme,
-  Divider,
-} from '@mui/material';
+import { MenuItem, Typography, useTheme, Divider } from '@mui/material';
 import { NestedMenuItem } from 'mui-nested-menu';
 import { useSnackbar } from 'notistack';
 import React, { useCallback } from 'react';
@@ -24,18 +18,51 @@ import Book from '../states/Book';
 import { State } from '../states/State';
 
 import '../renderer';
-
+import Menu from './Menu';
+import MenuButton from './MenuButton';
 
 const { api } = window;
 
 export default function FileMenu(): JSX.Element {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const buttonRef = React.useRef<HTMLButtonElement>(null);
+  const menuActions = React.useRef<MenuUnstyledActions>(null);
+  const preventReopen = React.useRef(false);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
+    if (preventReopen.current) {
+      event.preventDefault();
+      preventReopen.current = false;
+      return;
+    }
+
+    if (open) {
+      setAnchorEl(null);
+    } else {
+      setAnchorEl(event.currentTarget);
+    }
+  };
+  const handleButtonMouseDown = () => {
+    if (open) {
+      // Prevents the menu from reopening right after closing
+      // when clicking the button.
+      preventReopen.current = true;
+    }
+  };
+  const handleButtonKeyDown = (
+    event: React.KeyboardEvent<HTMLButtonElement>,
+  ) => {
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      setAnchorEl(event.currentTarget);
+      if (event.key === 'ArrowUp') {
+        menuActions.current?.highlightLastItem();
+      }
+    }
   };
   const handleClose = () => {
     setAnchorEl(null);
+    buttonRef.current?.focus();
   };
   const theme = useTheme();
   const dispatch = useDispatch();
@@ -84,19 +111,12 @@ export default function FileMenu(): JSX.Element {
 
   return (
     <div>
-      <Button color="inherit" onClick={handleClick} sx={theme.button}>
+      <MenuButton onClick={handleClick}>
         <Typography variant="button" noWrap>
           ファイル
         </Typography>
-      </Button>
-      <Menu
-        id="file-menu"
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        MenuListProps={{
-          'aria-labelledby': 'file-button',
-        }}>
+      </MenuButton>
+      <Menu id="file-menu" anchorEl={anchorEl} open={open}>
         <MenuItem>辞書の新規作成</MenuItem>
         <NestedMenuItem
           rightIcon={<ChevronRightIcon />}
