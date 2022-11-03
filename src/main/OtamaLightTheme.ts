@@ -23,5 +23,6 @@ export default class OtamaLightTheme extends StyleTheme {
     h6: 'text-xl text-slate-900',
     lg: 'text-lg text-slate-700',
     base: 'text-base text-slate-700',
+    'Menu.root': 'bg-slate-100 text-slate-700 shadow-md m-1 px-2 py-1',
   });
 }
