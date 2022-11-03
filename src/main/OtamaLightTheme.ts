@@ -12,7 +12,7 @@ export default class OtamaLightTheme extends StyleTheme {
   };
 
   readonly style = (): StyleThemeParameters => ({
-    main: '!bg-slate-200 !text-slate-700',
+    main: 'bg-slate-200 text-slate-700',
     menuBar: 'bg-slate-200',
     statuBar: 'bg-slate-300',
     editor: 'bg-slate-50',

@@ -12,7 +12,7 @@ export default class OtamaDarkTheme extends StyleTheme {
   };
 
   readonly style = (): StyleThemeParameters => ({
-    main: '!bg-slate-800 !text-slate-300',
+    main: 'bg-slate-800 text-slate-300',
     menuBar: 'bg-slate-800',
     statuBar: 'bg-slate-700',
     editor: 'bg-slate-900',
