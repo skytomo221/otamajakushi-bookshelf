@@ -14,6 +14,7 @@ import { SummaryWord } from '../renderer/SummaryWord';
 
 import Book from './Book';
 import OtamaDarkTheme from './OtamaDarkTheme';
+import OtamaDefaultTheme from './OtamaDefaultTheme';
 import OtamaLightTheme from './OtamaLightTheme';
 import OtmController from './OtmController';
 import OtmLayoutBuilder from './OtmLayoutBuilder';
@@ -37,6 +38,7 @@ const createWindow = () => {
     extensions: [
       () => new OtmController(),
       () => new OtmLayoutBuilder(),
+      () => new OtamaDefaultTheme(),
       () => new OtamaLightTheme(),
       () => new OtamaDarkTheme(),
     ],
