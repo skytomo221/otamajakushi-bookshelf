@@ -1,7 +1,6 @@
 import { MenuUnstyledActions } from '@mui/base/MenuUnstyled';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { MenuItem, Typography, useTheme, Divider } from '@mui/material';
-import { NestedMenuItem } from 'mui-nested-menu';
 import { useSnackbar } from 'notistack';
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -20,6 +19,7 @@ import { State } from '../states/State';
 import '../renderer';
 import Menu from './Menu';
 import MenuButton from './MenuButton';
+import NestedMenuItem from './NestedMenuItem';
 
 const { api } = window;
 
