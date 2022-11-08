@@ -1,5 +1,6 @@
 import { reducerWithInitialState } from 'typescript-fsa-reducers';
 
+import OtamaDefaultTheme from '../../main/OtamaDefaultTheme';
 import {
   applyStyleThemeAction,
   changeThemeAction,
@@ -8,19 +9,7 @@ import ThemeParameter from '../states/ThemeParameter';
 
 const initTheme: ThemeParameter = {
   spacing: 8,
-  style: {
-    main: '',
-    menuBar: 'bg-blue-500',
-    statuBar: 'bg-slate-300',
-    editor: '',
-    h2: 'text-5xl',
-    h3: 'text-4xl',
-    h4: 'text-3xl',
-    h5: 'text-2xl',
-    h6: 'text-xl',
-    lg: 'text-lg',
-    base: 'text-base',
-  },
+  style: new OtamaDefaultTheme().style(),
 };
 
 const themeReducer = reducerWithInitialState<ThemeParameter>(initTheme)
