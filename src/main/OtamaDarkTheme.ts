@@ -21,6 +21,7 @@ export default class OtamaDarkTheme extends StyleTheme {
     h4: 'text-3xl text-slate-100',
     h5: 'text-2xl text-slate-100',
     h6: 'text-xl text-slate-100',
+    span: '',
     lg: 'text-lg text-slate-300',
     base: 'text-base text-slate-300',
     'Menu.root': 'bg-slate-800 text-slate-300 shadow-md m-1 px-2 py-1',

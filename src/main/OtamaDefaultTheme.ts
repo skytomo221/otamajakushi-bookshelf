@@ -21,6 +21,7 @@ export default class OtamaDefaultTheme extends StyleTheme {
     h4: 'text-3xl',
     h5: 'text-2xl',
     h6: 'text-xl',
+    span: '',
     lg: 'text-lg',
     base: 'text-base',
     'Menu.root': 'bg-slate-100 shadow-md m-1 px-2 py-1',

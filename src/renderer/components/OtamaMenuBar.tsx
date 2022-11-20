@@ -1,9 +1,6 @@
 import MenuIcon from '@mui/icons-material/Menu';
 import { useScrollTrigger, Zoom, useTheme, Box } from '@mui/material';
-import AppBar from '@mui/material/AppBar';
 import IconButton from '@mui/material/IconButton';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
 import React from 'react';
 import { useSelector } from 'react-redux';
 
@@ -56,12 +53,11 @@ function ScrollTop(props: ElevationScrollProps) {
 }
 
 export default function OtamaMenuBar(): JSX.Element {
-  const theme = useTheme();
-  const parameter = useSelector<State, ThemeParameter>(state => state.theme);
+  const theme = useSelector<State, ThemeParameter>(state => state.theme);
 
   return (
     <header
-      className={`${parameter.style.menuBar} flex h-8 [-webkit-app-region:drag]`}>
+      className={`${theme.style.menuBar} flex h-8 [-webkit-app-region:drag]`}>
       <IconButton edge="start" color="inherit" aria-label="open drawer">
         <MenuIcon />
       </IconButton>

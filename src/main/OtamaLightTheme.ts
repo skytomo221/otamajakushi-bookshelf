@@ -21,6 +21,7 @@ export default class OtamaLightTheme extends StyleTheme {
     h4: 'text-3xl text-slate-900',
     h5: 'text-2xl text-slate-900',
     h6: 'text-xl text-slate-900',
+    span: '',
     lg: 'text-lg text-slate-700',
     base: 'text-base text-slate-700',
     'Menu.root': 'bg-slate-100 text-slate-700 shadow-md m-1 px-2 py-1',
