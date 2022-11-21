@@ -30,6 +30,7 @@ function MarkdownFeild({
   value: string;
   onChange: (value: string) => void;
 }) {
+  const theme = useSelector<State, ThemeParameter>(state => state.theme);
   const [text, setText] = useState(value);
   const [edit, setEdit] = useState(false);
   return (
@@ -48,6 +49,7 @@ function MarkdownFeild({
       )}
       <button
         type="submit"
+        className={theme.style.button}
         onClick={() => {
           if (edit) {
             onChange(text);

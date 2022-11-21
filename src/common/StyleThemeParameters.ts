@@ -3,6 +3,8 @@ export default interface StyleThemeParameters {
   menuBar?: string;
   statuBar?: string;
   editor?: string;
+  button?: string;
+  div?: string;
   h2?: string;
   h3?: string;
   h4?: string;

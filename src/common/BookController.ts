@@ -11,6 +11,8 @@ export default abstract class BookController extends Extension {
 
   abstract readWords(): WordCard[];
 
+  abstract onClick(script: string, id: number): WordCard;
+
   abstract load(path: string): Promise<BookController>;
 
   abstract save(path: string): Promise<BookController>;

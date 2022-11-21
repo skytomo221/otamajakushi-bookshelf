@@ -18,3 +18,7 @@ export const fetchSelectedWordAction = actionCreator<SummaryWord>(
 );
 export const pushSelectedWordAction =
   actionCreator<Mediator>('selected-word/push');
+export const onClickAction = actionCreator<{
+  summary: SummaryWord;
+  onClick: string;
+}>('selected-word/on-click');

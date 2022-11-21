@@ -201,19 +201,32 @@ const createWindow = () => {
     },
   );
 
+  ipcMain.handle(
+    'book-controller:word:on-click',
+    async (_, summary: SummaryWord, onClick: string): Promise<Mediator> => {
+      const book = state.bookshelf.books.find(b => b.path === summary.bookPath);
+      if (book) {
+        const newWord = book.bookController.onClick(onClick, Number(summary.id));
+        const layout = new OtmLayoutBuilder().layout(newWord);
+        return { summary, word: newWord, layout };
+      }
+      throw new Error(`Invalid word: ${summary} ${onClick}`);
+    },
+  );
 
-  ipcMain.handle('style-theme:apply', async (_, id: string): Promise<StyleThemeParameters> => {
-    const styleTheme = state.extensions
-      .filter(
-        (ext): ext is () => StyleTheme => ext() instanceof StyleTheme,
-      )
-      .find(ext => ext().properties.id === id);
-    if (!styleTheme) {
-      mainWindow.webContents.send('log:error', `Extension ${id} not found.`);
-      throw new Error(`Extension ${id} not found.`);
-    }
-    return styleTheme().style();
-  });
+  ipcMain.handle(
+    'style-theme:apply',
+    async (_, id: string): Promise<StyleThemeParameters> => {
+      const styleTheme = state.extensions
+        .filter((ext): ext is () => StyleTheme => ext() instanceof StyleTheme)
+        .find(ext => ext().properties.id === id);
+      if (!styleTheme) {
+        mainWindow.webContents.send('log:error', `Extension ${id} not found.`);
+        throw new Error(`Extension ${id} not found.`);
+      }
+      return styleTheme().style();
+    },
+  );
 
   ipcMain.on('markdown', (event: Electron.IpcMainEvent, text: string) => {
     // eslint-disable-next-line no-param-reassign

@@ -23,6 +23,7 @@ export interface Api {
   readWords: (path: string) => Promise<SummaryWord[]>;
   readWord: (word: SummaryWord) => Promise<Mediator>;
   updateWord: (summary: SummaryWord, word: WordCard) => Promise<Mediator>;
+  onClick: (summary: SummaryWord, onClick: string) => Promise<Mediator>;
   applyStyleTheme: (id: string) => Promise<StyleThemeParameters>;
   markdown: (text: string) => string,
   onExtensions: (

@@ -5,6 +5,8 @@ const defaultThemeParameters: Required<StyleThemeParameters> = {
   menuBar: 'bg-slate-200',
   statuBar: 'bg-slate-300',
   editor: 'bg-slate-50',
+  button: 'text-sm text-blue-500',
+  div: '',
   h2: 'text-5xl text-slate-900',
   h3: 'text-4xl text-slate-900',
   h4: 'text-3xl text-slate-900',

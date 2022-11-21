@@ -6,6 +6,7 @@ import {
   LayoutComponent,
   Recursion,
   Plain,
+  Div,
 } from '../common/LayoutCard';
 import { WordCard, Content, Translation } from '../common/WordCard';
 
@@ -19,7 +20,7 @@ export default class OtmLayoutBuilder extends LayoutBuilder {
   };
 
   public readonly layout = (word: WordCard): LayoutCard => {
-    const contents = (word.contents ?? []).map(
+    const rawContents = (word.contents ?? []).map(
       (content: Content, index: number): Recursion => ({
         component: 'recursion',
         contents: [
@@ -48,6 +49,24 @@ export default class OtmLayoutBuilder extends LayoutBuilder {
         ],
       }),
     );
+    const contents: (Recursion | Div)[] = [
+      ...rawContents,
+      {
+        component: 'div',
+        contents: [
+          {
+            component: 'button',
+            onClick: 'contents/add',
+            contents: [
+              {
+                component: 'text/plain',
+                text: '新しくコンテンツを追加する',
+              },
+            ],
+          },
+        ],
+      },
+    ];
     const translations = (word.translations ?? []).map(
       (translation: Translation, index: number): Recursion => ({
         component: 'recursion',

@@ -5,7 +5,9 @@ import { LayoutComponent, LayoutCard } from '../../../common/LayoutCard';
 import { WordCard } from '../../../common/WordCard';
 import { SummaryWord } from '../../SummaryWord';
 
+import Button from './Button';
 import Chip from './Chip';
+import Div from './Div';
 import H2 from './H2';
 import H3 from './H3';
 import H4 from './H4';
@@ -44,12 +46,35 @@ export default function Recursion({
                 word={word}
               />
             );
+          case 'button':
+            return (
+              <Button
+                className={child.class}
+                onClick={child.onClick}
+                contents={child.contents}
+                editable={editable}
+                summary={summary}
+                layout={layout}
+                word={word}
+              />
+            );
           case 'chip':
             return (
               <Chip
                 className={child.class}
                 keyword={child.key}
                 value={child.value}
+                editable={editable}
+                summary={summary}
+                layout={layout}
+                word={word}
+              />
+            );
+          case 'div':
+            return (
+              <Div
+                className={child.class}
+                contents={child.contents}
                 editable={editable}
                 summary={summary}
                 layout={layout}

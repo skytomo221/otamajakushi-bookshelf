@@ -4,6 +4,7 @@ export interface LayoutCard {
 }
 
 export type LayoutComponent =
+  | Button
   | Div
   | Divider
   | H2
@@ -22,6 +23,12 @@ export interface LayoutBaseComponent {
   class?: string;
   option?: LayoutOption;
 }
+
+export type Button = LayoutBaseComponent & {
+  component: 'button';
+  onClick: string;
+  contents: LayoutComponent[];
+};
 
 export type Div = LayoutBaseComponent & {
   component: 'div';
