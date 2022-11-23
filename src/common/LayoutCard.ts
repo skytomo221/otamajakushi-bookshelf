@@ -13,6 +13,7 @@ export type LayoutComponent =
   | H5
   | H6
   | Span
+  | Array
   | Chip
   | Recursion
   | Plain
@@ -67,6 +68,12 @@ export type H6 = LayoutBaseComponent & {
 export type Span = LayoutBaseComponent & {
   component: 'span';
   contents: LayoutComponent[];
+};
+
+export type Array = LayoutBaseComponent & {
+  component: 'array';
+  baseReference: string;
+  content: LayoutComponent;
 };
 
 export type Chip = LayoutBaseComponent & {

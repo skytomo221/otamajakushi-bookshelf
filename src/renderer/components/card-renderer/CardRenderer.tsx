@@ -20,6 +20,7 @@ export default function CardRenderer({
   );
   return (
     <Recursion
+      baseReference=""
       layout={layout}
       summary={summary}
       word={word}

@@ -5,6 +5,7 @@ import { LayoutComponent, LayoutCard } from '../../../common/LayoutCard';
 import { WordCard } from '../../../common/WordCard';
 import { SummaryWord } from '../../SummaryWord';
 
+import Array from './Array';
 import Button from './Button';
 import Chip from './Chip';
 import Div from './Div';
@@ -18,6 +19,7 @@ import Plain from './Plain';
 import Span from './Span';
 
 interface Props {
+  baseReference: string;
   contents: LayoutComponent[];
   editable: boolean;
   summary: SummaryWord;
@@ -26,6 +28,7 @@ interface Props {
 }
 
 export default function Recursion({
+  baseReference,
   contents,
   editable,
   summary,
@@ -39,7 +42,19 @@ export default function Recursion({
           case 'recursion':
             return (
               <Recursion
+                baseReference={baseReference}
                 contents={child.contents}
+                editable={editable}
+                summary={summary}
+                layout={layout}
+                word={word}
+              />
+            );
+          case 'array':
+            return (
+              <Array
+                baseReference={child.baseReference}
+                content={child.content}
                 editable={editable}
                 summary={summary}
                 layout={layout}
@@ -49,6 +64,7 @@ export default function Recursion({
           case 'button':
             return (
               <Button
+                baseReference={baseReference}
                 className={child.class}
                 onClick={child.onClick}
                 contents={child.contents}
@@ -61,6 +77,7 @@ export default function Recursion({
           case 'chip':
             return (
               <Chip
+                baseReference={baseReference}
                 className={child.class}
                 keyword={child.key}
                 value={child.value}
@@ -73,6 +90,7 @@ export default function Recursion({
           case 'div':
             return (
               <Div
+                baseReference={baseReference}
                 className={child.class}
                 contents={child.contents}
                 editable={editable}
@@ -84,6 +102,7 @@ export default function Recursion({
           case 'h2':
             return (
               <H2
+                baseReference={baseReference}
                 className={child.class}
                 contents={child.contents}
                 editable={editable}
@@ -95,6 +114,7 @@ export default function Recursion({
           case 'h3':
             return (
               <H3
+                baseReference={baseReference}
                 className={child.class}
                 contents={child.contents}
                 editable={editable}
@@ -106,6 +126,7 @@ export default function Recursion({
           case 'h4':
             return (
               <H4
+                baseReference={baseReference}
                 className={child.class}
                 contents={child.contents}
                 editable={editable}
@@ -117,6 +138,7 @@ export default function Recursion({
           case 'h5':
             return (
               <H5
+                baseReference={baseReference}
                 className={child.class}
                 contents={child.contents}
                 editable={editable}
@@ -128,6 +150,7 @@ export default function Recursion({
           case 'h6':
             return (
               <H6
+                baseReference={baseReference}
                 className={child.class}
                 contents={child.contents}
                 editable={editable}
@@ -139,6 +162,7 @@ export default function Recursion({
           case 'span':
             return (
               <Span
+                baseReference={baseReference}
                 className={child.class}
                 contents={child.contents}
                 editable={editable}
@@ -152,7 +176,11 @@ export default function Recursion({
               <Plain text={child.text} editable={editable} layout={layout} />
             ) : (
               <Plain
-                reference={child.reference}
+                reference={
+                  child.reference.startsWith('.')
+                    ? baseReference + child.reference
+                    : child.reference
+                }
                 editable={editable}
                 summary={summary}
                 layout={layout}
@@ -164,7 +192,11 @@ export default function Recursion({
               <Markdown text={child.text} editable={editable} layout={layout} />
             ) : (
               <Markdown
-                reference={child.reference}
+                reference={
+                  child.reference.startsWith('.')
+                    ? baseReference + child.reference
+                    : child.reference
+                }
                 editable={editable}
                 summary={summary}
                 layout={layout}

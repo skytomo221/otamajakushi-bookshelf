@@ -1,3 +1,4 @@
+import flatten from 'flat';
 import React from 'react';
 import { useSelector } from 'react-redux';
 
@@ -9,41 +10,51 @@ import ThemeParameter from '../../states/ThemeParameter';
 
 // eslint-disable-next-line import/no-cycle
 import Recursion from './Recursion';
-import styleJoin from './styleJoin';
 
 interface Props {
   baseReference: string;
   className?: string;
-  contents: LayoutComponent[];
+  content: LayoutComponent;
   editable: boolean;
   summary: SummaryWord;
   layout: LayoutCard;
   word: WordCard;
 }
 
-export default function H4({
+export default function ArrayElement({
   baseReference,
   className,
-  contents,
+  content,
   editable,
   summary,
   layout,
   word,
 }: Props): JSX.Element {
   const theme = useSelector<State, ThemeParameter>(state => state.theme);
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  const keys = Object.keys(flatten(word) as object);
+  const length = new Set(
+    keys
+      .map(k => k.match(`^${baseReference}.\\d+`))
+      .filter((k): k is NonNullable<typeof k> => k != null)
+      .map(k => k[0]),
+  ).size;
   return (
-    <h4 className={styleJoin(theme.style.h4, className)}>
-      <Recursion
-        baseReference={baseReference}
-        contents={contents}
-        editable={editable}
-        summary={summary}
-        layout={layout}
-        word={word}
-      />
-    </h4>
+    <>
+      {[...Array(length).keys()].map(i => (
+        <Recursion
+          key={i}
+          baseReference={`${baseReference}.${i}`}
+          contents={[content]}
+          editable={editable}
+          summary={summary}
+          layout={layout}
+          word={word}
+        />
+      ))}
+    </>
   );
 }
-H4.defaultProps = {
+ArrayElement.defaultProps = {
   className: '',
 };

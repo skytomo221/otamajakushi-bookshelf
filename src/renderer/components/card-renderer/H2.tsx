@@ -12,6 +12,7 @@ import Recursion from './Recursion';
 import styleJoin from './styleJoin';
 
 interface Props {
+  baseReference: string;
   className?: string;
   contents: LayoutComponent[];
   editable: boolean;
@@ -21,6 +22,7 @@ interface Props {
 }
 
 export default function H2({
+  baseReference,
   className,
   contents,
   editable,
@@ -32,6 +34,7 @@ export default function H2({
   return (
     <h2 className={styleJoin(theme.style.h2, className)}>
       <Recursion
+        baseReference={baseReference}
         contents={contents}
         editable={editable}
         summary={summary}

@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { LayoutComponent, LayoutCard } from '../../../common/LayoutCard';
 import { WordCard } from '../../../common/WordCard';
-import { Mediator } from '../../Mediator';
 import { SummaryWord } from '../../SummaryWord';
 import { onClickAction } from '../../actions/SelectedWordsActions';
 import { State } from '../../states/State';
@@ -14,6 +13,7 @@ import Recursion from './Recursion';
 import styleJoin from './styleJoin';
 
 interface Props {
+  baseReference: string;
   className?: string;
   contents: LayoutComponent[];
   onClick: string;
@@ -24,6 +24,7 @@ interface Props {
 }
 
 export default function Button({
+  baseReference,
   className,
   contents,
   onClick: script,
@@ -46,6 +47,7 @@ export default function Button({
       }}
       type="submit">
       <Recursion
+        baseReference={baseReference}
         contents={contents}
         editable={editable}
         summary={summary}

@@ -12,6 +12,7 @@ import TextPlain from './Plain';
 import styleJoin from './styleJoin';
 
 interface Props {
+  baseReference: string;
   className?: string;
   keyword: Plain;
   value: Plain | undefined;
@@ -22,6 +23,7 @@ interface Props {
 }
 
 export default function Chip({
+  baseReference,
   className,
   keyword,
   value,
@@ -38,7 +40,11 @@ export default function Chip({
           <TextPlain text={keyword.text} editable={editable} layout={layout} />
         ) : (
           <TextPlain
-            reference={keyword.reference}
+            reference={
+              keyword.reference.startsWith('.')
+                ? baseReference + keyword.reference
+                : keyword.reference
+            }
             editable={editable}
             summary={summary}
             layout={layout}
@@ -52,7 +58,11 @@ export default function Chip({
             <TextPlain text={value.text} editable={editable} layout={layout} />
           ) : (
             <TextPlain
-              reference={value.reference}
+              reference={
+                value.reference.startsWith('.')
+                  ? baseReference + value.reference
+                  : value.reference
+              }
               editable={editable}
               summary={summary}
               layout={layout}
