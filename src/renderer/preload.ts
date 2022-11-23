@@ -4,10 +4,11 @@ import log from 'electron-log';
 
 import { ExtensionProperties } from '../common/ExtensionProperties';
 import { LayoutCard } from '../common/LayoutCard';
+import StyleThemeParameters from '../common/StyleThemeParameters';
 import { WordCard } from '../common/WordCard';
+import { Mediator } from './Mediator';
 
 import { SummaryWord } from './SummaryWord';
-
 
 contextBridge.exposeInMainWorld('api', {
   windowMinimize: () => ipcRenderer.invoke('window-minimize'),
@@ -22,6 +23,10 @@ contextBridge.exposeInMainWorld('api', {
     ipcRenderer.invoke('book-controller:word:read', word),
   updateWord: (summary: SummaryWord, word: WordCard): Promise<LayoutCard> =>
     ipcRenderer.invoke('book-controller:word:update', summary, word),
+  onClick: (summary: SummaryWord, onClick: string): Promise<Mediator> =>
+    ipcRenderer.invoke('book-controller:word:on-click', summary, onClick),
+  applyStyleTheme: (id: string): Promise<StyleThemeParameters> =>
+    ipcRenderer.invoke('style-theme:apply', id),
   markdown: (text: string) => ipcRenderer.sendSync('markdown', text),
   onExtensions: (
     channel: 'extensions:send',

@@ -125,7 +125,7 @@ export default function PrimarySidebar(): JSX.Element {
 
   if (open) {
     return books.some(book => book.path === primarySidebar) ? (
-      <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <div className="flex flex-col h-full">
         <Box sx={{ display: 'flex' }}>
           <TextField
             value={search}
@@ -147,14 +147,16 @@ export default function PrimarySidebar(): JSX.Element {
             }}
           />
         </Box>
-        <List sx={{ height: '100%', overflow: 'auto' }}>
-          <BookListItem
-            book={books.find(book => book.path === primarySidebar) as Book}
-            search={search}
-            mode={modes[searchMode]}
-          />
-        </List>
-      </Box>
+        <div className="grow overflow-auto">
+          <List>
+            <BookListItem
+              book={books.find(book => book.path === primarySidebar) as Book}
+              search={search}
+              mode={modes[searchMode]}
+            />
+          </List>
+        </div>
+      </div>
     ) : (
       <></>
     );

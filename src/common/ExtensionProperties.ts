@@ -6,7 +6,8 @@ export interface FileFilter {
 
 export type ExtensionProperties =
   | BookControllerProperties
-  | LayoutBuilderProperties;
+  | LayoutBuilderProperties
+  | StyleThemeProperties;
 
 export interface BookControllerProperties {
   name: string;
@@ -24,4 +25,12 @@ export interface LayoutBuilderProperties {
   version: string;
   author: string;
   type: 'layout-builder';
+}
+
+export interface StyleThemeProperties {
+  name: string;
+  id: string;
+  version: string;
+  author: string;
+  type: 'style-theme';
 }

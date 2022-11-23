@@ -1,15 +1,11 @@
 import MenuIcon from '@mui/icons-material/Menu';
-import {
-  useScrollTrigger,
-  Zoom,
-  useTheme,
-  Box,
-} from '@mui/material';
-import AppBar from '@mui/material/AppBar';
+import { useScrollTrigger, Zoom, useTheme, Box } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
 import React from 'react';
+import { useSelector } from 'react-redux';
+
+import { State } from '../states/State';
+import ThemeParameter from '../states/ThemeParameter';
 
 import ControlBox from './ControlBox';
 import FileMenu from './FileMenu';
@@ -57,22 +53,19 @@ function ScrollTop(props: ElevationScrollProps) {
 }
 
 export default function OtamaMenuBar(): JSX.Element {
-  const theme = useTheme();
+  const theme = useSelector<State, ThemeParameter>(state => state.theme);
 
   return (
-    <AppBar position="static" sx={theme.menuBar}>
-      <Toolbar variant="dense">
-        <IconButton edge="start" color="inherit" aria-label="open drawer">
-          <MenuIcon />
-        </IconButton>
-        <FileMenu />
-        <Box component="div" sx={theme.grow} />
-        <Typography variant="body1" noWrap>
-          Otamajakushi Bookshelf
-        </Typography>
-        <Box component="div" sx={theme.grow} />
-        <ControlBox />
-      </Toolbar>
-    </AppBar>
+    <header
+      className={`${theme.style.menuBar} flex h-8 [-webkit-app-region:drag]`}>
+      <IconButton edge="start" color="inherit" aria-label="open drawer">
+        <MenuIcon />
+      </IconButton>
+      <FileMenu />
+      <div className="grow" />
+      <h1 className="p-1.5 text-sm">Otamajakushi Bookshelf</h1>
+      <div className="grow" />
+      <ControlBox />
+    </header>
   );
 }

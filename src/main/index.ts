@@ -6,11 +6,16 @@ import log from 'electron-log';
 import MarkdownIt from 'markdown-it';
 
 import BookController from '../common/BookController';
+import StyleTheme from '../common/StyleTheme';
+import StyleThemeParameters from '../common/StyleThemeParameters';
 import { WordCard } from '../common/WordCard';
 import { Mediator } from '../renderer/Mediator';
 import { SummaryWord } from '../renderer/SummaryWord';
 
 import Book from './Book';
+import OtamaDarkTheme from './OtamaDarkTheme';
+import OtamaDefaultTheme from './OtamaDefaultTheme';
+import OtamaLightTheme from './OtamaLightTheme';
 import OtmController from './OtmController';
 import OtmLayoutBuilder from './OtmLayoutBuilder';
 import { State } from './State';
@@ -30,7 +35,13 @@ const createWindow = () => {
     bookshelf: {
       books: [],
     },
-    extensions: [() => new OtmController(), () => new OtmLayoutBuilder()],
+    extensions: [
+      () => new OtmController(),
+      () => new OtmLayoutBuilder(),
+      () => new OtamaDefaultTheme(),
+      () => new OtamaLightTheme(),
+      () => new OtamaDarkTheme(),
+    ],
   };
   const md = new MarkdownIt();
 
@@ -187,6 +198,33 @@ const createWindow = () => {
         return { summary, word: newWord, layout };
       }
       throw new Error(`Invalid word: ${summary} ${word}`);
+    },
+  );
+
+  ipcMain.handle(
+    'book-controller:word:on-click',
+    async (_, summary: SummaryWord, onClick: string): Promise<Mediator> => {
+      const book = state.bookshelf.books.find(b => b.path === summary.bookPath);
+      if (book) {
+        const newWord = book.bookController.onClick(onClick, Number(summary.id));
+        const layout = new OtmLayoutBuilder().layout(newWord);
+        return { summary, word: newWord, layout };
+      }
+      throw new Error(`Invalid word: ${summary} ${onClick}`);
+    },
+  );
+
+  ipcMain.handle(
+    'style-theme:apply',
+    async (_, id: string): Promise<StyleThemeParameters> => {
+      const styleTheme = state.extensions
+        .filter((ext): ext is () => StyleTheme => ext() instanceof StyleTheme)
+        .find(ext => ext().properties.id === id);
+      if (!styleTheme) {
+        mainWindow.webContents.send('log:error', `Extension ${id} not found.`);
+        throw new Error(`Extension ${id} not found.`);
+      }
+      return styleTheme().style();
     },
   );
 

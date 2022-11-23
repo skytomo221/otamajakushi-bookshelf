@@ -11,7 +11,7 @@ import { Mediator } from '../Mediator';
 import { removeSelectedWordAction } from '../actions/SelectedWordsActions';
 import { State } from '../states/State';
 
-import CardRenderer from './CardRenderer';
+import CardRenderer from './card-renderer/CardRenderer';
 
 const { api } = window;
 

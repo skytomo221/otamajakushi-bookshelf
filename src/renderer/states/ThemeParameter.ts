@@ -1,4 +1,6 @@
+import StyleThemeParameters from "../../common/StyleThemeParameters";
+
 export default interface ThemeParameter {
-  [name: string]: number | string;
   spacing: number;
+  style: Required<StyleThemeParameters>;
 }

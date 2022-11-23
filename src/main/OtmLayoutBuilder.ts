@@ -2,13 +2,12 @@ import { LayoutBuilderProperties } from '../common/ExtensionProperties';
 import LayoutBuilder from '../common/LayoutBuilder';
 import {
   LayoutCard,
-  LayoutChip,
+  Chip,
   LayoutComponent,
-  LayoutRecursion,
-  LayoutString,
+  Recursion,
+  Plain,
 } from '../common/LayoutCard';
-import { WordCard, Content, Translation } from '../common/WordCard';
-
+import { WordCard, Translation } from '../common/WordCard';
 
 export default class OtmLayoutBuilder extends LayoutBuilder {
   public properties: LayoutBuilderProperties = {
@@ -20,46 +19,69 @@ export default class OtmLayoutBuilder extends LayoutBuilder {
   };
 
   public readonly layout = (word: WordCard): LayoutCard => {
-    const contents = (word.contents ?? []).map(
-      (content: Content, index: number): LayoutRecursion => ({
+    const rawContents = {
+      baseReference: 'contents',
+      component: 'draggable-array',
+      content: {
         component: 'recursion',
         contents: [
           {
-            component: 'title',
+            component: 'h3',
             contents: [
               {
-                component: 'string',
-                text: content.title,
+                component: 'text/plain',
+                reference: `.title`,
               } as LayoutComponent,
             ],
           },
           {
-            component: 'body2',
+            component: 'span',
+            class: 'text-base',
             contents: [
               {
-                component:
-                  content.type === 'text/markdown' ? 'text/markdown' : 'string',
-                reference: `contents.${index}.description`,
+                component: 'text/markdown',
+                reference: `.description`,
               } as LayoutComponent,
             ],
           },
         ],
-      }),
-    );
+      },
+    } as LayoutComponent;
+    const contents: LayoutComponent[] = [
+      rawContents,
+      {
+        component: 'div',
+        contents: [
+          {
+            component: 'button',
+            onClick: 'contents/add',
+            contents: [
+              {
+                component: 'text/plain',
+                text: '新しくコンテンツを追加する',
+              },
+            ],
+          },
+        ],
+      },
+    ];
     const translations = (word.translations ?? []).map(
-      (translation: Translation, index: number): LayoutRecursion => ({
+      (translation: Translation, index: number): Recursion => ({
         component: 'recursion',
         contents: [
           {
-            component: 'body1',
+            component: 'span',
             contents: [
               {
                 component: 'chip',
-                label: translation.partOfSpeech.join(', '),
+                key: {
+                  component: 'text/plain',
+                  text: translation.partOfSpeech.join(', '),
+                },
               },
               ...translation.translatedWord.map(
-                (_, twIndex): LayoutString => ({
-                  component: 'string',
+                (_, twIndex): Plain => ({
+                  component: 'text/plain',
                   reference: `translations.${index}.translatedWord.${twIndex}`,
                 }),
               ),
@@ -73,16 +95,16 @@ export default class OtmLayoutBuilder extends LayoutBuilder {
         component: 'recursion',
         contents: [
           {
-            component: 'form',
+            component: 'h2',
             contents: [
               {
-                component: 'string',
+                component: 'text/plain',
                 reference: 'form',
               },
               ...(word.tags ?? []).map(
-                (tag): LayoutChip => ({
+                (tag): Chip => ({
                   component: 'chip',
-                  label: tag.name,
+                  key: { component: 'text/plain', text: tag.name },
                 }),
               ),
             ],

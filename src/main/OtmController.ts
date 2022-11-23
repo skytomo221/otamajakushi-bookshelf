@@ -90,6 +90,33 @@ export default class OtmController extends BookController {
     return parseInt(word.id, 10);
   }
 
+  public onClick(script: string, id: number): WordCard {
+    if (this.otm === undefined) {
+      throw new Error('otm is undefined');
+    }
+    if (script === 'contents/add') {
+      this.otm.updateWord({
+        filter: w => w.entry.id === id,
+        map: w => ({
+          ...w,
+          contents: [
+            ...w.contents,
+            {
+              title: 'New Content',
+              markdown: 'No description',
+              text: '',
+            },
+          ],
+        }),
+      });
+    }
+    const word = this.otm.toPlain().words.find(w => w.entry.id === id);
+    if (!word) {
+      throw new Error('card not found');
+    }
+    return OtmController.toWordCard(word);
+  }
+
   public async load(path: string): Promise<BookController> {
     const loader = new OtmLoader(path);
     return loader

@@ -11,18 +11,11 @@ import {
   List,
   useTheme,
 } from '@mui/material';
-import { useSnackbar } from 'notistack';
 import React from 'react';
-import { useDispatch } from 'react-redux';
 
-import { addBookAction } from '../actions/BookshelfActions';
-
-const { api } = window;
 
 export default function Hero(): JSX.Element {
   const theme = useTheme();
-  const dispatch = useDispatch();
-  const { enqueueSnackbar } = useSnackbar();
 
   return (
     <Container

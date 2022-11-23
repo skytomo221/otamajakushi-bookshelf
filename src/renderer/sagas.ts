@@ -5,6 +5,7 @@ import { Action } from 'typescript-fsa';
 import {
   addSelectedWordAction,
   fetchSelectedWordAction,
+  onClickAction,
   pushSelectedWordAction,
   updateSelectedWordAction,
 } from './actions/SelectedWordsActions';
@@ -33,7 +34,11 @@ export function* updateSelectedWordAsnyc(
 ): SagaIterator {
   const mediator = action.payload;
   api.log.info('updateSelectedWordAsnyc', mediator);
-  const newMediator = yield* call(api.updateWord, mediator.summary, mediator.word);
+  const newMediator = yield* call(
+    api.updateWord,
+    mediator.summary,
+    mediator.word,
+  );
   api.log.info('newMediator', newMediator);
   yield* put(updateSelectedWordAction(newMediator));
 }
@@ -42,7 +47,21 @@ export function* pushWordAsync(): SagaIterator {
   yield* takeLeading(pushSelectedWordAction, updateSelectedWordAsnyc);
 }
 
+export function* onClickChildAsync(
+  action: Action<PayloadOf<typeof onClickAction>>,
+): SagaIterator {
+  const { summary, onClick } = action.payload;
+  api.log.info('onClickAsync', action.payload);
+  const newMediator = yield* call(api.onClick, summary, onClick);
+  api.log.info('newMediator', newMediator);
+  yield* put(updateSelectedWordAction(newMediator));
+}
+
+export function* onClickAsync(): SagaIterator {
+  yield* takeLeading(onClickAction, onClickChildAsync);
+}
+
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export default function* rootSaga() {
-  yield* all([fetchWordAsync(), pushWordAsync()]);
+  yield* all([fetchWordAsync(), pushWordAsync(), onClickAsync()]);
 }
