@@ -15,6 +15,7 @@ export type LayoutComponent =
   | Span
   | Array
   | Chip
+  | DraggableArray
   | Recursion
   | Plain
   | Markdown;
@@ -80,6 +81,12 @@ export type Chip = LayoutBaseComponent & {
   component: 'chip';
   key: Plain;
   value?: Plain;
+};
+
+export type DraggableArray = LayoutBaseComponent & {
+  component: 'draggable-array';
+  baseReference: string;
+  content: LayoutComponent;
 };
 
 export type Recursion = LayoutBaseComponent & {

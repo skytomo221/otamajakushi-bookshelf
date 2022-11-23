@@ -178,8 +178,8 @@ const NestedMenuItem = React.forwardRef<
       <MenuUnstyled
         anchorEl={menuItemRef.current}
         open={open}
-        components={{ Root: Popper, Listbox: 'ul' }}
-        componentsProps={{
+        slots={{ root: Popper, listbox: 'ul' }}
+        slotProps={{
           listbox: { className: theme.style['Menu.listbox'] ?? defaultListbox },
           root: { className: theme.style['Menu.root'] ?? defaultRoot },
         }}

@@ -13,9 +13,14 @@ export default interface StyleThemeParameters {
   span?: string;
   lg?: string;
   base?: string;
+  Array?: string;
   Chip?: string;
   'Chip.Key'?: string;
   'Chip.Value'?: string;
+  'DraggableArray.Draggable'?: string;
+  'DraggableArray.Draggable.Dragging'?: string;
+  'DraggableArray.Droppable'?: string;
+  'DraggableArray.Droppable.DraggingOver'?: string;
   ControlBox?: string;
   'ControlBox.MinimizeButton'?: string;
   'ControlBox.MaximizeButton'?: string;

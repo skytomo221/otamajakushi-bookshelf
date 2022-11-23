@@ -6,9 +6,8 @@ import {
   LayoutComponent,
   Recursion,
   Plain,
-  Div,
 } from '../common/LayoutCard';
-import { WordCard, Content, Translation } from '../common/WordCard';
+import { WordCard, Translation } from '../common/WordCard';
 
 export default class OtmLayoutBuilder extends LayoutBuilder {
   public properties: LayoutBuilderProperties = {
@@ -20,8 +19,10 @@ export default class OtmLayoutBuilder extends LayoutBuilder {
   };
 
   public readonly layout = (word: WordCard): LayoutCard => {
-    const rawContents = (word.contents ?? []).map(
-      (content: Content, index: number): Recursion => ({
+    const rawContents = {
+      baseReference: 'contents',
+      component: 'draggable-array',
+      content: {
         component: 'recursion',
         contents: [
           {
@@ -29,7 +30,7 @@ export default class OtmLayoutBuilder extends LayoutBuilder {
             contents: [
               {
                 component: 'text/plain',
-                text: content.title,
+                reference: `.title`,
               } as LayoutComponent,
             ],
           },
@@ -38,19 +39,16 @@ export default class OtmLayoutBuilder extends LayoutBuilder {
             class: 'text-base',
             contents: [
               {
-                component:
-                  content.type === 'text/markdown'
-                    ? 'text/markdown'
-                    : 'text/plain',
-                reference: `contents.${index}.description`,
+                component: 'text/markdown',
+                reference: `.description`,
               } as LayoutComponent,
             ],
           },
         ],
-      }),
-    );
-    const contents: (Recursion | Div)[] = [
-      ...rawContents,
+      },
+    } as LayoutComponent;
+    const contents: LayoutComponent[] = [
+      rawContents,
       {
         component: 'div',
         contents: [

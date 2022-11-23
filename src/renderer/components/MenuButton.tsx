@@ -7,7 +7,7 @@ const MenuButton = React.forwardRef(
     <ButtonUnstyled
       // eslint-disable-next-line react/jsx-props-no-spreading
       {...props}
-      componentsProps={{
+      slotProps={{
         root: {
           className: `flex [-webkit-app-region:no-drag] p-1.5 text-sm`,
         },

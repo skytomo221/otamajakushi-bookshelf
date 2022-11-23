@@ -9,6 +9,7 @@ import Array from './Array';
 import Button from './Button';
 import Chip from './Chip';
 import Div from './Div';
+import DraggableArray from './DraggableArray';
 import H2 from './H2';
 import H3 from './H3';
 import H4 from './H4';
@@ -81,6 +82,17 @@ export default function Recursion({
                 className={child.class}
                 keyword={child.key}
                 value={child.value}
+                editable={editable}
+                summary={summary}
+                layout={layout}
+                word={word}
+              />
+            );
+          case 'draggable-array':
+            return (
+              <DraggableArray
+                baseReference={child.baseReference}
+                content={child.content}
                 editable={editable}
                 summary={summary}
                 layout={layout}

@@ -17,8 +17,8 @@ const Menu = React.forwardRef(
       <MenuUnstyled
         // eslint-disable-next-line react/jsx-props-no-spreading
         {...props}
-        components={{ Root: PopperUnstyled, Listbox: 'ul' }}
-        componentsProps={{
+        slots={{ root: PopperUnstyled, listbox: 'ul' }}
+        slotProps={{
           listbox: {
             className: theme.style['Menu.listbox'] ?? defaultListbox,
           },
