@@ -43,7 +43,7 @@ export default function DraggableArray({
   return (
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     <DragDropContext onDragEnd={() => {}}>
-      <Droppable droppableId="droppable">
+      <Droppable droppableId="droppable" isDropDisabled={!editable}>
         {(droppableProvided, droppableSnapshot) => (
           <div
             ref={droppableProvided.innerRef}
@@ -55,7 +55,11 @@ export default function DraggableArray({
             // eslint-disable-next-line react/jsx-props-no-spreading
             {...droppableProvided.droppableProps}>
             {[...Array(length).keys()].map(i => (
-              <Draggable key={i} draggableId={`draggable-${i}`} index={i}>
+              <Draggable
+                key={i}
+                draggableId={`draggable-${i}`}
+                index={i}
+                isDragDisabled={!editable}>
                 {(draggableProvided, draggableSnapshot) => (
                   <div
                     ref={draggableProvided.innerRef}
