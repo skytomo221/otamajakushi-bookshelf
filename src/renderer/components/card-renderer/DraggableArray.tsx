@@ -143,6 +143,7 @@ export default function DraggableArray({
                 )}
               </Draggable>
             ))}
+            {droppableProvided.placeholder}
           </div>
         )}
       </Droppable>
