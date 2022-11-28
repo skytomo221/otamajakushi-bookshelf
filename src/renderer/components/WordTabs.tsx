@@ -1,7 +1,8 @@
+import TabPanelUnstyled from '@mui/base/TabPanelUnstyled';
+import TabsListUnstyled from '@mui/base/TabsListUnstyled';
+import TabsUnstyled from '@mui/base/TabsUnstyled';
 import CloseIcon from '@mui/icons-material/Close';
 import Box from '@mui/material/Box';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
 import Typography from '@mui/material/Typography';
 import * as React from 'react';
 import { useCallback, useState } from 'react';
@@ -10,45 +11,20 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Mediator } from '../Mediator';
 import { removeSelectedWordAction } from '../actions/SelectedWordsActions';
 import { State } from '../states/State';
+import ThemeParameter from '../states/ThemeParameter';
 
+import Tab from './Tab';
+import TabPanel from './TabPanel';
+import Tabs from './Tabs';
+import TabsList from './TabsList';
 import CardRenderer from './card-renderer/CardRenderer';
 
 const { api } = window;
 
-interface TabPanelProps {
-  // eslint-disable-next-line react/require-default-props
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <Box
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      sx={{ height: '100%', overflow: 'auto' }}
-      // eslint-disable-next-line react/jsx-props-no-spreading
-      {...other}>
-      {value === index && (
-        <Box sx={{ p: 3 }}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
-    </Box>
-  );
-}
-
-export default function WordTabs() {
+export default function WordTabs(): JSX.Element {
   const dispatch = useDispatch();
   const [value, setValue] = useState(0);
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
-  };
+  const theme = useSelector<State, ThemeParameter>(state => state.theme);
   const selectedWords = useSelector<State, null | Mediator[]>(
     (state: State) => state.selectedWords,
   );
@@ -64,38 +40,39 @@ export default function WordTabs() {
         flexDirection: 'column',
         height: '100%',
       }}>
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs value={value} onChange={handleChange} sx={{ minHeight: 'auto' }}>
-          {selectedWords?.map(mediator => (
-            <Tab
-              label={mediator.summary.form}
-              sx={{ minHeight: '48px', textTransform: 'none' }}
-              icon={
+      <Tabs defaultValue={0}>
+        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+          <TabsList>
+            {selectedWords?.map((mediator, index) => (
+              <Tab
+                index={index}
+                value={value}
+                key={`${mediator.summary.bookPath}/${mediator.summary.id}`}
+                onClick={() => setValue(index)}>
+                {mediator.summary.form}
                 <CloseIcon
                   fontSize="small"
                   onClick={() => {
                     removeSelectedWord(mediator);
                   }}
                 />
-              }
-              iconPosition="end"
-              key={`${mediator.summary.bookPath}/${mediator.summary.id}`}
+              </Tab>
+            ))}
+          </TabsList>
+        </Box>
+        {(selectedWords ?? []).map((mediator, index) => (
+          <TabPanel
+            index={index}
+            value={value}
+            key={`${mediator.summary.bookPath}/${mediator.summary.id}`}>
+            <CardRenderer
+              word={mediator.word}
+              summary={mediator.summary}
+              layout={mediator.layout}
             />
-          ))}
-        </Tabs>
-      </Box>
-      {(selectedWords ?? []).map((mediator, index) => (
-        <TabPanel
-          value={value}
-          index={index}
-          key={`${mediator.summary.bookPath}/${mediator.summary.id}`}>
-          <CardRenderer
-            word={mediator.word}
-            summary={mediator.summary}
-            layout={mediator.layout}
-          />
-        </TabPanel>
-      ))}
+          </TabPanel>
+        ))}
+      </Tabs>
     </Box>
   );
 }

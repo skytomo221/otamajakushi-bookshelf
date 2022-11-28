@@ -27,4 +27,9 @@ export default interface StyleThemeParameters {
   'ControlBox.CloseButton'?: string;
   'Menu.listbox'?: string;
   'Menu.root'?: string;
+  Tab?: string;
+  'Tab.selected'?: string;
+  Tabs?: string;
+  TabsList?: string;
+  TabPanel?: string;
 }

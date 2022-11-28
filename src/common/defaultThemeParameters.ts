@@ -32,5 +32,10 @@ const defaultThemeParameters: Required<StyleThemeParameters> = {
   'DraggableArray.Droppable.DraggingOver': 'bg-slate-200/30',
   'Menu.root': 'bg-slate-100 text-slate-700 shadow-md m-1 px-2 py-1',
   'Menu.listbox': '',
+  Tab: 'h-8 px-2 hover:bg-slate-400/20',
+  'Tab.selected': 'h-8 px-2 bg-slate-400/20',
+  Tabs: '',
+  TabsList: '',
+  TabPanel: 'h-full overflow-auto p-3',
 };
 export default defaultThemeParameters;
