@@ -10,6 +10,7 @@ export default interface StyleThemeParameters {
   h4?: string;
   h5?: string;
   h6?: string;
+  p?: string;
   span?: string;
   lg?: string;
   base?: string;
