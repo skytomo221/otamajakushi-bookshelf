@@ -10,6 +10,7 @@ export default interface StyleThemeParameters {
   h4?: string;
   h5?: string;
   h6?: string;
+  p?: string;
   span?: string;
   lg?: string;
   base?: string;
@@ -27,4 +28,9 @@ export default interface StyleThemeParameters {
   'ControlBox.CloseButton'?: string;
   'Menu.listbox'?: string;
   'Menu.root'?: string;
+  Tab?: string;
+  'Tab.selected'?: string;
+  Tabs?: string;
+  TabsList?: string;
+  TabPanel?: string;
 }

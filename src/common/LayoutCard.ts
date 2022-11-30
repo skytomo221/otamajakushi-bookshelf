@@ -12,6 +12,7 @@ export type LayoutComponent =
   | H4
   | H5
   | H6
+  | P
   | Span
   | Array
   | Chip
@@ -63,6 +64,11 @@ export type H5 = LayoutBaseComponent & {
 
 export type H6 = LayoutBaseComponent & {
   component: 'h6';
+  contents: LayoutComponent[];
+};
+
+export type P = LayoutBaseComponent & {
+  component: 'p';
   contents: LayoutComponent[];
 };
 

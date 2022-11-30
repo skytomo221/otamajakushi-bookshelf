@@ -4,8 +4,8 @@ import {
   LayoutCard,
   Chip,
   LayoutComponent,
-  Recursion,
   Plain,
+  P,
 } from '../common/LayoutCard';
 import { WordCard, Translation } from '../common/WordCard';
 
@@ -35,8 +35,7 @@ export default class OtmLayoutBuilder extends LayoutBuilder {
             ],
           },
           {
-            component: 'span',
-            class: 'text-base',
+            component: 'p',
             contents: [
               {
                 component: 'text/markdown',
@@ -66,8 +65,8 @@ export default class OtmLayoutBuilder extends LayoutBuilder {
       },
     ];
     const translations = (word.translations ?? []).map(
-      (translation: Translation, index: number): Recursion => ({
-        component: 'recursion',
+      (translation: Translation, index: number): P => ({
+        component: 'p',
         contents: [
           {
             component: 'span',

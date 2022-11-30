@@ -16,6 +16,7 @@ import H4 from './H4';
 import H5 from './H5';
 import H6 from './H6';
 import Markdown from './Markdown';
+import P from './P';
 import Plain from './Plain';
 import Span from './Span';
 
@@ -171,6 +172,18 @@ export default function Recursion({
                 word={word}
               />
             );
+            case 'p':
+              return (
+                <P
+                  baseReference={baseReference}
+                  className={child.class}
+                  contents={child.contents}
+                  editable={editable}
+                  summary={summary}
+                  layout={layout}
+                  word={word}
+                />
+              );
           case 'span':
             return (
               <Span
