@@ -7,10 +7,6 @@ const common = {
   cache: true,
   mode: 'development',
   devtool: 'source-map',
-  output: {
-    path: outputPath,
-    filename: 'main.js',
-  },
   module: {
     rules: [
       {
@@ -31,6 +27,33 @@ const common = {
   resolve: {
     extensions: ['.ts', '.tsx', '.js'],
   },
+}
+const mainConfig = {
+  ...common,
+  target: 'electron-main',
+  entry: './src/main/index.ts',
+  output: {
+    path: outputPath,
+    filename: 'main.js',
+  },
+};
+const preloadConfig = {
+  ...common,
+  target: 'electron-preload',
+  entry: './src/renderer/preload.ts',
+  output: {
+    path: outputPath,
+    filename: 'preload.js',
+  },
+};
+const rendererConfig = {
+  ...common,
+  target: 'electron-renderer',
+  entry: './src/renderer/index.tsx',
+  output: {
+    path: outputPath,
+    filename: 'renderer.js',
+  },
   plugins: [
     new HtmlWebpackPlugin({
       filename: 'index.html',
@@ -40,21 +63,6 @@ const common = {
       filename: './css/style.css',
     }),
   ],
-}
-const mainConfig = {
-  ...common,
-  target: 'electron-main',
-  entry: './src/main/index.ts',
-};
-const preloadConfig = {
-  ...common,
-  target: 'electron-preload',
-  entry: './src/renderer/preload.ts',
-};
-const rendererConfig = {
-  ...common,
-  target: 'electron-renderer',
-  entry: './src/renderer/index.tsx',
 };
 
 module.exports = [mainConfig, preloadConfig, rendererConfig];
