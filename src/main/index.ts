@@ -1,6 +1,7 @@
 /* eslint-disable global-require */
 /* eslint-disable @typescript-eslint/no-var-requires */
-import { app, BrowserWindow, dialog, ipcMain } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, nativeImage } from 'electron';
+import path from 'node:path';
 
 import log from 'electron-log';
 import MarkdownIt from 'markdown-it';
@@ -21,7 +22,6 @@ import OtmLayoutBuilder from './OtmLayoutBuilder';
 import { State } from './State';
 
 const createWindow = () => {
-  const path = require('path');
   const mainWindow = new BrowserWindow({
     width: 1200,
     height: 675,
@@ -30,6 +30,7 @@ const createWindow = () => {
     },
     frame: false,
     resizable: true,
+    icon: nativeImage.createFromPath(path.join(app.getAppPath(), '../assets/otamachan.png')),
   });
   const state: State = {
     bookshelf: {

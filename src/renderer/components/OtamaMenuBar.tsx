@@ -4,6 +4,7 @@ import IconButton from '@mui/material/IconButton';
 import React from 'react';
 import { useSelector } from 'react-redux';
 
+import Otamachan from '../../assets/otamachan.png';
 import { State } from '../states/State';
 import ThemeParameter from '../states/ThemeParameter';
 
@@ -58,9 +59,7 @@ export default function OtamaMenuBar(): JSX.Element {
   return (
     <header
       className={`${theme.style.menuBar} flex h-8 [-webkit-app-region:drag]`}>
-      <IconButton edge="start" color="inherit" aria-label="open drawer">
-        <MenuIcon />
-      </IconButton>
+      <img src={Otamachan} className="m-1.5 h-5 w-5" alt="Otamachan" />
       <FileMenu />
       <div className="grow" />
       <h1 className="p-1.5 text-sm">Otamajakushi Bookshelf</h1>

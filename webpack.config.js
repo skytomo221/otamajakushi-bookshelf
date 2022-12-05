@@ -1,4 +1,5 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const path = require('path');
 
@@ -22,12 +23,16 @@ const common = {
         test: /\.css$/,
         use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader'],
       },
+      {
+        test: /\.(ico|png|svg|eot|woff?2?)$/,
+        type: 'asset/resource',
+      },
     ],
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.js'],
   },
-}
+};
 const mainConfig = {
   ...common,
   target: 'electron-main',
@@ -36,6 +41,16 @@ const mainConfig = {
     path: outputPath,
     filename: 'main.js',
   },
+  plugins: [
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: path.resolve(__dirname, 'src/assets'),
+          to: 'assets',
+        },
+      ],
+    }),
+  ],
 };
 const preloadConfig = {
   ...common,
