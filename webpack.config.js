@@ -3,11 +3,13 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const path = require('path');
 
+const isDevelopment = process.env.NODE_ENV === 'development';
+
 const outputPath = path.join(__dirname, 'dist');
 const common = {
   cache: true,
-  mode: 'development',
-  devtool: 'source-map',
+  mode: isDevelopment ? 'development' : 'production',
+  devtool: isDevelopment ? 'inline-source-map' : undefined,
   module: {
     rules: [
       {
@@ -21,7 +23,11 @@ const common = {
       },
       {
         test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader'],
+        use: [
+          MiniCssExtractPlugin.loader,
+          { loader: 'css-loader', options: { sourceMap: isDevelopment } },
+          { loader: 'postcss-loader', options: { sourceMap: isDevelopment } },
+        ],
       },
       {
         test: /\.(ico|png|svg|eot|woff?2?)$/,

@@ -6,25 +6,35 @@
   "scripts": {
     "test": "jest",
     "eslint": "eslint ./src --fix",
-    "start": "electron ./dist/main/index.js",
-    "build": "tsc && webpack",
-    "build:main": "tsc",
-    "build:render": "webpack",
-    "package:mac": "webpack && electron-builder --mac --x64",
-    "package:windows": "webpack && electron-builder --win --x64",
-    "package:linux": "webpack && electron-builder --linux --x64"
+    "start": "electron ./dist/main.js",
+    "build": "cross-env NODE_ENV=\"development\" webpack",
+    "package:mac": "cross-env NODE_ENV=\"production\" webpack && electron-builder --mac --x64",
+    "package:windows": "cross-env NODE_ENV=\"production\" webpack && electron-builder --win --x64",
+    "package:linux": "cross-env NODE_ENV=\"production\" webpack && electron-builder --linux --x64"
   },
   "build": {
     "productName": "Otamajakushi Bookshelf",
-    "appId": "todo.example.com",
+    "appId": "com.electron.otamashelf",
+    "copyright": "Copyright © 2021-2022 skytomo",
     "files": [
-      "./dist/**/*.js",
-      "./dist/index.html",
-      "./main.js",
-      "./icon/**/*"
+      "dist/**/*",
+      "!dist/*-unpacked/**/*"
     ],
     "extraMetadata": {
-      "main": "./dist/main/index.js"
+      "main": "dist/main.js"
+    },
+    "mac": {
+      "icon": "src/assets/otamachan.png",
+      "target": [
+        "dmg"
+      ]
+    },
+    "win": {
+      "icon": "src/assets/otamachan.png",
+      "target": "nsis"
+    },
+    "linux": {
+      "icon": "src/assets/otamachan.png"
     },
     "dmg": {
       "contents": [
@@ -40,6 +50,10 @@
           "type": "file"
         }
       ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
     }
   },
   "author": "skytomo",
@@ -94,6 +108,7 @@
     "@typescript-eslint/parser": "^4.26.1",
     "autoprefixer": "^10.4.12",
     "copy-webpack-plugin": "^11.0.0",
+    "cross-env": "^7.0.3",
     "css-loader": "^6.7.1",
     "electron": "^18.3.7",
     "electron-builder": "^22.10.5",

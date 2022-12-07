@@ -21,16 +21,22 @@ import OtmController from './OtmController';
 import OtmLayoutBuilder from './OtmLayoutBuilder';
 import { State } from './State';
 
+const isDevelopment = process.env.NODE_ENV === 'development';
+
+const getResourceDirectory = () => isDevelopment
+    ? path.join(process.cwd(), 'dist')
+    : path.join(process.resourcesPath, 'app.asar', 'dist');
+
 const createWindow = () => {
   const mainWindow = new BrowserWindow({
     width: 1200,
     height: 675,
     webPreferences: {
-      preload: path.join(app.getAppPath(), '../preload.js'),
+      preload: path.join(__dirname, 'preload.js'),
     },
     frame: false,
     resizable: true,
-    icon: nativeImage.createFromPath(path.join(app.getAppPath(), '../assets/otamachan.png')),
+    icon: nativeImage.createFromPath(path.join(getResourceDirectory(), 'assets/otamachan.png')),
   });
   const state: State = {
     bookshelf: {
@@ -63,7 +69,7 @@ const createWindow = () => {
 
   // 読み込む index.html。
   // tsc でコンパイルするので、出力先の dist の相対パスで指定する。
-  mainWindow.loadFile(path.join(__dirname, '../index.html'));
+  mainWindow.loadFile(path.join(getResourceDirectory(), 'index.html'));
 
   if (process.argv.find(arg => arg === '--debug')) {
     mainWindow.webContents.openDevTools();
@@ -207,7 +213,10 @@ const createWindow = () => {
     async (_, summary: SummaryWord, onClick: string): Promise<Mediator> => {
       const book = state.bookshelf.books.find(b => b.path === summary.bookPath);
       if (book) {
-        const newWord = book.bookController.onClick(onClick, Number(summary.id));
+        const newWord = book.bookController.onClick(
+          onClick,
+          Number(summary.id),
+        );
         const layout = new OtmLayoutBuilder().layout(newWord);
         return { summary, word: newWord, layout };
       }
