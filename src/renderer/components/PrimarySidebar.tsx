@@ -22,19 +22,21 @@ import Book from '../states/Book';
 import { State } from '../states/State';
 
 import '../renderer';
+import ThemeParameter from '../states/ThemeParameter';
 
 const { api } = window;
 
 export const primarySidebarWidth = 240;
 
-interface BookListItemProps {
+interface IndexProps {
   book: Book;
   search: string;
   mode: string;
 }
 
-function BookListItem({ book, search, mode }: BookListItemProps): JSX.Element {
+function Index({ book, search, mode }: IndexProps): JSX.Element {
   const dispatch = useDispatch();
+  const theme = useSelector<State, ThemeParameter>(state => state.theme);
   const onSelectedWordFetch = React.useCallback((selectedWord: SummaryWord) => {
     dispatch(fetchSelectedWordAction(selectedWord));
   }, []);
@@ -78,8 +80,9 @@ function BookListItem({ book, search, mode }: BookListItemProps): JSX.Element {
           return 0;
         })
         .map(word => (
-          <ListItem key={word.id} disablePadding>
-            <ListItemButton
+          <li key={word.id} className={theme.style['Index.li']}>
+            <button
+              className={theme.style['Index.button']}
               onClick={() => {
                 if (
                   (selectedWords ?? []).every(
@@ -90,10 +93,11 @@ function BookListItem({ book, search, mode }: BookListItemProps): JSX.Element {
                 ) {
                   onSelectedWordFetch(word);
                 }
-              }}>
-              <ListItemText primary={word.form} />
-            </ListItemButton>
-          </ListItem>
+              }}
+              type="button">
+              {word.form}
+            </button>
+          </li>
         ))}
     </>
   );
@@ -126,35 +130,28 @@ export default function PrimarySidebar(): JSX.Element {
   if (open) {
     return books.some(book => book.path === primarySidebar) ? (
       <div className="flex flex-col h-full">
-        <Box sx={{ display: 'flex' }}>
-          <TextField
+        <div className="flex">
+          <button
+            aria-label="delete"
+            onClick={() => setSearchMode((searchMode + 1) % icons.length)}
+            type="button">
+            {icons[searchMode]}
+          </button>
+          <input
+            className="bg-transparent m-0.5 w-full"
             value={search}
             onChange={event => setSearch(event.target.value)}
             id="standard-basic"
-            sx={{ width: '100%', margin: '2px' }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <IconButton
-                    aria-label="delete"
-                    onClick={() =>
-                      setSearchMode((searchMode + 1) % icons.length)
-                    }>
-                    {icons[searchMode]}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
           />
-        </Box>
+        </div>
         <div className="grow overflow-auto">
-          <List>
-            <BookListItem
+          <ul>
+            <Index
               book={books.find(book => book.path === primarySidebar) as Book}
               search={search}
               mode={modes[searchMode]}
             />
-          </List>
+          </ul>
         </div>
       </div>
     ) : (

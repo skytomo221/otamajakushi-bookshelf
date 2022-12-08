@@ -26,6 +26,8 @@ export default interface StyleThemeParameters {
   'ControlBox.MinimizeButton'?: string;
   'ControlBox.MaximizeButton'?: string;
   'ControlBox.CloseButton'?: string;
+  'Index.li'?: string,
+  'Index.button'?: string,
   'Menu.listbox'?: string;
   'Menu.root'?: string;
   Tab?: string;
