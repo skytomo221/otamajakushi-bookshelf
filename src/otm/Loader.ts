@@ -41,6 +41,7 @@ export abstract class Loader extends EventEmitter {
     listener: (...args: LoaderEvent[E]) => void,
   ): this;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public on(event: string | symbol, listener: (...args: any) => void): this {
     const result = super.on(event, listener);
     return result;
@@ -51,6 +52,7 @@ export abstract class Loader extends EventEmitter {
     ...args: LoaderEvent[E]
   ): boolean;
 
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
   public emit(event: string | symbol, ...args: any): boolean {
     if (event === 'progress') {
       const date = new Date();

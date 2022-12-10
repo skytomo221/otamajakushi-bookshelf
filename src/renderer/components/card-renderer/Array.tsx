@@ -1,19 +1,15 @@
 import flatten from 'flat';
 import React from 'react';
-import { useSelector } from 'react-redux';
 
 import { LayoutComponent, LayoutCard } from '../../../common/LayoutCard';
 import { WordCard } from '../../../common/WordCard';
 import { SummaryWord } from '../../SummaryWord';
-import { State } from '../../states/State';
-import ThemeParameter from '../../states/ThemeParameter';
 
 // eslint-disable-next-line import/no-cycle
 import Recursion from './Recursion';
 
 interface Props {
   baseReference: string;
-  className?: string;
   content: LayoutComponent;
   editable: boolean;
   summary: SummaryWord;
@@ -23,14 +19,12 @@ interface Props {
 
 export default function ArrayElement({
   baseReference,
-  className,
   content,
   editable,
   summary,
   layout,
   word,
 }: Props): JSX.Element {
-  const theme = useSelector<State, ThemeParameter>(state => state.theme);
   // eslint-disable-next-line @typescript-eslint/ban-types
   const keys = Object.keys(flatten(word) as object);
   const length = new Set(
@@ -55,6 +49,3 @@ export default function ArrayElement({
     </>
   );
 }
-ArrayElement.defaultProps = {
-  className: '',
-};

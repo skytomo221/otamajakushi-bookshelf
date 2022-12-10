@@ -33,7 +33,6 @@ function swap<T>(items: T[], source: number, destination: number) {
 
 export default function DraggableArray({
   baseReference,
-  className,
   content,
   editable,
   summary,

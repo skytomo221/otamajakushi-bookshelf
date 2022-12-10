@@ -1,15 +1,14 @@
-import { useTheme } from "@emotion/react";
-import flatten, { unflatten } from "flat";
-import React, { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import flatten, { unflatten } from 'flat';
+import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 
-import { LayoutCard } from "../../../common/LayoutCard";
-import { WordCard } from "../../../common/WordCard";
-import { Mediator } from "../../Mediator";
-import { SummaryWord } from "../../SummaryWord";
-import { pushSelectedWordAction } from "../../actions/SelectedWordsActions";
-import { State } from "../../states/State";
-import ThemeParameter from "../../states/ThemeParameter";
+import { LayoutCard } from '../../../common/LayoutCard';
+import { WordCard } from '../../../common/WordCard';
+import { Mediator } from '../../Mediator';
+import { SummaryWord } from '../../SummaryWord';
+import { pushSelectedWordAction } from '../../actions/SelectedWordsActions';
+import { State } from '../../states/State';
+import ThemeParameter from '../../states/ThemeParameter';
 
 const { api } = window;
 

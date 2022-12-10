@@ -1,9 +1,5 @@
-import TabPanelUnstyled from '@mui/base/TabPanelUnstyled';
-import TabsListUnstyled from '@mui/base/TabsListUnstyled';
-import TabsUnstyled from '@mui/base/TabsUnstyled';
 import CloseIcon from '@mui/icons-material/Close';
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 import * as React from 'react';
 import { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -11,7 +7,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Mediator } from '../Mediator';
 import { removeSelectedWordAction } from '../actions/SelectedWordsActions';
 import { State } from '../states/State';
-import ThemeParameter from '../states/ThemeParameter';
 
 import Tab from './Tab';
 import TabPanel from './TabPanel';
@@ -19,12 +14,9 @@ import Tabs from './Tabs';
 import TabsList from './TabsList';
 import CardRenderer from './card-renderer/CardRenderer';
 
-const { api } = window;
-
 export default function WordTabs(): JSX.Element {
   const dispatch = useDispatch();
   const [value, setValue] = useState(0);
-  const theme = useSelector<State, ThemeParameter>(state => state.theme);
   const selectedWords = useSelector<State, null | Mediator[]>(
     (state: State) => state.selectedWords,
   );

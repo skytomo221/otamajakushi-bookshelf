@@ -1,12 +1,5 @@
 import BookIcon from '@mui/icons-material/Book';
-import {
-  ListItemButton,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Menu,
-  MenuItem,
-} from '@mui/material';
+import { ListItem, Menu, MenuItem } from '@mui/material';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 

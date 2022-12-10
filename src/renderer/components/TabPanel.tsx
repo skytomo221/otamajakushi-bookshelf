@@ -1,6 +1,3 @@
-import TabPanelUnstyled, {
-  TabPanelUnstyledProps,
-} from '@mui/base/TabPanelUnstyled';
 import React from 'react';
 import { useSelector } from 'react-redux';
 

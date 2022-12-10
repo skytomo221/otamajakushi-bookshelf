@@ -6,11 +6,6 @@ import {
   mdiFormatLetterMatches,
 } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Box, IconButton, InputAdornment, TextField } from '@mui/material';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';

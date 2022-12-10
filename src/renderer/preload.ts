@@ -6,8 +6,8 @@ import { ExtensionProperties } from '../common/ExtensionProperties';
 import { LayoutCard } from '../common/LayoutCard';
 import StyleThemeParameters from '../common/StyleThemeParameters';
 import { WordCard } from '../common/WordCard';
-import { Mediator } from './Mediator';
 
+import { Mediator } from './Mediator';
 import { SummaryWord } from './SummaryWord';
 
 contextBridge.exposeInMainWorld('api', {

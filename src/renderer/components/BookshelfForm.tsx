@@ -1,6 +1,6 @@
-import { Box, CssBaseline, useScrollTrigger, useTheme } from '@mui/material';
+import { CssBaseline, useTheme } from '@mui/material';
 import { SnackbarProvider } from 'notistack';
-import React, { useState } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
 import Split from 'react-split';
 
@@ -16,25 +16,8 @@ import PrimarySidebar from './PrimarySidebar';
 import SecondarySidebar from './SecondarySidebar';
 import StatusBar from './StatusBar';
 
-type ElevationScrollProps = {
-  children: React.ReactElement;
-};
-
-function ElevationScroll(props: ElevationScrollProps) {
-  const { children } = props;
-  const trigger = useScrollTrigger({
-    disableHysteresis: true,
-    threshold: 0,
-  });
-
-  return React.cloneElement(children, {
-    elevation: trigger ? 4 : 0,
-  });
-}
-
 export default function BookshelfForm(): JSX.Element {
   const theme = useTheme();
-  const [text, setText] = useState('この文章は書き換えることができます。');
   const primarySidebar = useSelector<State, null | string>(
     (state: State) => state.primarySidebar,
   );

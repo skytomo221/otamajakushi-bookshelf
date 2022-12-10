@@ -6,8 +6,6 @@ import { State } from "../../states/State";
 
 import Recursion from "./Recursion";
 
-const { api } = window;
-
 export default function CardRenderer({
   summary,
   word,
