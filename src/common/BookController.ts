@@ -5,6 +5,8 @@ import { WordCard } from './WordCard';
 export default abstract class BookController extends Extension {
   public abstract readonly properties: BookControllerProperties;
 
+  abstract deleteWord(id: number): boolean;
+
   abstract readWord(id: number): WordCard;
 
   abstract updateWord(word: WordCard): void;

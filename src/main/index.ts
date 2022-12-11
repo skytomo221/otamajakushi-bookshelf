@@ -182,6 +182,17 @@ const createWindow = () => {
   );
 
   ipcMain.handle(
+    'book-controller:word:delete',
+    async (_, summary: SummaryWord): Promise<boolean> => {
+      const book = state.bookshelf.books.find(b => b.path === summary.bookPath);
+      if (book) {
+        return book.bookController.deleteWord(Number(summary.id));
+      }
+      throw new Error(`Invalid word: ${summary}`);
+    },
+  );
+
+  ipcMain.handle(
     'book-controller:word:read',
     async (_, summary: SummaryWord): Promise<Mediator> => {
       const book = state.bookshelf.books.find(b => b.path === summary.bookPath);

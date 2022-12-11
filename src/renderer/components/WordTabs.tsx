@@ -21,7 +21,7 @@ export default function WordTabs(): JSX.Element {
     (state: State) => state.selectedWords,
   );
   const removeSelectedWord = useCallback((selectedWord: Mediator) => {
-    dispatch(removeSelectedWordAction(selectedWord));
+    dispatch(removeSelectedWordAction(selectedWord.summary));
   }, []);
 
   return (

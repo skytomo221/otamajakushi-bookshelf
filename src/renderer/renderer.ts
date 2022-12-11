@@ -20,6 +20,7 @@ export interface Api {
   windowMinimize: () => void;
   windowMaximize: () => void;
   windowClose: () => void;
+  deleteWord: (word: SummaryWord) => Promise<boolean>;
   readWords: (path: string) => Promise<SummaryWord[]>;
   readWord: (word: SummaryWord) => Promise<Mediator>;
   updateWord: (summary: SummaryWord, word: WordCard) => Promise<Mediator>;

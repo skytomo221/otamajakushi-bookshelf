@@ -17,6 +17,8 @@ contextBridge.exposeInMainWorld('api', {
   open: (id: string): Promise<string[]> => ipcRenderer.invoke('open', id),
   save: (filePath: string): Promise<boolean> =>
     ipcRenderer.invoke('save', filePath),
+  deleteWord: (word: SummaryWord): Promise<boolean> =>
+    ipcRenderer.invoke('book-controller:word:delete', word),
   readWords: (path: string): Promise<{ form: string; id: string | number }[]> =>
     ipcRenderer.invoke('book-controller:words:read', path),
   readWord: (word: SummaryWord): Promise<LayoutCard> =>

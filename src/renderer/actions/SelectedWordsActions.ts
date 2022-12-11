@@ -7,7 +7,10 @@ const actionCreator = actionCreatorFactory('selected-word-action');
 
 export const addSelectedWordAction =
   actionCreator<Mediator>('selected-word/add');
-export const removeSelectedWordAction = actionCreator<Mediator>(
+export const deleteSelectedWordAction = actionCreator<SummaryWord>(
+  'selected-word/delete',
+);
+export const removeSelectedWordAction = actionCreator<SummaryWord>(
   'selected-word/remove',
 );
 export const updateSelectedWordAction = actionCreator<Mediator>(

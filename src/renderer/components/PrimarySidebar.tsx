@@ -6,13 +6,17 @@ import {
   mdiFormatLetterMatches,
 } from '@mdi/js';
 import Icon from '@mdi/react';
+import DeleteIcon from '@mui/icons-material/Delete';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { Mediator } from '../Mediator';
 import { SummaryWord } from '../SummaryWord';
-import { fetchSelectedWordAction } from '../actions/SelectedWordsActions';
+import {
+  deleteSelectedWordAction,
+  fetchSelectedWordAction,
+} from '../actions/SelectedWordsActions';
 import Book from '../states/Book';
 import { State } from '../states/State';
 
@@ -31,6 +35,10 @@ interface IndexProps {
 
 function Index({ book, search, mode }: IndexProps): JSX.Element {
   const dispatch = useDispatch();
+  const editable = useSelector<State, boolean>(
+    (state: State) =>
+      state.bookshelf.books.find(b => b.path === book.path)?.editable ?? false,
+  );
   const theme = useSelector<State, ThemeParameter>(state => state.theme);
   const onSelectedWordFetch = React.useCallback((selectedWord: SummaryWord) => {
     dispatch(fetchSelectedWordAction(selectedWord));
@@ -44,6 +52,9 @@ function Index({ book, search, mode }: IndexProps): JSX.Element {
       setWords(await api.readWords(book.path));
     };
     process();
+  }, []);
+  const onDelete = React.useCallback((summary: SummaryWord) => {
+    dispatch(deleteSelectedWordAction(summary));
   }, []);
 
   return (
@@ -92,6 +103,17 @@ function Index({ book, search, mode }: IndexProps): JSX.Element {
               type="button">
               {word.form}
             </button>
+            {editable && (
+              <button
+                type="button"
+                className="flex"
+                onClick={() => {
+                  onDelete(word);
+                  setWords(words?.filter(w => w.id !== word.id));
+                }}>
+                <DeleteIcon />
+              </button>
+            )}
           </li>
         ))}
     </>

@@ -31,8 +31,8 @@ const selectedWordsReducer = reducerWithInitialState<null | Mediator[]>(
     (state ?? []).filter(
       mediator =>
         !(
-          mediator.summary.id === payload.summary.id &&
-          mediator.summary.bookPath === payload.summary.bookPath
+          mediator.summary.id === payload.id &&
+          mediator.summary.bookPath === payload.bookPath
         ),
     ),
   )

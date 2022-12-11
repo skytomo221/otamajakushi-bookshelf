@@ -42,6 +42,14 @@ export default class OtmController extends BookController {
     };
   }
 
+  public deleteWord(id: number): boolean {
+    if (this.otm === undefined) {
+      throw new Error('otm is undefined');
+    }
+    this.otm.removeWord(id);
+    return true;
+  }
+
   public readWords(): WordCard[] {
     if (this.otm === undefined) {
       throw new Error('otm is undefined');

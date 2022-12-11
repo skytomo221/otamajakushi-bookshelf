@@ -4,9 +4,11 @@ import { Action } from 'typescript-fsa';
 
 import {
   addSelectedWordAction,
+  deleteSelectedWordAction,
   fetchSelectedWordAction,
   onClickAction,
   pushSelectedWordAction,
+  removeSelectedWordAction,
   updateSelectedWordAction,
 } from './actions/SelectedWordsActions';
 
@@ -61,7 +63,25 @@ export function* onClickAsync(): SagaIterator {
   yield* takeLeading(onClickAction, onClickChildAsync);
 }
 
+export function* deleteChildAsync(
+  action: Action<PayloadOf<typeof deleteSelectedWordAction>>,
+): SagaIterator {
+  const summary = action.payload;
+  api.log.info('onDeleteAsync', action.payload);
+  yield* call(api.deleteWord, summary);
+  yield* put(removeSelectedWordAction(summary));
+}
+
+export function* deleteAsync(): SagaIterator {
+  yield* takeLeading(deleteSelectedWordAction, deleteChildAsync);
+}
+
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export default function* rootSaga() {
-  yield* all([fetchWordAsync(), pushWordAsync(), onClickAsync()]);
+  yield* all([
+    fetchWordAsync(),
+    pushWordAsync(),
+    onClickAsync(),
+    deleteAsync(),
+  ]);
 }
