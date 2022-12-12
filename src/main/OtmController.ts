@@ -42,7 +42,7 @@ export default class OtmController extends BookController {
     };
   }
 
-  public deleteWord(id: number): boolean {
+  public deletePage(id: number): boolean {
     if (this.otm === undefined) {
       throw new Error('otm is undefined');
     }
@@ -50,14 +50,14 @@ export default class OtmController extends BookController {
     return true;
   }
 
-  public readWords(): WordCard[] {
+  public readIndexes(): WordCard[] {
     if (this.otm === undefined) {
       throw new Error('otm is undefined');
     }
     return this.otm.toPlain().words.map(word => OtmController.toWordCard(word));
   }
 
-  public readWord(id: number): WordCard {
+  public readPage(id: number): WordCard {
     if (this.otm === undefined) {
       throw new Error('otm is undefined');
     }
@@ -68,7 +68,7 @@ export default class OtmController extends BookController {
     return OtmController.toWordCard(word);
   }
 
-  public updateWord(word: WordCard): number {
+  public updatePage(word: WordCard): number {
     if (this.otm === undefined) {
       throw new Error('otm is undefined');
     }

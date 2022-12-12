@@ -17,16 +17,16 @@ contextBridge.exposeInMainWorld('api', {
   open: (id: string): Promise<string[]> => ipcRenderer.invoke('open', id),
   save: (filePath: string): Promise<boolean> =>
     ipcRenderer.invoke('save', filePath),
-  deleteWord: (word: SummaryWord): Promise<boolean> =>
-    ipcRenderer.invoke('book-controller:word:delete', word),
-  readWords: (path: string): Promise<{ form: string; id: string | number }[]> =>
-    ipcRenderer.invoke('book-controller:words:read', path),
-  readWord: (word: SummaryWord): Promise<LayoutCard> =>
-    ipcRenderer.invoke('book-controller:word:read', word),
-  updateWord: (summary: SummaryWord, word: WordCard): Promise<LayoutCard> =>
-    ipcRenderer.invoke('book-controller:word:update', summary, word),
+  deletePage: (word: SummaryWord): Promise<boolean> =>
+    ipcRenderer.invoke('book-controller:page:delete', word),
+  readIndexes: (path: string): Promise<{ form: string; id: string | number }[]> =>
+    ipcRenderer.invoke('book-controller:indexes:read', path),
+  readPage: (word: SummaryWord): Promise<LayoutCard> =>
+    ipcRenderer.invoke('book-controller:page:read', word),
+  updatePage: (summary: SummaryWord, word: WordCard): Promise<LayoutCard> =>
+    ipcRenderer.invoke('book-controller:page:update', summary, word),
   onClick: (summary: SummaryWord, onClick: string): Promise<Mediator> =>
-    ipcRenderer.invoke('book-controller:word:on-click', summary, onClick),
+    ipcRenderer.invoke('book-controller:page:on-click', summary, onClick),
   applyStyleTheme: (id: string): Promise<StyleThemeParameters> =>
     ipcRenderer.invoke('style-theme:apply', id),
   markdown: (text: string) => ipcRenderer.sendSync('markdown', text),

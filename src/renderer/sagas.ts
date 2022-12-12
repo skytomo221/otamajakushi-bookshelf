@@ -23,7 +23,7 @@ export function* addSelectedWordAsnyc(
   action: Action<PayloadOf<typeof fetchSelectedWordAction>>,
 ): SagaIterator {
   const summaryWord = action.payload;
-  const mediator = yield* call(api.readWord, summaryWord);
+  const mediator = yield* call(api.readPage, summaryWord);
   yield* put(addSelectedWordAction(mediator));
 }
 
@@ -37,7 +37,7 @@ export function* updateSelectedWordAsnyc(
   const mediator = action.payload;
   api.log.info('updateSelectedWordAsnyc', mediator);
   const newMediator = yield* call(
-    api.updateWord,
+    api.updatePage,
     mediator.summary,
     mediator.word,
   );
@@ -68,7 +68,7 @@ export function* deleteChildAsync(
 ): SagaIterator {
   const summary = action.payload;
   api.log.info('onDeleteAsync', action.payload);
-  yield* call(api.deleteWord, summary);
+  yield* call(api.deletePage, summary);
   yield* put(removeSelectedWordAction(summary));
 }
 

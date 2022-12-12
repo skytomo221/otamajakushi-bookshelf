@@ -5,13 +5,13 @@ import { WordCard } from './WordCard';
 export default abstract class BookController extends Extension {
   public abstract readonly properties: BookControllerProperties;
 
-  abstract deleteWord(id: number): boolean;
+  abstract deletePage(id: number): boolean;
 
-  abstract readWord(id: number): WordCard;
+  abstract readPage(id: number): WordCard;
 
-  abstract updateWord(word: WordCard): void;
+  abstract updatePage(word: WordCard): void;
 
-  abstract readWords(): WordCard[];
+  abstract readIndexes(): WordCard[];
 
   abstract onClick(script: string, id: number): WordCard;
 

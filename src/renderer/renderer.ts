@@ -20,10 +20,10 @@ export interface Api {
   windowMinimize: () => void;
   windowMaximize: () => void;
   windowClose: () => void;
-  deleteWord: (word: SummaryWord) => Promise<boolean>;
-  readWords: (path: string) => Promise<SummaryWord[]>;
-  readWord: (word: SummaryWord) => Promise<Mediator>;
-  updateWord: (summary: SummaryWord, word: WordCard) => Promise<Mediator>;
+  deletePage: (word: SummaryWord) => Promise<boolean>;
+  readIndexes: (path: string) => Promise<SummaryWord[]>;
+  readPage: (word: SummaryWord) => Promise<Mediator>;
+  updatePage: (summary: SummaryWord, word: WordCard) => Promise<Mediator>;
   onClick: (summary: SummaryWord, onClick: string) => Promise<Mediator>;
   applyStyleTheme: (id: string) => Promise<StyleThemeParameters>;
   markdown: (text: string) => string,

@@ -169,12 +169,12 @@ const createWindow = () => {
   });
 
   ipcMain.handle(
-    'book-controller:words:read',
+    'book-controller:indexes:read',
     async (_, filePath: string): Promise<SummaryWord[]> => {
       const book = state.bookshelf.books.find(b => b.path === filePath);
       if (book) {
         return book.bookController
-          .readWords()
+          .readIndexes()
           .map(word => ({ bookPath: book.path, ...word }));
       }
       throw new Error(`Invalid path: ${filePath}`);
@@ -182,22 +182,22 @@ const createWindow = () => {
   );
 
   ipcMain.handle(
-    'book-controller:word:delete',
+    'book-controller:page:delete',
     async (_, summary: SummaryWord): Promise<boolean> => {
       const book = state.bookshelf.books.find(b => b.path === summary.bookPath);
       if (book) {
-        return book.bookController.deleteWord(Number(summary.id));
+        return book.bookController.deletePage(Number(summary.id));
       }
       throw new Error(`Invalid word: ${summary}`);
     },
   );
 
   ipcMain.handle(
-    'book-controller:word:read',
+    'book-controller:page:read',
     async (_, summary: SummaryWord): Promise<Mediator> => {
       const book = state.bookshelf.books.find(b => b.path === summary.bookPath);
       if (book) {
-        const word = book.bookController.readWord(Number(summary.id));
+        const word = book.bookController.readPage(Number(summary.id));
         const layout = new OtmLayoutBuilder().layout(word);
         return { summary, word, layout };
       }
@@ -206,12 +206,12 @@ const createWindow = () => {
   );
 
   ipcMain.handle(
-    'book-controller:word:update',
+    'book-controller:page:update',
     async (_, summary: SummaryWord, word: WordCard): Promise<Mediator> => {
       const book = state.bookshelf.books.find(b => b.path === summary.bookPath);
       if (book) {
-        book.bookController.updateWord(word);
-        const newWord = book.bookController.readWord(Number(summary.id));
+        book.bookController.updatePage(word);
+        const newWord = book.bookController.readPage(Number(summary.id));
         const layout = new OtmLayoutBuilder().layout(newWord);
         return { summary, word: newWord, layout };
       }
@@ -220,7 +220,7 @@ const createWindow = () => {
   );
 
   ipcMain.handle(
-    'book-controller:word:on-click',
+    'book-controller:page:on-click',
     async (_, summary: SummaryWord, onClick: string): Promise<Mediator> => {
       const book = state.bookshelf.books.find(b => b.path === summary.bookPath);
       if (book) {

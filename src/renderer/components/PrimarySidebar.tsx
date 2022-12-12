@@ -49,7 +49,7 @@ function Index({ book, search, mode }: IndexProps): JSX.Element {
   const [words, setWords] = useState<SummaryWord[]>();
   useEffect(() => {
     const process = async () => {
-      setWords(await api.readWords(book.path));
+      setWords(await api.readIndexes(book.path));
     };
     process();
   }, []);
