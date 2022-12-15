@@ -1,7 +1,7 @@
 import BookController from '../common/BookController';
 import { BookControllerProperties } from '../common/ExtensionProperties';
 import { WordCard, Content, Tag } from '../common/WordCard';
-import { Otm } from '../otm/Otm';
+import { initOtm, Otm } from '../otm/Otm';
 import OtmLoader from '../otm/OtmLoader';
 import OtmSaver from '../otm/OtmSaver';
 import { Word } from '../otm/Word';
@@ -123,6 +123,19 @@ export default class OtmController extends BookController {
       throw new Error('card not found');
     }
     return OtmController.toWordCard(word);
+  }
+
+  public async newBook(path: string): Promise<BookController> {
+    const saver = new OtmSaver(Otm.fromPlain(initOtm), path);
+    return saver
+      .asPromise()
+      .then(() => {
+        this.otm = Otm.fromPlain(initOtm);
+        return this
+      })
+      .catch(error => {
+        throw error;
+      });
   }
 
   public async load(path: string): Promise<BookController> {

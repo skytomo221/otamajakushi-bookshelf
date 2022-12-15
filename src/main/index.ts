@@ -99,6 +99,45 @@ const createWindow = () => {
     app.quit();
   });
 
+  ipcMain.handle('new', async (_, id: string): Promise<string[]> => {
+    const bookController = state.extensions
+      .filter(
+        (ext): ext is () => BookController => ext() instanceof BookController,
+      )
+      .find(ext => ext().properties.id === id);
+    if (!bookController) {
+      mainWindow.webContents.send('log:error', `Extension ${id} not found.`);
+      return [];
+    }
+    const filePath =
+      bookController().properties.format === 'file'
+        ? dialog.showSaveDialogSync(mainWindow, {
+            buttonLabel: '作成する',
+            filters: bookController().properties.filters,
+            properties: ['createDirectory'],
+          })
+        : dialog.showOpenDialogSync(mainWindow, {
+            buttonLabel: '作成する',
+            filters: bookController().properties.filters,
+            properties: ['openDirectory', 'createDirectory'],
+          })?.[0];
+    if (!filePath) return [];
+    try {
+      const bc = await (bookController().newBook(filePath));
+      console.log(bc.readIndexes());
+      state.bookshelf.books.push({
+        path: filePath,
+        bookController: bc,
+      });
+      return [filePath];
+    } catch (error) {
+      if (error instanceof Error) {
+        mainWindow.webContents.send('log:error', error.message);
+      }
+    }
+    return [];
+  });
+
   ipcMain.handle('open', async (_, id: string): Promise<string[]> => {
     const bookController = state.extensions
       .filter(

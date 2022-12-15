@@ -15,6 +15,8 @@ export default abstract class BookController extends Extension {
 
   abstract onClick(script: string, id: number): WordCard;
 
+  abstract newBook(path: string): Promise<BookController>;
+
   abstract load(path: string): Promise<BookController>;
 
   abstract save(path: string): Promise<BookController>;

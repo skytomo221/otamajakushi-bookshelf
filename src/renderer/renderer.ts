@@ -15,6 +15,7 @@ declare global {
 }
 
 export interface Api {
+  newBook: (id: string) => Promise<string[]>;
   open: (id: string) => Promise<string[]>;
   save: (filePath: string) => Promise<boolean>;
   windowMinimize: () => void;

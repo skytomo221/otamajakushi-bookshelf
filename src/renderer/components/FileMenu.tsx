@@ -103,6 +103,28 @@ export default function FileMenu(): JSX.Element {
         });
     };
 
+  const newBook = (extension: ExtensionProperties) => () => {
+    api
+      .newBook(extension.id)
+      .then(paths => {
+        paths.forEach(path =>
+          onBookUpdate({
+            path,
+            editable: true,
+          }),
+        );
+      })
+      .catch(err => {
+        if (err instanceof Error) {
+          enqueueSnackbar(err.message);
+          api.log.error(err.message);
+        } else {
+          enqueueSnackbar('原因不明のエラー');
+          api.log.error('原因不明のエラー');
+        }
+      });
+  };
+
   const applyStyleTheme = (extension: StyleThemeProperties) => () => {
     api
       .applyStyleTheme(extension.id)
@@ -117,7 +139,25 @@ export default function FileMenu(): JSX.Element {
         </Typography>
       </MenuButton>
       <Menu id="file-menu" anchorEl={anchorEl} open={open}>
-        <MenuItem>辞書の新規作成</MenuItem>
+        <NestedMenuItem
+          rightIcon={<ChevronRightIcon />}
+          label="辞書の新規作成"
+          parentMenuOpen={open}>
+          {extensions
+            .filter(
+              (ext): ext is BookControllerProperties =>
+                ext.type === 'book-controller',
+            )
+            .map(ext => (
+              <MenuItem key={ext.id} onClick={newBook(ext)}>
+                {ext.filters.map(
+                  f =>
+                    `${f.name} (${f.extensions.map(e => `*.${e}`).join(', ')})`,
+                )}
+                形式で開く
+              </MenuItem>
+            ))}
+        </NestedMenuItem>
         <NestedMenuItem
           rightIcon={<ChevronRightIcon />}
           label="開く"

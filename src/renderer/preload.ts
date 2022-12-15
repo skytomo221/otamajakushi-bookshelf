@@ -14,6 +14,7 @@ contextBridge.exposeInMainWorld('api', {
   windowMinimize: () => ipcRenderer.invoke('window-minimize'),
   windowMaximize: () => ipcRenderer.invoke('window-maximize'),
   windowClose: () => ipcRenderer.invoke('window-close'),
+  newBook: (id: string): Promise<string[]> => ipcRenderer.invoke('new', id),
   open: (id: string): Promise<string[]> => ipcRenderer.invoke('open', id),
   save: (filePath: string): Promise<boolean> =>
     ipcRenderer.invoke('save', filePath),
