@@ -15,11 +15,11 @@ test('42 to equal error', () => {
 test('addWord', () => {
   expect(
     new Otm()
-      .addWord({
+      .addWord(() => ({
         entry: {
           form: 'word',
         },
-      })
+      }))
       .toPlain().words,
   ).toStrictEqual([
     {
@@ -39,18 +39,18 @@ test('addWord', () => {
 test('renumber', () => {
   expect(
     new Otm()
-      .addWord({
+      .addWord(() => ({
         entry: {
           id: 2,
           form: 'hello',
         },
-      })
-      .addWord({
+      }))
+      .addWord(() => ({
         entry: {
           id: 4,
           form: 'world',
         },
-      })
+      }))
       .renumber()
       .toPlain().words,
   ).toStrictEqual([
@@ -82,11 +82,11 @@ test('renumber', () => {
 test('updateWord', () => {
   expect(
     new Otm()
-      .addWord({
+      .addWord(() => ({
         entry: {
           form: 'word',
         },
-      })
+      }))
       .updateWord({
         filter: word => word.entry.form === 'word',
         map: word => ({
@@ -125,11 +125,11 @@ test('updateWord', () => {
 test('updateWord cannot change word id', () => {
   expect(
     new Otm()
-      .addWord({
+      .addWord(() => ({
         entry: {
           form: 'word',
         },
-      })
+      }))
       .updateWord({
         filter: word => word.entry.id === 1,
         map: word => ({

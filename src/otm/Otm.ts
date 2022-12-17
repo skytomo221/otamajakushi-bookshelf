@@ -109,12 +109,12 @@ export class Otm {
 
   set idGenerator(generator: Generator<number>) {
     function* wrapper(otmc: Otm) {
+      let nextId: number = generator.next().value;
       while (true) {
-        let nextId: number = generator.next().value;
         const duplicate = (id: number): boolean =>
           otmc.otm.words.some(word => word.entry.id === id);
         while (duplicate(nextId)) {
-          nextId += generator.next().value;
+          nextId = generator.next().value;
         }
         yield nextId;
       }
@@ -132,24 +132,26 @@ export class Otm {
   }
 
   addWord(
-    word: Partial<
+    word: (id: number) => Partial<
       Omit<Word, 'entry'> & { entry: { id?: number; form: string } }
     >,
   ): Otm {
+    const nextId = this.wrapperIdGenerator.next().value;
+    const newWord = word(nextId);
     this.otm = {
       ...this.otm,
       words: [
         ...this.otm.words,
         {
           entry: {
-            id: word.entry?.id ?? this.wrapperIdGenerator.next().value,
-            form: word.entry?.form ?? '',
+            id: newWord.entry?.id ?? nextId,
+            form: newWord.entry?.form ?? '',
           },
-          translations: word.translations ?? [],
-          tags: word.tags ?? [],
-          contents: word.contents ?? [],
-          variations: word.variations ?? [],
-          relations: word.relations ?? [],
+          translations: newWord.translations ?? [],
+          tags: newWord.tags ?? [],
+          contents: newWord.contents ?? [],
+          variations: newWord.variations ?? [],
+          relations: newWord.relations ?? [],
         },
       ],
     };
