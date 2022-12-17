@@ -5,6 +5,7 @@ import log from 'electron-log';
 import { ExtensionProperties } from '../common/ExtensionProperties';
 import { LayoutCard } from '../common/LayoutCard';
 import StyleThemeParameters from '../common/StyleThemeParameters';
+import TemplateProperties from '../common/TemplateProperties';
 import { WordCard } from '../common/WordCard';
 
 import { Mediator } from './Mediator';
@@ -18,12 +19,16 @@ contextBridge.exposeInMainWorld('api', {
   open: (id: string): Promise<string[]> => ipcRenderer.invoke('open', id),
   save: (filePath: string): Promise<boolean> =>
     ipcRenderer.invoke('save', filePath),
+  createPage: (bookPath: string, templateId: string): Promise<Mediator> =>
+    ipcRenderer.invoke('book-controller:page:create', bookPath, templateId),
   deletePage: (word: SummaryWord): Promise<boolean> =>
     ipcRenderer.invoke('book-controller:page:delete', word),
   readIndexes: (path: string): Promise<{ form: string; id: string | number }[]> =>
     ipcRenderer.invoke('book-controller:indexes:read', path),
   readPage: (word: SummaryWord): Promise<LayoutCard> =>
     ipcRenderer.invoke('book-controller:page:read', word),
+  readTemplates: (word: SummaryWord): Promise<TemplateProperties[]> =>
+    ipcRenderer.invoke('book-controller:templates:read', word),
   updatePage: (summary: SummaryWord, word: WordCard): Promise<LayoutCard> =>
     ipcRenderer.invoke('book-controller:page:update', summary, word),
   onClick: (summary: SummaryWord, onClick: string): Promise<Mediator> =>

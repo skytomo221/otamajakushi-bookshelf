@@ -10,6 +10,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import AddIcon from '@mui/icons-material/Add';
 
 import { Mediator } from '../Mediator';
 import { SummaryWord } from '../SummaryWord';
@@ -22,6 +23,7 @@ import { State } from '../states/State';
 
 import '../renderer';
 import ThemeParameter from '../states/ThemeParameter';
+import TemplateProperties from '../../common/TemplateProperties';
 
 const { api } = window;
 
@@ -47,9 +49,11 @@ function Index({ book, search, mode }: IndexProps): JSX.Element {
     (state: State) => state.selectedWords,
   );
   const [words, setWords] = useState<SummaryWord[]>();
+  const [templates, setTemplates] = useState<TemplateProperties[]>();
   useEffect(() => {
     const process = async () => {
       setWords(await api.readIndexes(book.path));
+      setTemplates(await api.readTemplates(book.path));
     };
     process();
   }, []);
@@ -59,6 +63,21 @@ function Index({ book, search, mode }: IndexProps): JSX.Element {
 
   return (
     <>
+      {editable &&
+        (templates ?? []).map(template => (
+          <li key={template.id} className={theme.style['Index.li']}>
+            <button
+              className={theme.style['Index.button']}
+              onClick={async () => {
+                const newPage = await api.createPage(book.path, template.id);
+                onSelectedWordFetch(newPage.summary);
+              }}
+              type="button">
+              <AddIcon fontSize="small" />
+              {template.name}
+            </button>
+          </li>
+        ))}
       {(words ?? [])
         .filter(word => {
           switch (mode) {

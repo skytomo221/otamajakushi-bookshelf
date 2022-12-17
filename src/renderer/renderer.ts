@@ -2,6 +2,7 @@ import log from 'electron-log';
 
 import { ExtensionProperties } from '../common/ExtensionProperties';
 import StyleThemeParameters from '../common/StyleThemeParameters';
+import TemplateProperties from '../common/TemplateProperties';
 import { WordCard } from '../common/WordCard';
 
 import { Mediator } from './Mediator';
@@ -21,9 +22,11 @@ export interface Api {
   windowMinimize: () => void;
   windowMaximize: () => void;
   windowClose: () => void;
+  createPage: (bookPath: string, templateId: string) => Promise<Mediator>;
   deletePage: (word: SummaryWord) => Promise<boolean>;
   readIndexes: (path: string) => Promise<SummaryWord[]>;
   readPage: (word: SummaryWord) => Promise<Mediator>;
+  readTemplates: (path: string) => Promise<TemplateProperties[]>;
   updatePage: (summary: SummaryWord, word: WordCard) => Promise<Mediator>;
   onClick: (summary: SummaryWord, onClick: string) => Promise<Mediator>;
   applyStyleTheme: (id: string) => Promise<StyleThemeParameters>;

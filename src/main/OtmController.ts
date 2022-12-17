@@ -1,5 +1,6 @@
 import BookController from '../common/BookController';
 import { BookControllerProperties } from '../common/ExtensionProperties';
+import TemplateProperties from '../common/TemplateProperties';
 import { WordCard, Content, Tag } from '../common/WordCard';
 import { initOtm, Otm } from '../otm/Otm';
 import OtmLoader from '../otm/OtmLoader';
@@ -42,6 +43,22 @@ export default class OtmController extends BookController {
     };
   }
 
+  public createPage(): WordCard {
+    if (this.otm === undefined) {
+      throw new Error('otm is undefined');
+    }
+    let newId = -1;
+    this.otm.addWord(id => {
+      newId = id;
+      return {
+        entry: {
+          form: 'New Word',
+        },
+      };
+    });
+    return this.readPage(newId);
+  }
+
   public deletePage(id: number): boolean {
     if (this.otm === undefined) {
       throw new Error('otm is undefined');
@@ -66,6 +83,18 @@ export default class OtmController extends BookController {
       throw new Error('card not found');
     }
     return OtmController.toWordCard(word);
+  }
+
+  public readTemplates(): TemplateProperties[] {
+    if (this.otm === undefined) {
+      throw new Error('otm is undefined');
+    }
+    return [
+      {
+        id: 'new-word',
+        name: '新しく単語を作成する',
+      },
+    ];
   }
 
   public updatePage(word: WordCard): number {
@@ -131,7 +160,7 @@ export default class OtmController extends BookController {
       .asPromise()
       .then(() => {
         this.otm = Otm.fromPlain(initOtm);
-        return this
+        return this;
       })
       .catch(error => {
         throw error;

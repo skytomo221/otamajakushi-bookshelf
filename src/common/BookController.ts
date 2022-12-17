@@ -1,9 +1,12 @@
 import Extension from './Extension';
 import { BookControllerProperties } from './ExtensionProperties';
+import TemplateProperties from './TemplateProperties';
 import { WordCard } from './WordCard';
 
 export default abstract class BookController extends Extension {
   public abstract readonly properties: BookControllerProperties;
+
+  abstract createPage(id: string): WordCard;
 
   abstract deletePage(id: number): boolean;
 
@@ -12,6 +15,8 @@ export default abstract class BookController extends Extension {
   abstract updatePage(word: WordCard): void;
 
   abstract readIndexes(): WordCard[];
+
+  abstract readTemplates(): TemplateProperties[];
 
   abstract onClick(script: string, id: number): WordCard;
 

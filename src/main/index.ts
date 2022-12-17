@@ -20,10 +20,12 @@ import OtamaLightTheme from './OtamaLightTheme';
 import OtmController from './OtmController';
 import OtmLayoutBuilder from './OtmLayoutBuilder';
 import { State } from './State';
+import TemplateProperties from '../common/TemplateProperties';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
-const getResourceDirectory = () => isDevelopment
+const getResourceDirectory = () =>
+  isDevelopment
     ? path.join(process.cwd(), 'dist')
     : path.join(process.resourcesPath, 'app.asar', 'dist');
 
@@ -36,7 +38,9 @@ const createWindow = () => {
     },
     frame: false,
     resizable: true,
-    icon: nativeImage.createFromPath(path.join(getResourceDirectory(), 'assets/otamachan.png')),
+    icon: nativeImage.createFromPath(
+      path.join(getResourceDirectory(), 'assets/otamachan.png'),
+    ),
   });
   const state: State = {
     bookshelf: {
@@ -123,7 +127,7 @@ const createWindow = () => {
           })?.[0];
     if (!filePath) return [];
     try {
-      const bc = await (bookController().newBook(filePath));
+      const bc = await bookController().newBook(filePath);
       console.log(bc.readIndexes());
       state.bookshelf.books.push({
         path: filePath,
@@ -217,6 +221,32 @@ const createWindow = () => {
           .map(word => ({ bookPath: book.path, ...word }));
       }
       throw new Error(`Invalid path: ${filePath}`);
+    },
+  );
+
+  ipcMain.handle(
+    'book-controller:templates:read',
+    async (_, filePath: string): Promise<TemplateProperties[]> => {
+      const book = state.bookshelf.books.find(b => b.path === filePath);
+      if (book) {
+        return book.bookController
+          .readTemplates()
+          .map(word => ({ bookPath: book.path, ...word }));
+      }
+      throw new Error(`Invalid path: ${filePath}`);
+    },
+  );
+
+  ipcMain.handle(
+    'book-controller:page:create',
+    async (_, bookPath: string, templateId: string): Promise<Mediator> => {
+      const book = state.bookshelf.books.find(b => b.path === bookPath);
+      if (book) {
+        const word = book.bookController.createPage(templateId);
+        const layout = new OtmLayoutBuilder().layout(word);
+        return { summary: { bookPath: book.path, ...word }, word, layout };
+      }
+      throw new Error(`Invalid template: ${templateId}`);
     },
   );
 
