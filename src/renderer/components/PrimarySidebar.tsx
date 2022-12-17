@@ -6,12 +6,13 @@ import {
   mdiFormatLetterMatches,
 } from '@mdi/js';
 import Icon from '@mdi/react';
+import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import AddIcon from '@mui/icons-material/Add';
 
+import TemplateProperties from '../../common/TemplateProperties';
 import { Mediator } from '../Mediator';
 import { SummaryWord } from '../SummaryWord';
 import {
@@ -20,10 +21,8 @@ import {
 } from '../actions/SelectedWordsActions';
 import Book from '../states/Book';
 import { State } from '../states/State';
-
 import '../renderer';
 import ThemeParameter from '../states/ThemeParameter';
-import TemplateProperties from '../../common/TemplateProperties';
 
 const { api } = window;
 

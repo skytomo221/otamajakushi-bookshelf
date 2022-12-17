@@ -9,6 +9,7 @@ import MarkdownIt from 'markdown-it';
 import BookController from '../common/BookController';
 import StyleTheme from '../common/StyleTheme';
 import StyleThemeParameters from '../common/StyleThemeParameters';
+import TemplateProperties from '../common/TemplateProperties';
 import { WordCard } from '../common/WordCard';
 import { Mediator } from '../renderer/Mediator';
 import { SummaryWord } from '../renderer/SummaryWord';
@@ -20,7 +21,6 @@ import OtamaLightTheme from './OtamaLightTheme';
 import OtmController from './OtmController';
 import OtmLayoutBuilder from './OtmLayoutBuilder';
 import { State } from './State';
-import TemplateProperties from '../common/TemplateProperties';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
@@ -128,7 +128,6 @@ const createWindow = () => {
     if (!filePath) return [];
     try {
       const bc = await bookController().newBook(filePath);
-      console.log(bc.readIndexes());
       state.bookshelf.books.push({
         path: filePath,
         bookController: bc,
