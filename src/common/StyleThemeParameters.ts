@@ -26,6 +26,13 @@ export default interface StyleThemeParameters {
   'ControlBox.MinimizeButton'?: string;
   'ControlBox.MaximizeButton'?: string;
   'ControlBox.CloseButton'?: string;
+  'Hero'?: string;
+  'Hero.h2'?: string;
+  'Hero.h3'?: string;
+  'Hero.h4'?: string;
+  'Hero.BookControllerDiv'?: string;
+  'Hero.ButtonGroup'?: string;
+  'Hero.button'?: string;
   'Index.li'?: string,
   'Index.button'?: string,
   'Menu.listbox'?: string;

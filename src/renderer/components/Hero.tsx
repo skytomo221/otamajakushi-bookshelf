@@ -1,61 +1,134 @@
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
+import EditIcon from '@mui/icons-material/Edit';
 import FileOpenIcon from '@mui/icons-material/FileOpen';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
-import {
-  Container,
-  Typography,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  ListItem,
-  List,
-  useTheme,
-} from '@mui/material';
-import React from 'react';
+import NoteAddIcon from '@mui/icons-material/NoteAdd';
+import { useSnackbar } from 'notistack';
+import React, { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
+import {
+  BookControllerProperties,
+  ExtensionProperties,
+} from '../../common/ExtensionProperties';
+import { addBookAction } from '../actions/BookshelfActions';
+import Book from '../states/Book';
+import { State } from '../states/State';
+import ThemeParameter from '../states/ThemeParameter';
+
+const { api } = window;
 
 export default function Hero(): JSX.Element {
-  const theme = useTheme();
+  const theme = useSelector<State, ThemeParameter>(state => state.theme);
+  const dispatch = useDispatch();
+  const { enqueueSnackbar } = useSnackbar();
+  const extensions = useSelector<State, ExtensionProperties[]>(
+    (state: State) => state.extensions,
+  );
+  const onBookUpdate = useCallback((book: Book) => {
+    dispatch(addBookAction(book));
+  }, []);
+
+  const openBook =
+    (extension: ExtensionProperties, editable: boolean) => () => {
+      api
+        .open(extension.id)
+        .then(paths => {
+          paths.forEach(path =>
+            onBookUpdate({
+              path,
+              editable,
+            }),
+          );
+        })
+        .catch(err => {
+          if (err instanceof Error) {
+            enqueueSnackbar(err.message);
+            api.log.error(err.message);
+          } else {
+            enqueueSnackbar('原因不明のエラー');
+            api.log.error('原因不明のエラー');
+          }
+        });
+    };
+
+  const newBook = (extension: ExtensionProperties) => () => {
+    api
+      .newBook(extension.id)
+      .then(paths => {
+        paths.forEach(path =>
+          onBookUpdate({
+            path,
+            editable: true,
+          }),
+        );
+      })
+      .catch(err => {
+        if (err instanceof Error) {
+          enqueueSnackbar(err.message);
+          api.log.error(err.message);
+        } else {
+          enqueueSnackbar('原因不明のエラー');
+          api.log.error('原因不明のエラー');
+        }
+      });
+  };
 
   return (
-    <Container
-      maxWidth="md"
-      sx={{
-        flexGrow: 1,
-        padding: theme.spacing(3),
-        transition: theme.transitions.create('margin', {
-          easing: theme.transitions.easing.sharp,
-          duration: theme.transitions.duration.leavingScreen,
-        }),
-      }}>
-      <Typography variant="h2">Otamajakushi Bookshelf</Typography>
-      <Typography variant="h3">手軽に開発、便利な検索</Typography>
-      <List>
-        <ListItem disablePadding>
-          <ListItemButton>
-            <ListItemIcon>
-              <CreateNewFolderIcon />
-            </ListItemIcon>
-            <ListItemText primary="新しいプロジェクトを作成する" />
-          </ListItemButton>
-        </ListItem>
-        <ListItem disablePadding>
-          <ListItemButton>
-            <ListItemIcon>
-              <FolderOpenIcon />
-            </ListItemIcon>
-            <ListItemText primary="プロジェクトを開く" />
-          </ListItemButton>
-        </ListItem>
-        <ListItem disablePadding>
-          <ListItemButton>
-            <ListItemIcon>
-              <FileOpenIcon />
-            </ListItemIcon>
-            <ListItemText primary="辞書ファイルを開く" />
-          </ListItemButton>
-        </ListItem>
-      </List>
-    </Container>
+    <div className={theme.style.Hero}>
+      <h2 className={theme.style['Hero.h2']}>Otamajakushi Bookshelf</h2>
+      <h3 className={theme.style['Hero.h3']}>手軽に開発、便利な検索</h3>
+      <h4 className={theme.style['Hero.h4']}>はじめよう</h4>
+      {extensions
+        .filter(
+          (ext): ext is BookControllerProperties =>
+            ext.type === 'book-controller',
+        )
+        .map(ext => (
+          <div className={theme.style['Hero.BookControllerDiv']} key={ext.id}>
+            {ext.filters.map(
+              f => `${f.name} (${f.extensions.map(e => `*.${e}`).join(', ')})`,
+            )}
+            形式で
+            <div className={theme.style['Hero.ButtonGroup']}>
+              <button
+                className={theme.style['Hero.button']}
+                onClick={newBook(ext)}
+                type="button">
+                <div>
+                  {ext.format === 'directory' ? (
+                    <CreateNewFolderIcon fontSize="large" />
+                  ) : (
+                    <NoteAddIcon fontSize="large" />
+                  )}
+                </div>
+                <div>新しいブックを作成する</div>
+              </button>
+              <button
+                className={theme.style['Hero.button']}
+                onClick={openBook(ext, false)}
+                type="button">
+                <div>
+                  {ext.format === 'directory' ? (
+                    <FolderOpenIcon fontSize="large" />
+                  ) : (
+                    <FileOpenIcon fontSize="large" />
+                  )}
+                </div>
+                <div>ブックを開く</div>
+              </button>
+              <button
+                className={theme.style['Hero.button']}
+                onClick={openBook(ext, true)}
+                type="button">
+                <div>
+                  <EditIcon fontSize="large" />
+                </div>
+                <div>編集モードでブックを開く</div>
+              </button>
+            </div>
+          </div>
+        ))}
+    </div>
   );
 }
