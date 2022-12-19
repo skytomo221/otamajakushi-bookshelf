@@ -67,6 +67,7 @@
     "@mui/base": "^5.0.0-alpha.102",
     "@mui/icons-material": "^5.10.3",
     "@mui/material": "^5.10.4",
+    "ajv": "^8.11.2",
     "electron-log": "^4.4.8",
     "electron-squirrel-startup": "^1.0.0",
     "events": "^3.3.0",

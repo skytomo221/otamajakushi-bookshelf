@@ -1,11 +1,9 @@
 import { readFileSync } from 'fs';
 
-import { fold } from 'fp-ts/Either';
-import { parse, Json } from 'fp-ts/Json';
-import { pipe } from 'fp-ts/function';
+import Ajv from 'ajv';
 
 import { Loader } from './Loader';
-import { Otm, PlainOtm, TPlainOtm } from './Otm';
+import { Otm, plainOtmScheme } from './Otm';
 
 export default class OtmLoader extends Loader {
   private size = 3;
@@ -34,36 +32,18 @@ export default class OtmLoader extends Loader {
   private async loadDictionary(): Promise<Otm> {
     const buff = readFileSync(this.path);
     const json = buff.toString();
-    return pipe(
-      json,
-      parse,
-      fold(
-        (error: unknown) => {
-          throw error;
-        },
-        (otmjson: Json) => {
-          this.count += 1;
-          this.emitProgress();
-          return pipe(
-            otmjson,
-            TPlainOtm.decode,
-            fold(
-              (error: unknown) => {
-                throw error;
-              },
-              (otm: PlainOtm) => {
-                this.count += 1;
-                this.emitProgress();
-                const dictionary = Otm.fromPlain(otm);
-                this.count += 1;
-                this.emitProgress();
-                return dictionary;
-              },
-            ),
-          );
-        },
-      ),
-    );
+    const ajv = new Ajv();
+    const plainOtm = JSON.parse(json);
+    const valid = ajv.validate(plainOtmScheme, plainOtm);
+    if (!valid) {
+      throw new Error(ajv.errorsText());
+    }
+    this.count += 1;
+    this.emitProgress();
+    const dictionary = Otm.fromPlain(plainOtm);
+    this.count += 1;
+    this.emitProgress();
+    return dictionary;
   }
 
   private emitProgress(): void {

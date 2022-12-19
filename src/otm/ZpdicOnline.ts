@@ -1,11 +1,19 @@
-import * as t from 'io-ts';
+import { JSONSchemaType } from 'ajv';
 
 export type ZpdicOnline = {
   explanation: string;
   enableMarkdown: boolean;
 };
 
-export const TZpdicOnline = t.type({
-  explanation: t.string,
-  enableMarkdown: t.boolean,
-});
+export const zpdicOnlineScheme: JSONSchemaType<ZpdicOnline> = {
+  type: 'object',
+  properties: {
+    explanation: {
+      type: 'string',
+    },
+    enableMarkdown: {
+      type: 'boolean',
+    },
+  },
+  required: ['explanation', 'enableMarkdown'],
+};

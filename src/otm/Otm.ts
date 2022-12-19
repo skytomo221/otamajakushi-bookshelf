@@ -1,11 +1,9 @@
-import { fold } from 'fp-ts/Either';
-import { parse, Json, JsonArray, JsonRecord } from 'fp-ts/Json';
-import { pipe } from 'fp-ts/function';
-import * as t from 'io-ts';
+import Ajv, { JSONSchemaType } from 'ajv';
+import { Json } from 'fp-ts/Json';
 
-import { TWord, Word } from './Word';
-import { TZpdic, Zpdic } from './Zpdic';
-import { TZpdicOnline, ZpdicOnline } from './ZpdicOnline';
+import { Word, wordScheme } from './Word';
+import { Zpdic, zpdicScheme } from './Zpdic';
+import { ZpdicOnline, zpdicOnlineScheme } from './ZpdicOnline';
 
 export const initOtm = {
   words: [],
@@ -33,32 +31,13 @@ export const initOtm = {
   snoj: null,
 };
 
-const isJson = (arg: unknown): arg is JsonArray =>
-  typeof arg === 'string' ||
-  typeof arg === 'number' ||
-  typeof arg === 'boolean' ||
-  arg === null ||
-  isJsonArray(arg) ||
-  isJsonRecord(arg);
-
-const isJsonArray = (arg: unknown): arg is JsonArray =>
-  typeof arg === 'object' &&
-  arg !== null &&
-  (arg as JsonArray).every((item: unknown) => isJson(item));
-
-const isJsonRecord = (arg: unknown): arg is JsonRecord =>
-  typeof arg === 'object' &&
-  arg !== null &&
-  Object.keys(arg as JsonRecord)
-    .map(key => typeof key === 'string' && isJson(key))
-    .every(result => result === true);
-
 function* defaultIdIterator(): Generator<number> {
   let id = 0;
   while (true) {
     yield (id += 1);
   }
 }
+
 export class Otm {
   private otm: PlainOtm = initOtm;
 
@@ -81,29 +60,13 @@ export class Otm {
   }
 
   fromString(json: string): Otm {
-    pipe(
-      json,
-      parse,
-      fold(
-        (error: unknown) => {
-          throw error;
-        },
-        (otmjson: Json) => {
-          pipe(
-            otmjson,
-            TPlainOtm.decode,
-            fold(
-              (error: unknown) => {
-                throw error;
-              },
-              (otm: PlainOtm) => {
-                this.otm = otm;
-              },
-            ),
-          );
-        },
-      ),
-    );
+    const ajv = new Ajv();
+    const plainOtm = JSON.parse(json);
+    const valid = ajv.validate(plainOtmScheme, plainOtm);
+    if (!valid) {
+      throw new Error(ajv.errorsText());
+    }
+    this.otm = plainOtm;
     return this;
   }
 
@@ -132,7 +95,9 @@ export class Otm {
   }
 
   addWord(
-    word: (id: number) => Partial<
+    word: (
+      id: number,
+    ) => Partial<
       Omit<Word, 'entry'> & { entry: { id?: number; form: string } }
     >,
   ): Otm {
@@ -268,9 +233,25 @@ export type PlainOtm = {
   zpdicOnline?: ZpdicOnline;
 };
 
-export const TPlainOtm = t.type({
-  words: t.array(TWord),
-  version: t.union([t.undefined, t.number]),
-  zpdic: t.union([t.undefined, TZpdic]),
-  zpdicOnline: t.union([t.undefined, TZpdicOnline]),
-});
+export const plainOtmScheme: JSONSchemaType<PlainOtm> = {
+  type: 'object',
+  properties: {
+    words: {
+      type: 'array',
+      items: wordScheme,
+    },
+    version: {
+      type: 'number',
+      nullable: true,
+    },
+    zpdic: {
+      ...zpdicScheme,
+      nullable: true,
+    },
+    zpdicOnline: {
+      ...zpdicOnlineScheme,
+      nullable: true,
+    },
+  },
+  required: ['words'],
+};

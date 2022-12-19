@@ -1,4 +1,4 @@
-import * as t from 'io-ts';
+import { JSONSchemaType } from 'ajv';
 
 export type Content = {
   title: string;
@@ -6,8 +6,19 @@ export type Content = {
   markdown?: string;
 };
 
-export const TContent = t.type({
-  title: t.string,
-  text: t.string,
-  markdown: t.union([t.undefined, t.string]),
-});
+export const contentScheme: JSONSchemaType<Content> = {
+  type: 'object',
+  properties: {
+    title: {
+      type: 'string',
+    },
+    text: {
+      type: 'string',
+    },
+    markdown: {
+      type: 'string',
+      nullable: true,
+    },
+  },
+  required: ['title', 'text'],
+};

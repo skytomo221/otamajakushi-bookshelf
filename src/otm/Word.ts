@@ -1,10 +1,10 @@
-import * as t from 'io-ts';
+import { JSONSchemaType } from 'ajv';
 
-import { Content, TContent } from './Content';
-import { Entry, TEntry } from './Entry';
-import { Relation, TRelation } from './Relation';
-import { Translation, TTranslation } from './Translation';
-import { Variation, TVariation } from './Variation';
+import { Content, contentScheme } from './Content';
+import { Entry, entryScheme } from './Entry';
+import { Relation, relationScheme } from './Relation';
+import { Translation, translationScheme } from './Translation';
+import { Variation, variationScheme } from './Variation';
 
 export type Word = {
   entry: Entry;
@@ -15,11 +15,39 @@ export type Word = {
   relations: Relation[];
 };
 
-export const TWord = t.type({
-  entry: TEntry,
-  translations: t.array(TTranslation),
-  tags: t.array(t.string),
-  contents: t.array(TContent),
-  variations: t.array(TVariation),
-  relations: t.array(TRelation),
-});
+export const wordScheme: JSONSchemaType<Word> = {
+  type: 'object',
+  properties: {
+    entry: entryScheme,
+    translations: {
+      type: 'array',
+      items: translationScheme,
+    },
+    tags: {
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+    },
+    contents: {
+      type: 'array',
+      items: contentScheme,
+    },
+    variations: {
+      type: 'array',
+      items: variationScheme,
+    },
+    relations: {
+      type: 'array',
+      items: relationScheme,
+    },
+  },
+  required: [
+    'entry',
+    'translations',
+    'tags',
+    'contents',
+    'variations',
+    'relations',
+  ],
+};
