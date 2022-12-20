@@ -1,24 +1,27 @@
 import Extension from './Extension';
 import { BookControllerProperties } from './ExtensionProperties';
+import { IndexCard } from './IndexCard';
+import { PageCard } from './PageCard';
 import TemplateProperties from './TemplateProperties';
-import { WordCard } from './WordCard';
 
 export default abstract class BookController extends Extension {
   public abstract readonly properties: BookControllerProperties;
 
-  abstract createPage(id: string): WordCard;
+  abstract createPage(templateId: string): string;
 
   abstract deletePage(id: number): boolean;
 
-  abstract readPage(id: number): WordCard;
+  abstract readPage(id: string): PageCard;
 
-  abstract updatePage(word: WordCard): void;
+  abstract updatePage(word: PageCard): void;
 
-  abstract readIndexes(): WordCard[];
+  abstract readIndex(id: string): IndexCard;
+
+  abstract readIndexes(): IndexCard[];
 
   abstract readTemplates(): TemplateProperties[];
 
-  abstract onClick(script: string, id: number): WordCard;
+  abstract onClick(script: string, id: number): PageCard;
 
   abstract newBook(path: string): Promise<BookController>;
 

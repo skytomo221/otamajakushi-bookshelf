@@ -1,11 +1,14 @@
+import Ajv from 'ajv';
+
 import BookController from '../common/BookController';
 import { BookControllerProperties } from '../common/ExtensionProperties';
+import { IndexCard } from '../common/IndexCard';
+import { PageCard } from '../common/PageCard';
 import TemplateProperties from '../common/TemplateProperties';
-import { WordCard, Content, Tag } from '../common/WordCard';
 import { initOtm, Otm } from '../otm/Otm';
 import OtmLoader from '../otm/OtmLoader';
 import OtmSaver from '../otm/OtmSaver';
-import { Word } from '../otm/Word';
+import { Word, wordScheme } from '../otm/Word';
 
 export default class OtmController extends BookController {
   public readonly properties: BookControllerProperties = {
@@ -20,30 +23,21 @@ export default class OtmController extends BookController {
 
   private otm: Otm | undefined;
 
-  protected static toWordCard(word: Word): WordCard {
+  protected static toWordCard(word: Word): PageCard {
     return {
-      form: word.entry.form,
       id: word.entry.id.toString(),
-      tags: word.tags.map(
-        (tag): Tag => ({
-          name: tag,
-        }),
-      ),
-      contents: word.contents.map(
-        (content): Content => ({
-          title: content.title,
-          type: content.markdown ? 'text/markdown' : 'text/plain',
-          description: content.text,
-        }),
-      ),
-      translations: word.translations.map(translation => ({
-        partOfSpeech: [translation.title],
-        translatedWord: translation.forms,
-      })),
+      ...word,
     };
   }
 
-  public createPage(): WordCard {
+  protected static toIndexCard(word: Word): IndexCard {
+    return {
+      id: word.entry.id.toString(),
+      title: word.entry.form,
+    };
+  }
+
+  public createPage(): string {
     if (this.otm === undefined) {
       throw new Error('otm is undefined');
     }
@@ -56,7 +50,7 @@ export default class OtmController extends BookController {
         },
       };
     });
-    return this.readPage(newId);
+    return newId.toString();
   }
 
   public deletePage(id: number): boolean {
@@ -67,18 +61,33 @@ export default class OtmController extends BookController {
     return true;
   }
 
-  public readIndexes(): WordCard[] {
+  public readIndex(id: string): IndexCard {
     if (this.otm === undefined) {
       throw new Error('otm is undefined');
     }
-    return this.otm.toPlain().words.map(word => OtmController.toWordCard(word));
+    const numberId = parseInt(id, 10);
+    const word = this.otm.toPlain().words.find(w => w.entry.id === numberId);
+    if (!word) {
+      throw new Error('card not found');
+    }
+    return OtmController.toIndexCard(word);
   }
 
-  public readPage(id: number): WordCard {
+  public readIndexes(): IndexCard[] {
     if (this.otm === undefined) {
       throw new Error('otm is undefined');
     }
-    const word = this.otm.toPlain().words.find(w => w.entry.id === id);
+    return this.otm
+      .toPlain()
+      .words.map(word => OtmController.toIndexCard(word));
+  }
+
+  public readPage(id: string): PageCard {
+    if (this.otm === undefined) {
+      throw new Error('otm is undefined');
+    }
+    const numberId = parseInt(id, 10);
+    const word = this.otm.toPlain().words.find(w => w.entry.id === numberId);
     if (!word) {
       throw new Error('card not found');
     }
@@ -97,37 +106,23 @@ export default class OtmController extends BookController {
     ];
   }
 
-  public updatePage(word: WordCard): number {
+  public updatePage(word: PageCard): number {
     if (this.otm === undefined) {
       throw new Error('otm is undefined');
     }
+    const ajv = new Ajv();
+    const valid = ajv.validate(wordScheme, word);
+    if (!valid) {
+      throw new Error(ajv.errorsText());
+    }
     this.otm.updateWord({
       filter: w => w.entry.id === parseInt(word.id, 10),
-      map: () => ({
-        entry: {
-          form: word.form,
-        },
-        tags: word.tags?.map(tag => tag.name) ?? [],
-        contents:
-          word.contents?.map(content => ({
-            title: content.title,
-            markdown:
-              content.type === 'text/markdown'
-                ? content.description
-                : undefined,
-            text: content.description,
-          })) ?? [],
-        translations:
-          word.translations?.map(translation => ({
-            title: translation.partOfSpeech.join('・'),
-            forms: translation.translatedWord,
-          })) ?? [],
-      }),
+      map: () => word,
     });
     return parseInt(word.id, 10);
   }
 
-  public onClick(script: string, id: number): WordCard {
+  public onClick(script: string, id: number): PageCard {
     if (this.otm === undefined) {
       throw new Error('otm is undefined');
     }

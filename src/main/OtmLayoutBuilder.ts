@@ -1,3 +1,5 @@
+import Ajv from 'ajv';
+
 import { LayoutBuilderProperties } from '../common/ExtensionProperties';
 import LayoutBuilder from '../common/LayoutBuilder';
 import {
@@ -7,7 +9,9 @@ import {
   Plain,
   P,
 } from '../common/LayoutCard';
-import { WordCard, Translation } from '../common/WordCard';
+import { PageCard } from '../common/PageCard';
+import { Translation } from '../otm/Translation';
+import { wordScheme } from '../otm/Word';
 
 export default class OtmLayoutBuilder extends LayoutBuilder {
   public properties: LayoutBuilderProperties = {
@@ -18,7 +22,12 @@ export default class OtmLayoutBuilder extends LayoutBuilder {
     author: 'skytomo221',
   };
 
-  public readonly layout = (word: WordCard): LayoutCard => {
+  public readonly layout = (word: PageCard): LayoutCard => {
+    const ajv = new Ajv();
+    const valid = ajv.validate(wordScheme, word);
+    if (!valid) {
+      throw new Error(ajv.errorsText());
+    }
     const rawContents = {
       baseReference: 'contents',
       component: 'draggable-array',
@@ -39,7 +48,7 @@ export default class OtmLayoutBuilder extends LayoutBuilder {
             contents: [
               {
                 component: 'text/markdown',
-                reference: `.description`,
+                reference: `.text`,
               } as LayoutComponent,
             ],
           },
@@ -75,13 +84,13 @@ export default class OtmLayoutBuilder extends LayoutBuilder {
                 component: 'chip',
                 key: {
                   component: 'text/plain',
-                  text: translation.partOfSpeech.join(', '),
+                  text: translation.title,
                 },
               },
-              ...translation.translatedWord.map(
+              ...translation.forms.map(
                 (_, twIndex): Plain => ({
                   component: 'text/plain',
-                  reference: `translations.${index}.translatedWord.${twIndex}`,
+                  reference: `translations.${index}.forms.${twIndex}`,
                 }),
               ),
             ],
@@ -98,12 +107,12 @@ export default class OtmLayoutBuilder extends LayoutBuilder {
             contents: [
               {
                 component: 'text/plain',
-                reference: 'form',
+                reference: 'entry.form',
               },
               ...(word.tags ?? []).map(
                 (tag): Chip => ({
                   component: 'chip',
-                  key: { component: 'text/plain', text: tag.name },
+                  key: { component: 'text/plain', text: tag },
                 }),
               ),
             ],

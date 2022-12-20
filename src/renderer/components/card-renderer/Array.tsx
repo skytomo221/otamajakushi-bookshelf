@@ -2,7 +2,7 @@ import flatten from 'flat';
 import React from 'react';
 
 import { LayoutComponent, LayoutCard } from '../../../common/LayoutCard';
-import { WordCard } from '../../../common/WordCard';
+import { PageCard } from '../../../common/PageCard';
 import { SummaryWord } from '../../SummaryWord';
 
 // eslint-disable-next-line import/no-cycle
@@ -14,7 +14,7 @@ interface Props {
   editable: boolean;
   summary: SummaryWord;
   layout: LayoutCard;
-  word: WordCard;
+  word: PageCard;
 }
 
 export default function ArrayElement({
