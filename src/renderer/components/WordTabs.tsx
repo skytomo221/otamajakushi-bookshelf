@@ -41,7 +41,7 @@ export default function WordTabs(): JSX.Element {
                 value={value}
                 key={`${mediator.summary.bookPath}/${mediator.summary.id}`}
                 onClick={() => setValue(index)}>
-                {mediator.summary.form}
+                {mediator.word.title}
                 <CloseIcon
                   fontSize="small"
                   onClick={() => {

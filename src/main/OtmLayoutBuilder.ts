@@ -1,4 +1,4 @@
-import Ajv from 'ajv';
+import Ajv, { JSONSchemaType } from 'ajv';
 
 import { LayoutBuilderProperties } from '../common/ExtensionProperties';
 import LayoutBuilder from '../common/LayoutBuilder';
@@ -11,7 +11,7 @@ import {
 } from '../common/LayoutCard';
 import { PageCard } from '../common/PageCard';
 import { Translation } from '../otm/Translation';
-import { wordScheme } from '../otm/Word';
+import { Word, wordScheme } from '../otm/Word';
 
 export default class OtmLayoutBuilder extends LayoutBuilder {
   public properties: LayoutBuilderProperties = {
@@ -122,5 +122,34 @@ export default class OtmLayoutBuilder extends LayoutBuilder {
         ],
       },
     };
+  };
+
+  private wordsScheme: JSONSchemaType<Word[]> = {
+    type: 'array',
+    items: wordScheme,
+  };
+
+  public readonly indexes = (words: PageCard[]): LayoutCard[] => {
+    const ajv = new Ajv();
+    const valid = ajv.validate(this.wordsScheme, words);
+    if (!valid) {
+      throw new Error(ajv.errorsText());
+    }
+    return words.map(word => ({
+      layout: {
+        component: 'recursion',
+        contents: [
+          {
+            component: 'div',
+            contents: [
+              {
+                component: 'text/plain',
+                text: (word as unknown as Word).entry.form,
+              } as LayoutComponent,
+            ],
+          },
+        ],
+      },
+    }));
   };
 }

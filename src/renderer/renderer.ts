@@ -8,7 +8,6 @@ import TemplateProperties from '../common/TemplateProperties';
 import { Mediator } from './Mediator';
 import { SummaryWord } from './SummaryWord';
 
-
 declare global {
   interface Window {
     api: Api;
@@ -24,13 +23,17 @@ export interface Api {
   windowClose: () => void;
   createPage: (bookPath: string, templateId: string) => Promise<Mediator>;
   deletePage: (word: SummaryWord) => Promise<boolean>;
-  readIndexes: (path: string) => Promise<SummaryWord[]>;
+  selectPage: (
+    bookPath: string,
+    searchModeId: string,
+    searchWord: string,
+  ) => Promise<Mediator[]>;
   readPage: (word: SummaryWord) => Promise<Mediator>;
   readTemplates: (path: string) => Promise<TemplateProperties[]>;
   updatePage: (summary: SummaryWord, word: PageCard) => Promise<Mediator>;
   onClick: (summary: SummaryWord, onClick: string) => Promise<Mediator>;
   applyStyleTheme: (id: string) => Promise<StyleThemeParameters>;
-  markdown: (text: string) => string,
+  markdown: (text: string) => string;
   onExtensions: (
     channel: 'extensions:send',
     callback: (
@@ -40,10 +43,7 @@ export interface Api {
   ) => Electron.IpcRenderer;
   onErrorLog: (
     channel: 'log:error',
-    callback: (
-      event: Electron.IpcRendererEvent,
-      log: string,
-    ) => void,
+    callback: (event: Electron.IpcRendererEvent, log: string) => void,
   ) => Electron.IpcRenderer;
   log: log.ElectronLog & {
     default: log.ElectronLog;

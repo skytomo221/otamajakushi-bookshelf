@@ -23,6 +23,7 @@ import Book from '../states/Book';
 import { State } from '../states/State';
 import '../renderer';
 import ThemeParameter from '../states/ThemeParameter';
+import CardRenderer from './card-renderer/CardRenderer';
 
 const { api } = window;
 
@@ -47,11 +48,11 @@ function Index({ book, search, mode }: IndexProps): JSX.Element {
   const selectedWords = useSelector<State, null | Mediator[]>(
     (state: State) => state.selectedWords,
   );
-  const [words, setWords] = useState<SummaryWord[]>();
+  const [mediators, setMediators] = useState<Mediator[]>();
   const [templates, setTemplates] = useState<TemplateProperties[]>();
   useEffect(() => {
     const process = async () => {
-      setWords(await api.readIndexes(book.path));
+      setMediators(await api.selectPage(book.path, 'all', ''));
       setTemplates(await api.readTemplates(book.path));
     };
     process();
@@ -77,57 +78,54 @@ function Index({ book, search, mode }: IndexProps): JSX.Element {
             </button>
           </li>
         ))}
-      {(words ?? [])
-        .filter(word => {
+      {(mediators ?? [])
+        .filter(mediator => {
           switch (mode) {
             case 'startsWith':
-              return word.form.startsWith(search);
+              return mediator.word.title.startsWith(search);
             case 'endsWith':
-              return word.form.endsWith(search);
+              return mediator.word.title.endsWith(search);
             case 'matches':
-              return word.form.includes(search);
+              return mediator.word.title.includes(search);
             case 'regex':
-              return word.form.match(search);
+              return mediator.word.title.match(search);
             default:
               return true;
           }
         })
-        .sort((a, b) => {
-          const af = a.form.toUpperCase();
-          const bf = b.form.toUpperCase();
-          if (af < bf) {
-            return -1;
-          }
-          if (af > bf) {
-            return 1;
-          }
-          return 0;
-        })
-        .map(word => (
-          <li key={word.id} className={theme.style['Index.li']}>
+        .map(mediator => (
+          <li key={mediator.summary.id} className={theme.style['Index.li']}>
             <button
               className={theme.style['Index.button']}
               onClick={() => {
                 if (
                   (selectedWords ?? []).every(
-                    mediator =>
-                      mediator.summary.id !== word.id ||
-                      mediator.summary.bookPath !== book.path,
+                    m =>
+                      m.summary.id !== mediator.summary.id ||
+                      m.summary.bookPath !== book.path,
                   )
                 ) {
-                  onSelectedWordFetch(word);
+                  onSelectedWordFetch(mediator.summary);
                 }
               }}
               type="button">
-              {word.form}
+              <CardRenderer
+                word={mediator.word}
+                summary={mediator.summary}
+                layout={mediator.layout}
+              />
             </button>
             {editable && (
               <button
                 type="button"
                 className="flex"
                 onClick={() => {
-                  onDelete(word);
-                  setWords(words?.filter(w => w.id !== word.id));
+                  onDelete(mediator.summary);
+                  setMediators(
+                    mediators?.filter(
+                      m => m.summary.id !== mediator.summary.id,
+                    ),
+                  );
                 }}>
                 <DeleteIcon />
               </button>

@@ -2,6 +2,7 @@ import Extension from './Extension';
 import { BookControllerProperties } from './ExtensionProperties';
 import { IndexCard } from './IndexCard';
 import { PageCard } from './PageCard';
+import { SearchCard } from './SearchCard';
 import TemplateProperties from './TemplateProperties';
 
 export default abstract class BookController extends Extension {
@@ -13,11 +14,13 @@ export default abstract class BookController extends Extension {
 
   abstract readPage(id: string): PageCard;
 
+  abstract readPages(ids: string[]): PageCard[];
+
   abstract updatePage(word: PageCard): void;
 
-  abstract readIndex(id: string): IndexCard;
+  abstract readSearchMode(): string[];
 
-  abstract readIndexes(): IndexCard[];
+  abstract readSearchIndexes(searchModeId: string): SearchCard[];
 
   abstract readTemplates(): TemplateProperties[];
 

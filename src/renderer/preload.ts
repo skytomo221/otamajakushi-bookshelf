@@ -23,8 +23,17 @@ contextBridge.exposeInMainWorld('api', {
     ipcRenderer.invoke('book-controller:page:create', bookPath, templateId),
   deletePage: (word: SummaryWord): Promise<boolean> =>
     ipcRenderer.invoke('book-controller:page:delete', word),
-  readIndexes: (path: string): Promise<{ form: string; id: string | number }[]> =>
-    ipcRenderer.invoke('book-controller:indexes:read', path),
+  selectPage: (
+    bookPath: string,
+    searchModeId: string,
+    searchWord: string,
+  ): Promise<Mediator[]> =>
+    ipcRenderer.invoke(
+      'book-controller:page:select',
+      bookPath,
+      searchModeId,
+      searchWord,
+    ),
   readPage: (word: SummaryWord): Promise<LayoutCard> =>
     ipcRenderer.invoke('book-controller:page:read', word),
   readTemplates: (word: SummaryWord): Promise<TemplateProperties[]> =>

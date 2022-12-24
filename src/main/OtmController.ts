@@ -4,6 +4,7 @@ import BookController from '../common/BookController';
 import { BookControllerProperties } from '../common/ExtensionProperties';
 import { IndexCard } from '../common/IndexCard';
 import { PageCard } from '../common/PageCard';
+import { SearchCard } from '../common/SearchCard';
 import TemplateProperties from '../common/TemplateProperties';
 import { initOtm, Otm } from '../otm/Otm';
 import OtmLoader from '../otm/OtmLoader';
@@ -26,6 +27,7 @@ export default class OtmController extends BookController {
   protected static toWordCard(word: Word): PageCard {
     return {
       id: word.entry.id.toString(),
+      title: word.entry.form,
       ...word,
     };
   }
@@ -61,27 +63,6 @@ export default class OtmController extends BookController {
     return true;
   }
 
-  public readIndex(id: string): IndexCard {
-    if (this.otm === undefined) {
-      throw new Error('otm is undefined');
-    }
-    const numberId = parseInt(id, 10);
-    const word = this.otm.toPlain().words.find(w => w.entry.id === numberId);
-    if (!word) {
-      throw new Error('card not found');
-    }
-    return OtmController.toIndexCard(word);
-  }
-
-  public readIndexes(): IndexCard[] {
-    if (this.otm === undefined) {
-      throw new Error('otm is undefined');
-    }
-    return this.otm
-      .toPlain()
-      .words.map(word => OtmController.toIndexCard(word));
-  }
-
   public readPage(id: string): PageCard {
     if (this.otm === undefined) {
       throw new Error('otm is undefined');
@@ -92,6 +73,16 @@ export default class OtmController extends BookController {
       throw new Error('card not found');
     }
     return OtmController.toWordCard(word);
+  }
+
+  public readPages(ids: string[]): PageCard[] {
+    if (this.otm === undefined) {
+      throw new Error('otm is undefined');
+    }
+    return this.otm
+      .toPlain()
+      .words.filter(word => ids.includes(word.entry.id.toString()))
+      .map(word => OtmController.toWordCard(word));
   }
 
   public readTemplates(): TemplateProperties[] {
@@ -120,6 +111,48 @@ export default class OtmController extends BookController {
       map: () => word,
     });
     return parseInt(word.id, 10);
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  public readSearchMode(): string[] {
+    return ['form', 'translation', 'both', 'all'];
+  }
+
+  public readSearchIndexes(searchModeId: string): SearchCard[] {
+    if (this.otm === undefined) {
+      throw new Error('otm is undefined');
+    }
+    switch (searchModeId) {
+      case 'form':
+        return this.otm.toPlain().words.map(word => ({
+          id: word.entry.id.toString(),
+          target: [word.entry.form],
+        }));
+      case 'translation':
+        return this.otm.toPlain().words.map(word => ({
+          id: word.entry.id.toString(),
+          target: word.translations.map(t => t.forms).flat(),
+        }));
+      case 'both':
+        return this.otm.toPlain().words.map(word => ({
+          id: word.entry.id.toString(),
+          target: [
+            word.entry.form,
+            ...word.translations.map(t => t.forms).flat(),
+          ],
+        }));
+      case 'all':
+        return this.otm.toPlain().words.map(word => ({
+          id: word.entry.id.toString(),
+          target: [
+            word.entry.form,
+            ...word.translations.map(t => t.forms).flat(),
+            ...word.contents.map(c => c.text),
+          ],
+        }));
+      default:
+        return [];
+    }
   }
 
   public onClick(script: string, id: number): PageCard {

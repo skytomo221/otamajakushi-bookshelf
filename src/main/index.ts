@@ -215,11 +215,14 @@ const createWindow = () => {
     async (_, filePath: string): Promise<SummaryWord[]> => {
       const book = state.bookshelf.books.find(b => b.path === filePath);
       if (book) {
-        return book.bookController.readIndexes().map(summary => ({
-          bookPath: book.path,
-          id: summary.id,
-          form: summary.title,
-        }));
+        return book.bookController
+          .readPages(
+            book.bookController.readSearchIndexes('form').map(s => s.id),
+          )
+          .map(summary => ({
+            bookPath: book.path,
+            id: summary.id,
+          }));
       }
       throw new Error(`Invalid path: ${filePath}`);
     },
@@ -246,9 +249,8 @@ const createWindow = () => {
         const newId = book.bookController.createPage(templateId);
         const word = book.bookController.readPage(newId);
         const layout = new OtmLayoutBuilder().layout(word);
-        const summary = book.bookController.readIndex(newId);
         return {
-          summary: { bookPath: book.path, id: summary.id, form: summary.title },
+          summary: { bookPath: book.path, id: word.id },
           word,
           layout,
         };
@@ -278,6 +280,30 @@ const createWindow = () => {
         return { summary, word, layout };
       }
       throw new Error(`Invalid word: ${summary}`);
+    },
+  );
+
+  ipcMain.handle(
+    'book-controller:page:select',
+    async (
+      _,
+      bookPath: string,
+      searchModeId: string,
+      searchWord: string,
+    ): Promise<Mediator[]> => {
+      const book = state.bookshelf.books.find(b => b.path === bookPath);
+      if (book) {
+        const words = book.bookController.readPages(
+          book.bookController.readSearchIndexes('form').map(s => s.id),
+        );
+        const indexes = new OtmLayoutBuilder().indexes(words);
+        return words.map((word, i) => ({
+          summary: { id: word.id, bookPath },
+          word,
+          layout: indexes[i],
+        }));
+      }
+      throw new Error(`Invalid path: ${bookPath}`);
     },
   );
 
