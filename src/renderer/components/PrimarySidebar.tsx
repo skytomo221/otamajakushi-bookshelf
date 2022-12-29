@@ -1,62 +1,52 @@
-import {
-  mdiRegex,
-  mdiBookSearch,
-  mdiFormatLetterStartsWith,
-  mdiFormatLetterEndsWith,
-  mdiFormatLetterMatches,
-} from '@mdi/js';
-import Icon from '@mdi/react';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import * as React from 'react';
-import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import TemplateProperties from '../../common/TemplateProperties';
+import SearchProperties from '../../common/SearchProperties';
 import { Mediator } from '../Mediator';
 import { SummaryWord } from '../SummaryWord';
+import {
+  updatePrimarySidebarAction,
+  updateSearchWordAction,
+} from '../actions/PrimarySidebarActions';
 import {
   deleteSelectedWordAction,
   fetchSelectedWordAction,
 } from '../actions/SelectedWordsActions';
 import Book from '../states/Book';
+import PrimarySidebarState from '../states/PrimarySidebarState';
 import { State } from '../states/State';
 import '../renderer';
 import ThemeParameter from '../states/ThemeParameter';
+
 import CardRenderer from './card-renderer/CardRenderer';
 
 const { api } = window;
 
 export const primarySidebarWidth = 240;
 
-interface IndexProps {
-  book: Book;
-  search: string;
-  mode: string;
-}
-
-function Index({ book, search, mode }: IndexProps): JSX.Element {
+function Index(): JSX.Element {
   const dispatch = useDispatch();
-  const editable = useSelector<State, boolean>(
-    (state: State) =>
-      state.bookshelf.books.find(b => b.path === book.path)?.editable ?? false,
+  const primarySidebar = useSelector<State, PrimarySidebarState | null>(
+    (state: State) => state.primarySidebar,
   );
+  if (primarySidebar === null) {
+    return <></>;
+  }
+  const { book, templates, mediators } = primarySidebar;
+  const { editable } = book;
   const theme = useSelector<State, ThemeParameter>(state => state.theme);
   const onSelectedWordFetch = React.useCallback((selectedWord: SummaryWord) => {
     dispatch(fetchSelectedWordAction(selectedWord));
   }, []);
+  const onMediatorsUpdate = React.useCallback(
+    (ms: Mediator[]) => dispatch(updatePrimarySidebarAction({ mediators: ms })),
+    [],
+  );
   const selectedWords = useSelector<State, null | Mediator[]>(
     (state: State) => state.selectedWords,
   );
-  const [mediators, setMediators] = useState<Mediator[]>();
-  const [templates, setTemplates] = useState<TemplateProperties[]>();
-  useEffect(() => {
-    const process = async () => {
-      setMediators(await api.selectPage(book.path, 'all', ''));
-      setTemplates(await api.readTemplates(book.path));
-    };
-    process();
-  }, []);
   const onDelete = React.useCallback((summary: SummaryWord) => {
     dispatch(deleteSelectedWordAction(summary));
   }, []);
@@ -78,112 +68,108 @@ function Index({ book, search, mode }: IndexProps): JSX.Element {
             </button>
           </li>
         ))}
-      {(mediators ?? [])
-        .filter(mediator => {
-          switch (mode) {
-            case 'startsWith':
-              return mediator.word.title.startsWith(search);
-            case 'endsWith':
-              return mediator.word.title.endsWith(search);
-            case 'matches':
-              return mediator.word.title.includes(search);
-            case 'regex':
-              return mediator.word.title.match(search);
-            default:
-              return true;
-          }
-        })
-        .map(mediator => (
-          <li key={mediator.summary.id} className={theme.style['Index.li']}>
+      {(mediators ?? []).map(mediator => (
+        <li key={mediator.summary.id} className={theme.style['Index.li']}>
+          <button
+            className={theme.style['Index.button']}
+            onClick={() => {
+              if (
+                (selectedWords ?? []).every(
+                  m =>
+                    m.summary.id !== mediator.summary.id ||
+                    m.summary.bookPath !== book.path,
+                )
+              ) {
+                onSelectedWordFetch(mediator.summary);
+              }
+            }}
+            type="button">
+            <CardRenderer
+              word={mediator.word}
+              summary={mediator.summary}
+              layout={mediator.layout}
+            />
+          </button>
+          {editable && (
             <button
-              className={theme.style['Index.button']}
+              type="button"
+              className="flex"
               onClick={() => {
-                if (
-                  (selectedWords ?? []).every(
-                    m =>
-                      m.summary.id !== mediator.summary.id ||
-                      m.summary.bookPath !== book.path,
-                  )
-                ) {
-                  onSelectedWordFetch(mediator.summary);
-                }
-              }}
-              type="button">
-              <CardRenderer
-                word={mediator.word}
-                summary={mediator.summary}
-                layout={mediator.layout}
-              />
+                onDelete(mediator.summary);
+                onMediatorsUpdate(
+                  mediators?.filter(m => m.summary.id !== mediator.summary.id),
+                );
+              }}>
+              <DeleteIcon />
             </button>
-            {editable && (
-              <button
-                type="button"
-                className="flex"
-                onClick={() => {
-                  onDelete(mediator.summary);
-                  setMediators(
-                    mediators?.filter(
-                      m => m.summary.id !== mediator.summary.id,
-                    ),
-                  );
-                }}>
-                <DeleteIcon />
-              </button>
-            )}
-          </li>
-        ))}
+          )}
+        </li>
+      ))}
     </>
   );
 }
 
 export default function PrimarySidebar(): JSX.Element {
+  const dispatch = useDispatch();
   const books = useSelector<State, Book[]>(
     (state: State) => state.bookshelf.books,
   );
-  const primarySidebar = useSelector<State, null | string>(
+  const primarySidebar = useSelector<State, null | PrimarySidebarState>(
     (state: State) => state.primarySidebar,
   );
-  const open = primarySidebar !== null;
-  const [search, setSearch] = useState<string>('');
-  const [searchMode, setSearchMode] = useState<number>(0);
-  const icons = [
-    <Icon
-      key={0}
-      path={mdiFormatLetterStartsWith}
-      title="Start with"
-      size={1}
-    />,
-    <Icon key={1} path={mdiFormatLetterEndsWith} title="Ends with" size={1} />,
-    <Icon key={2} path={mdiFormatLetterMatches} title="Matches" size={1} />,
-    <Icon key={3} path={mdiRegex} title="Regex" size={1} />,
-    <Icon key={4} path={mdiBookSearch} title="Full text search" size={1} />,
-  ];
-  const modes = ['startsWith', 'endsWith', 'matches', 'regex', 'fullText'];
+  const onPageExplorerUpdate = React.useCallback(
+    (pageExplorer: SearchProperties) => {
+      dispatch(updatePrimarySidebarAction({ pageExplorer }));
+    },
+    [],
+  );
+  const onSearchModeUpdate = React.useCallback((searchMode: string) => {
+    dispatch(updatePrimarySidebarAction({ searchMode }));
+  }, []);
+  const onSearchWordUpdate = React.useCallback((searchWord: string) => {
+    dispatch(updateSearchWordAction(searchWord));
+  }, []);
 
-  if (open) {
-    return books.some(book => book.path === primarySidebar) ? (
+  if (primarySidebar) {
+    const { pageExplorers, searchModes, searchWord } = primarySidebar;
+    return books.some(b => b.path === primarySidebar.book.path) ? (
       <div className="flex flex-col h-full">
-        <div className="flex">
-          <button
-            aria-label="delete"
-            onClick={() => setSearchMode((searchMode + 1) % icons.length)}
-            type="button">
-            {icons[searchMode]}
-          </button>
-          <input
-            className="bg-transparent m-0.5 w-full"
-            value={search}
-            onChange={event => setSearch(event.target.value)}
-            id="standard-basic"
-          />
-        </div>
+        <input
+          className="bg-transparent m-0.5 w-full"
+          value={searchWord}
+          onChange={event => onSearchWordUpdate(event.target.value)}
+          id="standard-basic"
+        />
+        <div className="text-xs">検索範囲</div>
+        <select
+          onChange={event => {
+            onSearchModeUpdate(event.target.value);
+          }}>
+          {searchModes.map(mode => (
+            <option key={mode} value={mode}>
+              {mode}
+            </option>
+          ))}
+        </select>
+        <div className="text-xs">検索方式</div>
+        <select
+          onChange={event => {
+            onPageExplorerUpdate(
+              pageExplorers.find(p => p.id === event.target.value) ?? {
+                id: '',
+                displayName: '',
+              },
+            );
+          }}>
+          {pageExplorers.map(explorer => (
+            <option key={explorer.id} value={explorer.id}>
+              {explorer.displayName}
+            </option>
+          ))}
+        </select>
         <div className="grow overflow-auto">
           <ul>
-            <Index
-              book={books.find(book => book.path === primarySidebar) as Book}
-              search={search}
-              mode={modes[searchMode]}
-            />
+            <Index />
           </ul>
         </div>
       </div>

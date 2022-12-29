@@ -4,8 +4,16 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { editBookAction, removeBookAction } from '../actions/BookshelfActions';
-import { changePrimarySidebarAction } from '../actions/PrimarySidebarActions';
+import {
+  changePrimarySidebarAction,
+  readPageExplorerAction,
+  readTemplatesAction,
+  updatePrimarySidebarAction,
+  readSearchModeAction,
+  updateSearchWordAction,
+} from '../actions/PrimarySidebarActions';
 import Book from '../states/Book';
+import PrimarySidebarStates from '../states/PrimarySidebarState';
 import { State } from '../states/State';
 
 interface Props {
@@ -14,11 +22,23 @@ interface Props {
 
 export default function BookViewContainer({ book }: Props): JSX.Element {
   const dispatch = useDispatch();
-  const primarySidebar = useSelector<State, null | string>(
+  const primarySidebar = useSelector<State, null | PrimarySidebarStates>(
     (state: State) => state.primarySidebar,
   );
-  const onPrimarySidebarChange = React.useCallback((text: string | null) => {
-    dispatch(changePrimarySidebarAction(text));
+  const onPrimarySidebarChange = React.useCallback((newBook: Book | null) => {
+    if (newBook === null) {
+      dispatch(changePrimarySidebarAction(null));
+    } else {
+      dispatch(
+        updatePrimarySidebarAction({
+          book: newBook,
+        }),
+      );
+      dispatch(readPageExplorerAction());
+      dispatch(readSearchModeAction(newBook));
+      dispatch(readTemplatesAction(newBook));
+      dispatch(updateSearchWordAction(''));
+    }
   }, []);
   const [contextMenu, setContextMenu] = React.useState<{
     mouseX: number;
@@ -46,7 +66,7 @@ export default function BookViewContainer({ book }: Props): JSX.Element {
     <ListItem
       onClick={() => {
         if (contextMenu === null)
-          onPrimarySidebarChange(primarySidebar === null ? book.path : null);
+          onPrimarySidebarChange(primarySidebar === null ? book : null);
       }}
       onContextMenu={handleClick}
       key={book.path}

@@ -8,18 +8,25 @@ import MarkdownIt from 'markdown-it';
 
 import BookController from '../common/BookController';
 import { PageCard } from '../common/PageCard';
+import PageExplorer from '../common/PageExplorer';
+import SearchProperites from '../common/SearchProperties';
 import StyleTheme from '../common/StyleTheme';
 import StyleThemeParameters from '../common/StyleThemeParameters';
 import TemplateProperties from '../common/TemplateProperties';
 import { Mediator } from '../renderer/Mediator';
 import { SummaryWord } from '../renderer/SummaryWord';
 
+import AllPageExplorer from './AllPageExplorer';
 import Book from './Book';
+import EndsWithPageExplorer from './EndsWithPageExplorer';
+import IncludesPageExplorer from './IncludesPageExplorer';
 import OtamaDarkTheme from './OtamaDarkTheme';
 import OtamaDefaultTheme from './OtamaDefaultTheme';
 import OtamaLightTheme from './OtamaLightTheme';
 import OtmController from './OtmController';
 import OtmLayoutBuilder from './OtmLayoutBuilder';
+import RegexPageExplorer from './RegexPageExplorer';
+import StartsWithPageExplorer from './StartsWithPageExplorer';
 import { State } from './State';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
@@ -52,6 +59,10 @@ const createWindow = () => {
       () => new OtamaDefaultTheme(),
       () => new OtamaLightTheme(),
       () => new OtamaDarkTheme(),
+      () => new StartsWithPageExplorer(),
+      () => new EndsWithPageExplorer(),
+      () => new IncludesPageExplorer(),
+      () => new RegexPageExplorer(),
     ],
   };
   const md = new MarkdownIt();
@@ -211,24 +222,6 @@ const createWindow = () => {
   });
 
   ipcMain.handle(
-    'book-controller:indexes:read',
-    async (_, filePath: string): Promise<SummaryWord[]> => {
-      const book = state.bookshelf.books.find(b => b.path === filePath);
-      if (book) {
-        return book.bookController
-          .readPages(
-            book.bookController.readSearchIndexes('form').map(s => s.id),
-          )
-          .map(summary => ({
-            bookPath: book.path,
-            id: summary.id,
-          }));
-      }
-      throw new Error(`Invalid path: ${filePath}`);
-    },
-  );
-
-  ipcMain.handle(
     'book-controller:templates:read',
     async (_, filePath: string): Promise<TemplateProperties[]> => {
       const book = state.bookshelf.books.find(b => b.path === filePath);
@@ -288,13 +281,24 @@ const createWindow = () => {
     async (
       _,
       bookPath: string,
+      pageExplorerId: string,
       searchModeId: string,
       searchWord: string,
     ): Promise<Mediator[]> => {
       const book = state.bookshelf.books.find(b => b.path === bookPath);
+      const pageExplorer =
+        state.extensions
+          .filter(
+            (ext): ext is () => PageExplorer => ext() instanceof PageExplorer,
+          )
+          .find(p => p().properties.id === pageExplorerId) ??
+        (() => new AllPageExplorer());
       if (book) {
         const words = book.bookController.readPages(
-          book.bookController.readSearchIndexes('form').map(s => s.id),
+          pageExplorer().search(
+            book.bookController.readSearchIndexes(searchModeId),
+            searchWord,
+          ),
         );
         const indexes = new OtmLayoutBuilder().indexes(words);
         return words.map((word, i) => ({
@@ -334,6 +338,30 @@ const createWindow = () => {
         return { summary, word: newWord, layout };
       }
       throw new Error(`Invalid word: ${summary} ${onClick}`);
+    },
+  );
+
+  ipcMain.handle(
+    'book-controller:page-explorer:read',
+    async (): Promise<SearchProperites[]> => {
+      const pageExplorers = state.extensions.filter(
+        (ext): ext is () => PageExplorer => ext() instanceof PageExplorer,
+      );
+      return pageExplorers.map(pageExplorer => ({
+        id: pageExplorer().properties.id,
+        displayName: pageExplorer().name(),
+      }));
+    },
+  );
+
+  ipcMain.handle(
+    'book-controller:search-mode:read',
+    async (_, bookPath: string): Promise<string[]> => {
+      const book = state.bookshelf.books.find(b => b.path === bookPath);
+      if (book) {
+        return book.bookController.readSearchModes();
+      }
+      throw new Error(`Invalid path: ${bookPath}`);
     },
   );
 

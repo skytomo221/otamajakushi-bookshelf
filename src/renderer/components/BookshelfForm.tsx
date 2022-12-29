@@ -4,6 +4,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import Split from 'react-split';
 
+import PrimarySidebarStates from '../states/PrimarySidebarState';
 import { State } from '../states/State';
 import ThemeParameter from '../states/ThemeParameter';
 
@@ -18,7 +19,7 @@ import StatusBar from './StatusBar';
 
 export default function BookshelfForm(): JSX.Element {
   const theme = useTheme();
-  const primarySidebar = useSelector<State, null | string>(
+  const primarySidebar = useSelector<State, null | PrimarySidebarStates>(
     (state: State) => state.primarySidebar,
   );
   const secondarySidebar = useSelector<State, null | string>(

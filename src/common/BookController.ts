@@ -18,7 +18,7 @@ export default abstract class BookController extends Extension {
 
   abstract updatePage(word: PageCard): void;
 
-  abstract readSearchMode(): string[];
+  abstract readSearchModes(): string[];
 
   abstract readSearchIndexes(searchModeId: string): SearchCard[];
 

@@ -114,7 +114,7 @@ export default class OtmController extends BookController {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  public readSearchMode(): string[] {
+  public readSearchModes(): string[] {
     return ['form', 'translation', 'both', 'all'];
   }
 
@@ -126,17 +126,17 @@ export default class OtmController extends BookController {
       case 'form':
         return this.otm.toPlain().words.map(word => ({
           id: word.entry.id.toString(),
-          target: [word.entry.form],
+          targets: [word.entry.form],
         }));
       case 'translation':
         return this.otm.toPlain().words.map(word => ({
           id: word.entry.id.toString(),
-          target: word.translations.map(t => t.forms).flat(),
+          targets: word.translations.map(t => t.forms).flat(),
         }));
       case 'both':
         return this.otm.toPlain().words.map(word => ({
           id: word.entry.id.toString(),
-          target: [
+          targets: [
             word.entry.form,
             ...word.translations.map(t => t.forms).flat(),
           ],
@@ -144,7 +144,7 @@ export default class OtmController extends BookController {
       case 'all':
         return this.otm.toPlain().words.map(word => ({
           id: word.entry.id.toString(),
-          target: [
+          targets: [
             word.entry.form,
             ...word.translations.map(t => t.forms).flat(),
             ...word.contents.map(c => c.text),

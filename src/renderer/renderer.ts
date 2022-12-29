@@ -2,6 +2,7 @@ import log from 'electron-log';
 
 import { ExtensionProperties } from '../common/ExtensionProperties';
 import { PageCard } from '../common/PageCard';
+import SearchProperties from '../common/SearchProperties';
 import StyleThemeParameters from '../common/StyleThemeParameters';
 import TemplateProperties from '../common/TemplateProperties';
 
@@ -25,10 +26,13 @@ export interface Api {
   deletePage: (word: SummaryWord) => Promise<boolean>;
   selectPage: (
     bookPath: string,
+    pageExplorerId: string,
     searchModeId: string,
     searchWord: string,
   ) => Promise<Mediator[]>;
   readPage: (word: SummaryWord) => Promise<Mediator>;
+  readPageExplorer: () => Promise<SearchProperties[]>;
+  readSearchMode: (bookPath: string) => Promise<string[]>;
   readTemplates: (path: string) => Promise<TemplateProperties[]>;
   updatePage: (summary: SummaryWord, word: PageCard) => Promise<Mediator>;
   onClick: (summary: SummaryWord, onClick: string) => Promise<Mediator>;

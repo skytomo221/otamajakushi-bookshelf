@@ -5,6 +5,7 @@ import log from 'electron-log';
 import { ExtensionProperties } from '../common/ExtensionProperties';
 import { LayoutCard } from '../common/LayoutCard';
 import { PageCard } from '../common/PageCard';
+import SearchProperties from '../common/SearchProperties';
 import StyleThemeParameters from '../common/StyleThemeParameters';
 import TemplateProperties from '../common/TemplateProperties';
 
@@ -25,17 +26,23 @@ contextBridge.exposeInMainWorld('api', {
     ipcRenderer.invoke('book-controller:page:delete', word),
   selectPage: (
     bookPath: string,
+    pageExplorerId: string,
     searchModeId: string,
     searchWord: string,
   ): Promise<Mediator[]> =>
     ipcRenderer.invoke(
       'book-controller:page:select',
       bookPath,
+      pageExplorerId,
       searchModeId,
       searchWord,
     ),
   readPage: (word: SummaryWord): Promise<LayoutCard> =>
     ipcRenderer.invoke('book-controller:page:read', word),
+  readPageExplorer: (): Promise<SearchProperties[]> =>
+    ipcRenderer.invoke('book-controller:page-explorer:read'),
+  readSearchMode: (bookPath: string): Promise<string[]> =>
+    ipcRenderer.invoke('book-controller:search-mode:read', bookPath),
   readTemplates: (word: SummaryWord): Promise<TemplateProperties[]> =>
     ipcRenderer.invoke('book-controller:templates:read', word),
   updatePage: (summary: SummaryWord, word: PageCard): Promise<LayoutCard> =>
