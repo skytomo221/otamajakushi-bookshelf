@@ -12,7 +12,7 @@ export const activityBarWidth = 240;
 
 export default function ActivityBar(): JSX.Element {
   const books = useSelector<State, Book[]>(
-    (state: State) => state.bookshelf.books,
+    (state: State) => state.workbenches.map(w => w.book),
   );
 
   return (

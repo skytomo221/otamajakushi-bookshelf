@@ -11,8 +11,8 @@ import {
   StyleThemeProperties,
 } from '../../common/ExtensionProperties';
 import StyleThemeParameters from '../../common/StyleThemeParameters';
-import { addBookAction } from '../actions/BookshelfActions';
 import { applyStyleThemeAction } from '../actions/ThemeActions';
+import { initializeWorkbench } from '../actions/WorkbenchesActions';
 import Book from '../states/Book';
 import { State } from '../states/State';
 
@@ -67,14 +67,14 @@ export default function FileMenu(): JSX.Element {
   const theme = useTheme();
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
-  const books = useSelector<State, Book[]>(
-    (state: State) => state.bookshelf.books,
+  const books = useSelector<State, Book[]>((state: State) =>
+    state.workbenches.map(workbench => workbench.book),
   );
   const extensions = useSelector<State, ExtensionProperties[]>(
     (state: State) => state.extensions,
   );
-  const onBookUpdate = useCallback((book: Book) => {
-    dispatch(addBookAction(book));
+  const onWorkbenchInitialize = useCallback((book: Book) => {
+    dispatch(initializeWorkbench(book));
   }, []);
   const onStyleThemeApply = useCallback((styleTheme: StyleThemeParameters) => {
     dispatch(applyStyleThemeAction(styleTheme));
@@ -86,7 +86,7 @@ export default function FileMenu(): JSX.Element {
         .open(extension.id)
         .then(paths => {
           paths.forEach(path =>
-            onBookUpdate({
+            onWorkbenchInitialize({
               path,
               editable,
             }),
@@ -108,7 +108,7 @@ export default function FileMenu(): JSX.Element {
       .newBook(extension.id)
       .then(paths => {
         paths.forEach(path =>
-          onBookUpdate({
+          onWorkbenchInitialize({
             path,
             editable: true,
           }),

@@ -7,18 +7,19 @@ import SearchProperties from '../../common/SearchProperties';
 import { Mediator } from '../Mediator';
 import { SummaryWord } from '../SummaryWord';
 import {
-  updatePrimarySidebarAction,
-  updateSearchWordAction,
-} from '../actions/PrimarySidebarActions';
-import {
   deleteSelectedWordAction,
   fetchSelectedWordAction,
 } from '../actions/SelectedWordsActions';
-import Book from '../states/Book';
+import {
+  updatePageExplorerAction,
+  updateSearchModeAction,
+  updateSearchWordAction,
+} from '../actions/WorkbenchesActions';
 import PrimarySidebarState from '../states/PrimarySidebarState';
 import { State } from '../states/State';
 import '../renderer';
 import ThemeParameter from '../states/ThemeParameter';
+import Workbench from '../states/Workbench';
 
 import CardRenderer from './card-renderer/CardRenderer';
 
@@ -28,28 +29,37 @@ export const primarySidebarWidth = 240;
 
 function Index(): JSX.Element {
   const dispatch = useDispatch();
-  const primarySidebar = useSelector<State, PrimarySidebarState | null>(
+  const primarySidebar = useSelector<State, PrimarySidebarState>(
     (state: State) => state.primarySidebar,
   );
-  if (primarySidebar === null) {
-    return <></>;
-  }
-  const { book, templates, mediators } = primarySidebar;
-  const { editable } = book;
+  const workbenches = useSelector<State, Workbench[]>(
+    (state: State) => state.workbenches,
+  );
   const theme = useSelector<State, ThemeParameter>(state => state.theme);
   const onSelectedWordFetch = React.useCallback((selectedWord: SummaryWord) => {
     dispatch(fetchSelectedWordAction(selectedWord));
   }, []);
-  const onMediatorsUpdate = React.useCallback(
-    (ms: Mediator[]) => dispatch(updatePrimarySidebarAction({ mediators: ms })),
-    [],
-  );
+  const onMediatorsUpdate = React.useCallback(() => {
+    dispatch(updateSearchWordAction(searchWord));
+  }, []);
   const selectedWords = useSelector<State, null | Mediator[]>(
     (state: State) => state.selectedWords,
   );
   const onDelete = React.useCallback((summary: SummaryWord) => {
     dispatch(deleteSelectedWordAction(summary));
   }, []);
+  const workbench = workbenches.find(
+    w => w.book.path === primarySidebar.bookPath,
+  );
+  if (
+    !primarySidebar.display ||
+    primarySidebar.bookPath === null ||
+    workbench === undefined
+  ) {
+    return <></>;
+  }
+  const { book, templates, mediators, searchWord } = workbench;
+  const { editable } = book;
 
   return (
     <>
@@ -96,9 +106,7 @@ function Index(): JSX.Element {
               className="flex"
               onClick={() => {
                 onDelete(mediator.summary);
-                onMediatorsUpdate(
-                  mediators?.filter(m => m.summary.id !== mediator.summary.id),
-                );
+                onMediatorsUpdate();
               }}>
               <DeleteIcon />
             </button>
@@ -111,71 +119,76 @@ function Index(): JSX.Element {
 
 export default function PrimarySidebar(): JSX.Element {
   const dispatch = useDispatch();
-  const books = useSelector<State, Book[]>(
-    (state: State) => state.bookshelf.books,
-  );
-  const primarySidebar = useSelector<State, null | PrimarySidebarState>(
+  const primarySidebar = useSelector<State, PrimarySidebarState>(
     (state: State) => state.primarySidebar,
+  );
+  const workbenches = useSelector<State, Workbench[]>(
+    (state: State) => state.workbenches,
   );
   const onPageExplorerUpdate = React.useCallback(
     (pageExplorer: SearchProperties) => {
-      dispatch(updatePrimarySidebarAction({ pageExplorer }));
+      dispatch(updatePageExplorerAction(pageExplorer));
     },
     [],
   );
   const onSearchModeUpdate = React.useCallback((searchMode: string) => {
-    dispatch(updatePrimarySidebarAction({ searchMode }));
+    dispatch(updateSearchModeAction(searchMode));
   }, []);
-  const onSearchWordUpdate = React.useCallback((searchWord: string) => {
-    dispatch(updateSearchWordAction(searchWord));
+  const onSearchWordUpdate = React.useCallback((sw: string) => {
+    dispatch(updateSearchWordAction(sw));
   }, []);
-
-  if (primarySidebar) {
-    const { pageExplorers, searchModes, searchWord } = primarySidebar;
-    return books.some(b => b.path === primarySidebar.book.path) ? (
-      <div className="flex flex-col h-full">
-        <input
-          className="bg-transparent m-0.5 w-full"
-          value={searchWord}
-          onChange={event => onSearchWordUpdate(event.target.value)}
-          id="standard-basic"
-        />
-        <div className="text-xs">検索範囲</div>
-        <select
-          onChange={event => {
-            onSearchModeUpdate(event.target.value);
-          }}>
-          {searchModes.map(mode => (
-            <option key={mode} value={mode}>
-              {mode}
-            </option>
-          ))}
-        </select>
-        <div className="text-xs">検索方式</div>
-        <select
-          onChange={event => {
-            onPageExplorerUpdate(
-              pageExplorers.find(p => p.id === event.target.value) ?? {
-                id: '',
-                displayName: '',
-              },
-            );
-          }}>
-          {pageExplorers.map(explorer => (
-            <option key={explorer.id} value={explorer.id}>
-              {explorer.displayName}
-            </option>
-          ))}
-        </select>
-        <div className="grow overflow-auto">
-          <ul>
-            <Index />
-          </ul>
-        </div>
-      </div>
-    ) : (
-      <></>
-    );
+  const workbench = workbenches.find(
+    w => w.book.path === primarySidebar.bookPath,
+  );
+  if (
+    !primarySidebar.display ||
+    primarySidebar.bookPath === null ||
+    workbench === undefined
+  ) {
+    return <></>;
   }
-  return <></>;
+  const { pageExplorers, searchModes, searchWord } = workbench;
+
+  return (
+    <div className="flex flex-col h-full">
+      <input
+        className="bg-transparent m-0.5 w-full"
+        value={searchWord}
+        onChange={event => onSearchWordUpdate(event.target.value)}
+        id="standard-basic"
+      />
+      <div className="text-xs">検索範囲</div>
+      <select
+        onChange={event => {
+          onSearchModeUpdate(event.target.value);
+        }}>
+        {searchModes.map(mode => (
+          <option key={mode} value={mode}>
+            {mode}
+          </option>
+        ))}
+      </select>
+      <div className="text-xs">検索方式</div>
+      <select
+        onChange={event => {
+          onPageExplorerUpdate(
+            pageExplorers.find(p => p.id === event.target.value) ?? {
+              id: '',
+              displayName: '',
+            },
+          );
+        }}>
+        {pageExplorers.map(explorer => (
+          <option key={explorer.id} value={explorer.id}>
+            {explorer.displayName}
+          </option>
+        ))}
+      </select>
+      <div className="grow overflow-auto">
+        <ul>
+          <Index />
+        </ul>
+      </div>
+    </div>
+  );
 }

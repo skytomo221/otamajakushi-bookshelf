@@ -4,7 +4,6 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import Split from 'react-split';
 
-import PrimarySidebarStates from '../states/PrimarySidebarState';
 import { State } from '../states/State';
 import ThemeParameter from '../states/ThemeParameter';
 
@@ -19,8 +18,8 @@ import StatusBar from './StatusBar';
 
 export default function BookshelfForm(): JSX.Element {
   const theme = useTheme();
-  const primarySidebar = useSelector<State, null | PrimarySidebarStates>(
-    (state: State) => state.primarySidebar,
+  const isDisplayPrimarySidebar = useSelector<State, boolean>(
+    (state: State) => state.primarySidebar.display,
   );
   const secondarySidebar = useSelector<State, null | string>(
     (state: State) => state.secondarySidebar,
@@ -41,7 +40,7 @@ export default function BookshelfForm(): JSX.Element {
                 className="flex flex-row grow h-full"
                 elementStyle={(_dimension, size, gutterSize, index) => ({
                   width: `calc(${size}% - ${
-                    (index === 1 && primarySidebar) ||
+                    (index === 1 && isDisplayPrimarySidebar) ||
                     (index === 2 && secondarySidebar)
                       ? gutterSize
                       : 0
@@ -66,18 +65,18 @@ export default function BookshelfForm(): JSX.Element {
                   backgroundColor: theme.palette.divider,
                   cursor: 'col-resize',
                   display:
-                    (index === 1 && primarySidebar) ||
+                    (index === 1 && isDisplayPrimarySidebar) ||
                     (index === 2 && secondarySidebar)
                       ? 'inherit'
                       : 'none',
                 })}
                 minSize={[
-                  primarySidebar ? 100 : 0,
+                  isDisplayPrimarySidebar ? 100 : 0,
                   100,
                   secondarySidebar ? 100 : 0,
                 ]}
                 sizes={[
-                  primarySidebar ? 25 : 0,
+                  isDisplayPrimarySidebar ? 25 : 0,
                   100,
                   secondarySidebar ? 25 : 0,
                 ]}>

@@ -11,7 +11,7 @@ import {
   BookControllerProperties,
   ExtensionProperties,
 } from '../../common/ExtensionProperties';
-import { addBookAction } from '../actions/BookshelfActions';
+import { initializeWorkbench } from '../actions/WorkbenchesActions';
 import Book from '../states/Book';
 import { State } from '../states/State';
 import ThemeParameter from '../states/ThemeParameter';
@@ -25,8 +25,8 @@ export default function Hero(): JSX.Element {
   const extensions = useSelector<State, ExtensionProperties[]>(
     (state: State) => state.extensions,
   );
-  const onBookUpdate = useCallback((book: Book) => {
-    dispatch(addBookAction(book));
+  const onWorkbenchInitialize = useCallback((book: Book) => {
+    dispatch(initializeWorkbench(book));
   }, []);
 
   const openBook =
@@ -35,7 +35,7 @@ export default function Hero(): JSX.Element {
         .open(extension.id)
         .then(paths => {
           paths.forEach(path =>
-            onBookUpdate({
+            onWorkbenchInitialize({
               path,
               editable,
             }),
@@ -57,7 +57,7 @@ export default function Hero(): JSX.Element {
       .newBook(extension.id)
       .then(paths => {
         paths.forEach(path =>
-          onBookUpdate({
+          onWorkbenchInitialize({
             path,
             editable: true,
           }),

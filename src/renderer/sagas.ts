@@ -1,4 +1,3 @@
-import { useSelector } from 'react-redux';
 import { SagaIterator } from 'redux-saga';
 import {
   all,
@@ -6,17 +5,13 @@ import {
   put,
   select,
   takeEvery,
+  takeLatest,
   takeLeading,
 } from 'typed-redux-saga';
 import { Action } from 'typescript-fsa';
 
-import {
-  readPageExplorerAction,
-  readSearchModeAction,
-  readTemplatesAction,
-  updatePrimarySidebarAction,
-  updateSearchWordAction,
-} from './actions/PrimarySidebarActions';
+import SearchProperties from '../common/SearchProperties';
+
 import {
   addSelectedWordAction,
   deleteSelectedWordAction,
@@ -26,8 +21,15 @@ import {
   removeSelectedWordAction,
   updateSelectedWordAction,
 } from './actions/SelectedWordsActions';
+import {
+  addWorkbenchAction,
+  initializeWorkbench,
+  updateWorkbenchAction,
+  updatePageExplorerAction,
+  updateSearchWordAction,
+  updateSearchModeAction,
+} from './actions/WorkbenchesActions';
 import Book from './states/Book';
-import PrimarySidebarState from './states/PrimarySidebarState';
 import { State } from './states/State';
 
 const { api } = window;
@@ -94,65 +96,128 @@ export function* deleteAsync(): SagaIterator {
   yield* takeLeading(deleteSelectedWordAction, deleteChildAsync);
 }
 
-export function* readTemplatesAsync(action: Action<Book>): SagaIterator {
+export function* addWorkbenchAsync(action: Action<Book>): SagaIterator {
   const book = action.payload;
-  api.log.info('readTemplatesAsync', action.payload);
+  api.log.info('addWorkbenchAsync', action.payload);
+  const pageExplorers = yield* call(api.readPageExplorer, book.path);
+  const pageExplorer = pageExplorers[0];
+  const searchModes = yield* call(api.readSearchMode, book.path);
+  const searchMode = searchModes[0];
   const templates = yield* call(api.readTemplates, book.path);
-  yield* put(updatePrimarySidebarAction({ templates }));
-}
-
-export function* pullTemplateAsync(): SagaIterator {
-  yield* takeLeading(readTemplatesAction, readTemplatesAsync);
-}
-
-export function* readPageExplorerAsync(action: Action<void>): SagaIterator {
-  api.log.info('readPageExplorerAsync', action.payload);
-  const pageExplorers = yield* call(api.readPageExplorer);
+  const searchWord = '';
+  const mediators = yield* call(
+    api.selectPage,
+    book.path,
+    pageExplorer.id,
+    searchMode,
+    searchWord,
+  );
   yield* put(
-    updatePrimarySidebarAction({
+    addWorkbenchAction({
+      book,
+      pageExplorer,
       pageExplorers,
-      pageExplorer: pageExplorers[0],
+      searchMode,
+      searchModes,
+      searchWord,
+      templates,
+      mediators,
     }),
   );
 }
 
-export function* pullPageExplorerAsync(): SagaIterator {
-  yield* takeLeading(readPageExplorerAction, readPageExplorerAsync);
+export function* initializeWorkbenchAsync(): SagaIterator {
+  yield* takeLeading(initializeWorkbench, addWorkbenchAsync);
 }
 
-export function* readSearchModesAsync(action: Action<Book>): SagaIterator {
-  const book = action.payload;
-  api.log.info('readSearchModesAsync', action.payload);
-  const searchModes = yield* call(api.readSearchMode, book.path);
-  yield* put(
-    updatePrimarySidebarAction({ searchModes, searchMode: searchModes[0] }),
-  );
-}
-
-export function* pullSearchModesAsync(): SagaIterator {
-  yield* takeLeading(readSearchModeAction, readSearchModesAsync);
-}
-
-export function* readSearchWordAsync(action: Action<string>): SagaIterator {
-  const searchWord = action.payload;
+export function* readPageExplorerAsync(action: Action<SearchProperties>): SagaIterator {
+  const { bookPath } = yield* select((state: State) => state.primarySidebar);
+  if (bookPath === null) {
+    throw new Error('primarySidebar.bookPath is null');
+  }
+  const pageExplorer = action.payload;
   api.log.info('readSearchWordAsync', action.payload);
-  yield* put(updatePrimarySidebarAction({ searchWord }));
-  const primarySidebar = yield* select(state => state.primarySidebar);
-  if (primarySidebar === null) {
-    throw new Error('primarySidebar is null');
+  yield* put(
+    updateWorkbenchAction({ path: bookPath, partial: { pageExplorer } }),
+  );
+  const workbench = yield* select((state: State) =>
+    state.workbenches.find(w => w.book.path === bookPath),
+  );
+  if (workbench === undefined) {
+    throw new Error('workbench is null');
   }
   const mediators = yield* call(
     api.selectPage,
-    primarySidebar.book.path,
-    primarySidebar.pageExplorer.id,
-    primarySidebar.searchMode,
-    primarySidebar.searchWord,
+    workbench.book.path,
+    workbench.pageExplorer.id,
+    workbench.searchMode,
+    workbench.searchWord,
   );
-  yield* put(updatePrimarySidebarAction({ mediators }));
+  yield* put(updateWorkbenchAction({ path: bookPath, partial: { mediators } }));
+}
+
+export function* pullPageExplorerAsync(): SagaIterator {
+  yield* takeLatest(updatePageExplorerAction, readPageExplorerAsync);
+}
+
+export function* readSearchModeAsync(action: Action<string>): SagaIterator {
+  const { bookPath } = yield* select((state: State) => state.primarySidebar);
+  if (bookPath === null) {
+    throw new Error('primarySidebar.bookPath is null');
+  }
+  const searchMode = action.payload;
+  api.log.info('readSearchWordAsync', action.payload);
+  yield* put(
+    updateWorkbenchAction({ path: bookPath, partial: { searchMode } }),
+  );
+  const workbench = yield* select((state: State) =>
+    state.workbenches.find(w => w.book.path === bookPath),
+  );
+  if (workbench === undefined) {
+    throw new Error('workbench is null');
+  }
+  const mediators = yield* call(
+    api.selectPage,
+    workbench.book.path,
+    workbench.pageExplorer.id,
+    workbench.searchMode,
+    workbench.searchWord,
+  );
+  yield* put(updateWorkbenchAction({ path: bookPath, partial: { mediators } }));
+}
+
+export function* pullSearchModeAsync(): SagaIterator {
+  yield* takeLatest(updateSearchModeAction, readSearchModeAsync);
+}
+
+export function* readSearchWordAsync(action: Action<string>): SagaIterator {
+  const { bookPath } = yield* select((state: State) => state.primarySidebar);
+  if (bookPath === null) {
+    throw new Error('primarySidebar.bookPath is null');
+  }
+  const searchWord = action.payload;
+  api.log.info('readSearchWordAsync', action.payload);
+  yield* put(
+    updateWorkbenchAction({ path: bookPath, partial: { searchWord } }),
+  );
+  const workbench = yield* select((state: State) =>
+    state.workbenches.find(w => w.book.path === bookPath),
+  );
+  if (workbench === undefined) {
+    throw new Error('workbench is null');
+  }
+  const mediators = yield* call(
+    api.selectPage,
+    workbench.book.path,
+    workbench.pageExplorer.id,
+    workbench.searchMode,
+    workbench.searchWord,
+  );
+  yield* put(updateWorkbenchAction({ path: bookPath, partial: { mediators } }));
 }
 
 export function* pullSearchWordAsync(): SagaIterator {
-  yield* takeLeading(updateSearchWordAction, readSearchWordAsync);
+  yield* takeLatest(updateSearchWordAction, readSearchWordAsync);
 }
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -162,9 +227,9 @@ export default function* rootSaga() {
     pushWordAsync(),
     onClickAsync(),
     deleteAsync(),
-    pullTemplateAsync(),
+    initializeWorkbenchAsync(),
     pullPageExplorerAsync(),
-    pullSearchModesAsync(),
+    pullSearchModeAsync(),
     pullSearchWordAsync(),
   ]);
 }
