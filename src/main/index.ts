@@ -1,12 +1,15 @@
 /* eslint-disable global-require */
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { app, BrowserWindow, dialog, ipcMain, nativeImage } from 'electron';
+import fs from 'node:fs';
 import path from 'node:path';
 
 import log from 'electron-log';
+import { apFirst } from 'fp-ts/lib/Apply';
 import MarkdownIt from 'markdown-it';
 
 import BookController from '../common/BookController';
+import Extension from '../common/Extension';
 import { PageCard } from '../common/PageCard';
 import PageExplorer from '../common/PageExplorer';
 import SearchProperites from '../common/SearchProperties';
@@ -15,6 +18,7 @@ import StyleThemeParameters from '../common/StyleThemeParameters';
 import TemplateProperties from '../common/TemplateProperties';
 import { Mediator } from '../renderer/Mediator';
 import { SummaryWord } from '../renderer/SummaryWord';
+import nativeImport from '../utils/nativeImport';
 
 import AllPageExplorer from './AllPageExplorer';
 import Book from './Book';
@@ -36,7 +40,7 @@ const getResourceDirectory = () =>
     ? path.join(process.cwd(), 'dist')
     : path.join(process.resourcesPath, 'app.asar', 'dist');
 
-const createWindow = () => {
+const createWindow = async () => {
   const mainWindow = new BrowserWindow({
     width: 1200,
     height: 675,
@@ -49,6 +53,7 @@ const createWindow = () => {
       path.join(getResourceDirectory(), 'assets/otamachan.png'),
     ),
   });
+  // eslint-disable-next-line import/extensions, import/no-unresolved
   const state: State = {
     bookshelf: {
       books: [],
@@ -90,13 +95,15 @@ const createWindow = () => {
     mainWindow.webContents.openDevTools();
   }
 
-  mainWindow.webContents.on('did-finish-load', () => {
+  mainWindow.webContents.on('did-finish-load', async () => {
     mainWindow.webContents.send(
       'extensions:send',
-      state.extensions.map(extension => {
-        const ext = extension();
-        return ext.properties;
-      }),
+      await Promise.all(
+        state.extensions.map(async extension => {
+          const ext = extension();
+          return ext.properties();
+        }),
+      ),
     );
   });
 
@@ -119,21 +126,22 @@ const createWindow = () => {
       .filter(
         (ext): ext is () => BookController => ext() instanceof BookController,
       )
-      .find(ext => ext().properties.id === id);
+      .find(async ext => (await ext().properties()).id === id);
     if (!bookController) {
       mainWindow.webContents.send('log:error', `Extension ${id} not found.`);
       return [];
     }
+    const properties = await bookController().properties();
     const filePath =
-      bookController().properties.format === 'file'
+      properties.format === 'file'
         ? dialog.showSaveDialogSync(mainWindow, {
             buttonLabel: '作成する',
-            filters: bookController().properties.filters,
+            filters: properties.filters,
             properties: ['createDirectory'],
           })
         : dialog.showOpenDialogSync(mainWindow, {
             buttonLabel: '作成する',
-            filters: bookController().properties.filters,
+            filters: properties.filters,
             properties: ['openDirectory', 'createDirectory'],
           })?.[0];
     if (!filePath) return [];
@@ -157,21 +165,22 @@ const createWindow = () => {
       .filter(
         (ext): ext is () => BookController => ext() instanceof BookController,
       )
-      .find(ext => ext().properties.id === id);
+      .find(async ext => (await ext().properties()).id === id);
     if (!bookController) {
       mainWindow.webContents.send('log:error', `Extension ${id} not found.`);
       return [];
     }
+    const properties = await bookController().properties();
     const paths =
-      bookController().properties.format === 'file'
+      properties.format === 'file'
         ? dialog.showOpenDialogSync(mainWindow, {
             buttonLabel: '開く',
-            filters: bookController().properties.filters,
+            filters: properties.filters,
             properties: ['openFile', 'createDirectory'],
           })
         : dialog.showOpenDialogSync(mainWindow, {
             buttonLabel: '開く',
-            filters: bookController().properties.filters,
+            filters: properties.filters,
             properties: ['openDirectory', 'createDirectory'],
           });
     if (!paths) return [];
@@ -226,9 +235,10 @@ const createWindow = () => {
     async (_, filePath: string): Promise<TemplateProperties[]> => {
       const book = state.bookshelf.books.find(b => b.path === filePath);
       if (book) {
-        return book.bookController
-          .readTemplates()
-          .map(word => ({ bookPath: book.path, ...word }));
+        return (await book.bookController.readTemplates()).map(word => ({
+          bookPath: book.path,
+          ...word,
+        }));
       }
       throw new Error(`Invalid path: ${filePath}`);
     },
@@ -239,9 +249,9 @@ const createWindow = () => {
     async (_, bookPath: string, templateId: string): Promise<Mediator> => {
       const book = state.bookshelf.books.find(b => b.path === bookPath);
       if (book) {
-        const newId = book.bookController.createPage(templateId);
-        const word = book.bookController.readPage(newId);
-        const layout = new OtmLayoutBuilder().layout(word);
+        const newId = await book.bookController.createPage(templateId);
+        const word = await book.bookController.readPage(newId);
+        const layout = await new OtmLayoutBuilder().layout(word);
         return {
           summary: { bookPath: book.path, id: word.id },
           word,
@@ -257,7 +267,7 @@ const createWindow = () => {
     async (_, summary: SummaryWord): Promise<boolean> => {
       const book = state.bookshelf.books.find(b => b.path === summary.bookPath);
       if (book) {
-        return book.bookController.deletePage(Number(summary.id));
+        return book.bookController.deletePage(summary.id);
       }
       throw new Error(`Invalid word: ${summary}`);
     },
@@ -268,8 +278,8 @@ const createWindow = () => {
     async (_, summary: SummaryWord): Promise<Mediator> => {
       const book = state.bookshelf.books.find(b => b.path === summary.bookPath);
       if (book) {
-        const word = book.bookController.readPage(summary.id.toString());
-        const layout = new OtmLayoutBuilder().layout(word);
+        const word = await book.bookController.readPage(summary.id.toString());
+        const layout = await new OtmLayoutBuilder().layout(word);
         return { summary, word, layout };
       }
       throw new Error(`Invalid word: ${summary}`);
@@ -291,16 +301,16 @@ const createWindow = () => {
           .filter(
             (ext): ext is () => PageExplorer => ext() instanceof PageExplorer,
           )
-          .find(p => p().properties.id === pageExplorerId) ??
+          .find(async p => (await p().properties()).id === pageExplorerId) ??
         (() => new AllPageExplorer());
       if (book) {
-        const words = book.bookController.readPages(
-          pageExplorer().search(
-            book.bookController.readSearchIndexes(searchModeId),
+        const words = await book.bookController.readPages(
+          await pageExplorer().search(
+            await book.bookController.readSearchIndexes(searchModeId),
             searchWord,
           ),
         );
-        const indexes = new OtmLayoutBuilder().indexes(words);
+        const indexes = await new OtmLayoutBuilder().indexes(words);
         return words.map((word, i) => ({
           summary: { id: word.id, bookPath },
           word,
@@ -317,8 +327,10 @@ const createWindow = () => {
       const book = state.bookshelf.books.find(b => b.path === summary.bookPath);
       if (book) {
         book.bookController.updatePage(word);
-        const newWord = book.bookController.readPage(summary.id.toString());
-        const layout = new OtmLayoutBuilder().layout(newWord);
+        const newWord = await book.bookController.readPage(
+          summary.id.toString(),
+        );
+        const layout = await new OtmLayoutBuilder().layout(newWord);
         return { summary, word: newWord, layout };
       }
       throw new Error(`Invalid word: ${summary} ${word}`);
@@ -330,11 +342,11 @@ const createWindow = () => {
     async (_, summary: SummaryWord, onClick: string): Promise<Mediator> => {
       const book = state.bookshelf.books.find(b => b.path === summary.bookPath);
       if (book) {
-        const newWord = book.bookController.onClick(
+        const newWord = await book.bookController.onClick(
           onClick,
           Number(summary.id),
         );
-        const layout = new OtmLayoutBuilder().layout(newWord);
+        const layout = await new OtmLayoutBuilder().layout(newWord);
         return { summary, word: newWord, layout };
       }
       throw new Error(`Invalid word: ${summary} ${onClick}`);
@@ -347,10 +359,12 @@ const createWindow = () => {
       const pageExplorers = state.extensions.filter(
         (ext): ext is () => PageExplorer => ext() instanceof PageExplorer,
       );
-      return pageExplorers.map(pageExplorer => ({
-        id: pageExplorer().properties.id,
-        displayName: pageExplorer().name(),
-      }));
+      return Promise.all(
+        pageExplorers.map(async pageExplorer => ({
+          id: (await pageExplorer().properties()).id,
+          displayName: await pageExplorer().name(),
+        })),
+      );
     },
   );
 
@@ -370,7 +384,7 @@ const createWindow = () => {
     async (_, id: string): Promise<StyleThemeParameters> => {
       const styleTheme = state.extensions
         .filter((ext): ext is () => StyleTheme => ext() instanceof StyleTheme)
-        .find(ext => ext().properties.id === id);
+        .find(async ext => (await ext().properties()).id === id);
       if (!styleTheme) {
         mainWindow.webContents.send('log:error', `Extension ${id} not found.`);
         throw new Error(`Extension ${id} not found.`);

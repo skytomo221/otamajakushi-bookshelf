@@ -3,7 +3,7 @@ import { StyleThemeProperties } from './ExtensionProperties';
 import StyleThemeParameters from './StyleThemeParameters';
 
 export default abstract class StyleTheme extends Extension {
-  public abstract readonly properties: StyleThemeProperties;
+  abstract properties(): Promise<StyleThemeProperties>;
 
-  abstract readonly style: () => StyleThemeParameters;
+  abstract readonly style: () => Promise<StyleThemeParameters>;
 }

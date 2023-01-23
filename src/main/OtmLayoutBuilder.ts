@@ -14,15 +14,15 @@ import { Translation } from '../otm/Translation';
 import { Word, wordScheme } from '../otm/Word';
 
 export default class OtmLayoutBuilder extends LayoutBuilder {
-  public properties: LayoutBuilderProperties = {
+  public properties = async (): Promise<LayoutBuilderProperties> => ({
     name: 'OTM Layout Builder',
     id: 'otm-layout-builder',
     version: '0.1.0',
     type: 'layout-builder',
     author: 'skytomo221',
-  };
+  });
 
-  public readonly layout = (word: PageCard): LayoutCard => {
+  public readonly layout = async (word: PageCard): Promise<LayoutCard> => {
     const ajv = new Ajv();
     const valid = ajv.validate(wordScheme, word);
     if (!valid) {
@@ -129,7 +129,7 @@ export default class OtmLayoutBuilder extends LayoutBuilder {
     items: wordScheme,
   };
 
-  public readonly indexes = (words: PageCard[]): LayoutCard[] => {
+  public readonly indexes = async (words: PageCard[]): Promise<LayoutCard[]> => {
     const ajv = new Ajv();
     const valid = ajv.validate(this.wordsScheme, words);
     if (!valid) {

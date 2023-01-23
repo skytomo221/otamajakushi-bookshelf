@@ -12,7 +12,7 @@ import OtmSaver from '../otm/OtmSaver';
 import { Word, wordScheme } from '../otm/Word';
 
 export default class OtmController extends BookController {
-  public readonly properties: BookControllerProperties = {
+  public properties = async (): Promise<BookControllerProperties> => ({
     name: 'OTM Controller',
     id: 'otm-controller',
     version: '0.1.0',
@@ -20,7 +20,7 @@ export default class OtmController extends BookController {
     author: 'skytomo221',
     format: 'file',
     filters: [{ name: 'OTM-JSON', extensions: ['json'] }],
-  };
+  });
 
   private otm: Otm | undefined;
 
@@ -39,7 +39,7 @@ export default class OtmController extends BookController {
     };
   }
 
-  public createPage(): string {
+  public async createPage(): Promise<string> {
     if (this.otm === undefined) {
       throw new Error('otm is undefined');
     }
@@ -55,15 +55,15 @@ export default class OtmController extends BookController {
     return newId.toString();
   }
 
-  public deletePage(id: number): boolean {
+  public async deletePage(id: string): Promise<boolean> {
     if (this.otm === undefined) {
       throw new Error('otm is undefined');
     }
-    this.otm.removeWord(id);
+    this.otm.removeWord(parseInt(id, 10));
     return true;
   }
 
-  public readPage(id: string): PageCard {
+  public async readPage(id: string): Promise<PageCard> {
     if (this.otm === undefined) {
       throw new Error('otm is undefined');
     }
@@ -75,7 +75,7 @@ export default class OtmController extends BookController {
     return OtmController.toWordCard(word);
   }
 
-  public readPages(ids: string[]): PageCard[] {
+  public async readPages(ids: string[]): Promise<PageCard[]> {
     if (this.otm === undefined) {
       throw new Error('otm is undefined');
     }
@@ -85,7 +85,7 @@ export default class OtmController extends BookController {
       .map(word => OtmController.toWordCard(word));
   }
 
-  public readTemplates(): TemplateProperties[] {
+  public async readTemplates(): Promise<TemplateProperties[]> {
     if (this.otm === undefined) {
       throw new Error('otm is undefined');
     }
@@ -97,7 +97,7 @@ export default class OtmController extends BookController {
     ];
   }
 
-  public updatePage(word: PageCard): number {
+  public async updatePage(word: PageCard): Promise<string> {
     if (this.otm === undefined) {
       throw new Error('otm is undefined');
     }
@@ -110,15 +110,15 @@ export default class OtmController extends BookController {
       filter: w => w.entry.id === parseInt(word.id, 10),
       map: () => word,
     });
-    return parseInt(word.id, 10);
+    return word.id;
   }
 
   // eslint-disable-next-line class-methods-use-this
-  public readSearchModes(): string[] {
+  public async readSearchModes(): Promise<string[]> {
     return ['form', 'translation', 'both', 'all'];
   }
 
-  public readSearchIndexes(searchModeId: string): SearchCard[] {
+  public async readSearchIndexes(searchModeId: string): Promise<SearchCard[]> {
     if (this.otm === undefined) {
       throw new Error('otm is undefined');
     }
@@ -155,7 +155,7 @@ export default class OtmController extends BookController {
     }
   }
 
-  public onClick(script: string, id: number): PageCard {
+  public async onClick(script: string, id: number): Promise<PageCard> {
     if (this.otm === undefined) {
       throw new Error('otm is undefined');
     }

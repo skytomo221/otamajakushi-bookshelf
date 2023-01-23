@@ -3,20 +3,20 @@ import PageExplorer from '../common/PageExplorer';
 import { SearchCard } from '../common/SearchCard';
 
 export default class IncludesPageExplorer extends PageExplorer {
-  public readonly properties: PageExplorerProperties = {
+  public readonly properties = async (): Promise<PageExplorerProperties> => ({
     name: 'IncludesPageExplorer',
     id: 'includes-page-explorer',
     version: '0.1.0',
     author: 'skytomo221',
     type: 'page-explorer',
-  };
+  });
 
-  public readonly name = (): string => '部分一致';
+  public readonly name = async (): Promise<string> => '部分一致';
 
-  public readonly search = (
+  public readonly search = async (
     cards: SearchCard[],
     searchWord: string,
-  ): string[] =>
+  ): Promise<string[]> =>
     cards
       .filter(card => card.targets.some(t => t.includes(searchWord)))
       .map(card => card.id);
