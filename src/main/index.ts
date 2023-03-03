@@ -1,15 +1,19 @@
 /* eslint-disable global-require */
 /* eslint-disable @typescript-eslint/no-var-requires */
+import { exec } from 'child_process';
 import { app, BrowserWindow, dialog, ipcMain, nativeImage } from 'electron';
 import fs from 'node:fs';
+import * as net from 'node:net';
 import path from 'node:path';
 
 import log from 'electron-log';
 import { apFirst } from 'fp-ts/lib/Apply';
+import getPort from 'get-port';
 import MarkdownIt from 'markdown-it';
 
 import BookController from '../common/BookController';
 import Extension from '../common/Extension';
+import { ExtensionProperties } from '../common/ExtensionProperties';
 import { PageCard } from '../common/PageCard';
 import PageExplorer from '../common/PageExplorer';
 import SearchProperites from '../common/SearchProperties';
@@ -18,7 +22,6 @@ import StyleThemeParameters from '../common/StyleThemeParameters';
 import TemplateProperties from '../common/TemplateProperties';
 import { Mediator } from '../renderer/Mediator';
 import { SummaryWord } from '../renderer/SummaryWord';
-import nativeImport from '../utils/nativeImport';
 
 import AllPageExplorer from './AllPageExplorer';
 import Book from './Book';
@@ -30,6 +33,7 @@ import OtamaLightTheme from './OtamaLightTheme';
 import OtmController from './OtmController';
 import OtmLayoutBuilder from './OtmLayoutBuilder';
 import RegexPageExplorer from './RegexPageExplorer';
+import SocketBookController from './SocketBookController';
 import StartsWithPageExplorer from './StartsWithPageExplorer';
 import { State } from './State';
 
@@ -71,6 +75,74 @@ const createWindow = async () => {
     ],
   };
   const md = new MarkdownIt();
+
+  fs.readdir(path.join(__dirname, 'extensions'), (_err, files) => {
+    files.forEach(file => {
+      const extensionDirectory = path.join(__dirname, 'extensions', file);
+      const activateFile = path.join(extensionDirectory, 'activate.bat');
+      fs.stat(activateFile, async (_err2, stats) => {
+        const portNumber = await getPort();
+        if (stats.isFile()) {
+          const command = fs
+            .readFileSync(activateFile)
+            .toString()
+            // eslint-disable-next-line no-template-curly-in-string
+            .replace('${portNumber}', portNumber.toString());
+          const server = net
+            .createServer(socket => {
+              socket.once(
+                'data',
+                async (buffer: { toString: () => string }) => {
+                  const { action, data } = JSON.parse(buffer.toString());
+                  log.info(buffer.toString());
+                  if (action === 'properties') {
+                    const properties = data as ExtensionProperties;
+                    if (
+                      state.extensions.every(
+                        async e =>
+                          (await e().properties()).id !== properties.id,
+                      )
+                    ) {
+                      state.extensions.push(
+                        () => new SocketBookController(socket),
+                      );
+                      mainWindow.webContents.send(
+                        'extensions:send',
+                        await Promise.all(
+                          state.extensions.map(async extension => {
+                            const ext = extension();
+                            return ext.properties();
+                          }),
+                        ),
+                      );
+                      log.info(
+                        `Extension loaded successfully. Extension id: ${properties.id}`,
+                      );
+                    }
+                  }
+                },
+              );
+              socket.write(JSON.stringify({ action: 'properties' }));
+            })
+            .listen(portNumber);
+          const fixedCommand = command
+            .replace(
+              // eslint-disable-next-line no-template-curly-in-string
+              '${__dirname}',
+              extensionDirectory,
+            )
+            .replace(
+              // eslint-disable-next-line no-template-curly-in-string
+              '${portNumber}',
+              portNumber.toString(),
+            );
+          exec(fixedCommand);
+          log.info({ activateFile, fixedCommand, portNumber });
+        }
+      });
+      console.log(file);
+    });
+  });
 
   (() => {
     if (process.argv.find(arg => arg === '--debug')) {

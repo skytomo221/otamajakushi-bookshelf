@@ -73,6 +73,7 @@
     "events": "^3.3.0",
     "flat": "^5.0.2",
     "fp-ts": "^2.12.3",
+    "get-port": "^6.1.2",
     "io-ts": "^2.2.18",
     "markdown-it": "^13.0.1",
     "mui-nested-menu": "^2.1.3",

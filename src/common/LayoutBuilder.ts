@@ -8,5 +8,5 @@ export default abstract class LayoutBuilder extends Extension {
 
   abstract readonly layout: (word: PageCard) => Promise<LayoutCard>;
 
-  abstract readonly indexes: (word: PageCard[]) => Promise<LayoutCard[]>;
+  abstract readonly indexes: (words: PageCard[]) => Promise<LayoutCard[]>;
 }
