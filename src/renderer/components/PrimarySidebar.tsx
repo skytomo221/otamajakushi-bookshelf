@@ -1,165 +1,194 @@
-import {
-  mdiRegex,
-  mdiBookSearch,
-  mdiFormatLetterStartsWith,
-  mdiFormatLetterEndsWith,
-  mdiFormatLetterMatches,
-} from '@mdi/js';
-import Icon from '@mdi/react';
-import { Box, IconButton, InputAdornment, TextField } from '@mui/material';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
 import * as React from 'react';
-import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
+import SearchProperties from '../../common/SearchProperties';
 import { Mediator } from '../Mediator';
 import { SummaryWord } from '../SummaryWord';
-import { fetchSelectedWordAction } from '../actions/SelectedWordsActions';
-import Book from '../states/Book';
+import {
+  deleteSelectedWordAction,
+  fetchSelectedWordAction,
+} from '../actions/SelectedWordsActions';
+import {
+  updatePageExplorerAction,
+  updateSearchModeAction,
+  updateSearchWordAction,
+} from '../actions/WorkbenchesActions';
+import PrimarySidebarState from '../states/PrimarySidebarState';
 import { State } from '../states/State';
-
 import '../renderer';
+import ThemeParameter from '../states/ThemeParameter';
+import Workbench from '../states/Workbench';
+
+import CardRenderer from './card-renderer/CardRenderer';
 
 const { api } = window;
 
 export const primarySidebarWidth = 240;
 
-interface BookListItemProps {
-  book: Book;
-  search: string;
-  mode: string;
-}
-
-function BookListItem({ book, search, mode }: BookListItemProps): JSX.Element {
+function Index(): JSX.Element {
   const dispatch = useDispatch();
+  const primarySidebar = useSelector<State, PrimarySidebarState>(
+    (state: State) => state.primarySidebar,
+  );
+  const workbenches = useSelector<State, Workbench[]>(
+    (state: State) => state.workbenches,
+  );
+  const theme = useSelector<State, ThemeParameter>(state => state.theme);
   const onSelectedWordFetch = React.useCallback((selectedWord: SummaryWord) => {
     dispatch(fetchSelectedWordAction(selectedWord));
+  }, []);
+  const onMediatorsUpdate = React.useCallback(() => {
+    dispatch(updateSearchWordAction(searchWord));
   }, []);
   const selectedWords = useSelector<State, null | Mediator[]>(
     (state: State) => state.selectedWords,
   );
-  const [words, setWords] = useState<SummaryWord[]>();
-  useEffect(() => {
-    const process = async () => {
-      setWords(await api.readWords(book.path));
-    };
-    process();
+  const onDelete = React.useCallback((summary: SummaryWord) => {
+    dispatch(deleteSelectedWordAction(summary));
   }, []);
+  const workbench = workbenches.find(
+    w => w.book.path === primarySidebar.bookPath,
+  );
+  if (
+    !primarySidebar.display ||
+    primarySidebar.bookPath === null ||
+    workbench === undefined
+  ) {
+    return <></>;
+  }
+  const { book, templates, mediators, searchWord } = workbench;
+  const { editable } = book;
 
   return (
     <>
-      {(words ?? [])
-        .filter(word => {
-          switch (mode) {
-            case 'startsWith':
-              return word.form.startsWith(search);
-            case 'endsWith':
-              return word.form.endsWith(search);
-            case 'matches':
-              return word.form.includes(search);
-            case 'regex':
-              return word.form.match(search);
-            default:
-              return true;
-          }
-        })
-        .sort((a, b) => {
-          const af = a.form.toUpperCase();
-          const bf = b.form.toUpperCase();
-          if (af < bf) {
-            return -1;
-          }
-          if (af > bf) {
-            return 1;
-          }
-          return 0;
-        })
-        .map(word => (
-          <ListItem key={word.id} disablePadding>
-            <ListItemButton
-              onClick={() => {
-                if (
-                  (selectedWords ?? []).every(
-                    mediator =>
-                      mediator.summary.id !== word.id ||
-                      mediator.summary.bookPath !== book.path,
-                  )
-                ) {
-                  onSelectedWordFetch(word);
-                }
-              }}>
-              <ListItemText primary={word.form} />
-            </ListItemButton>
-          </ListItem>
+      {editable &&
+        (templates ?? []).map(template => (
+          <li key={template.id} className={theme.style['Index.li']}>
+            <button
+              className={theme.style['Index.button']}
+              onClick={async () => {
+                const newPage = await api.createPage(book.path, template.id);
+                onSelectedWordFetch(newPage.summary);
+              }}
+              type="button">
+              <AddIcon fontSize="small" />
+              {template.name}
+            </button>
+          </li>
         ))}
+      {(mediators ?? []).map(mediator => (
+        <li key={mediator.summary.id} className={theme.style['Index.li']}>
+          <button
+            className={theme.style['Index.button']}
+            onClick={() => {
+              if (
+                (selectedWords ?? []).every(
+                  m =>
+                    m.summary.id !== mediator.summary.id ||
+                    m.summary.bookPath !== book.path,
+                )
+              ) {
+                onSelectedWordFetch(mediator.summary);
+              }
+            }}
+            type="button">
+            <CardRenderer
+              word={mediator.word}
+              summary={mediator.summary}
+              layout={mediator.layout}
+            />
+          </button>
+          {editable && (
+            <button
+              type="button"
+              className="flex"
+              onClick={() => {
+                onDelete(mediator.summary);
+                onMediatorsUpdate();
+              }}>
+              <DeleteIcon />
+            </button>
+          )}
+        </li>
+      ))}
     </>
   );
 }
 
 export default function PrimarySidebar(): JSX.Element {
-  const books = useSelector<State, Book[]>(
-    (state: State) => state.bookshelf.books,
-  );
-  const primarySidebar = useSelector<State, null | string>(
+  const dispatch = useDispatch();
+  const primarySidebar = useSelector<State, PrimarySidebarState>(
     (state: State) => state.primarySidebar,
   );
-  const open = primarySidebar !== null;
-  const [search, setSearch] = useState<string>('');
-  const [searchMode, setSearchMode] = useState<number>(0);
-  const icons = [
-    <Icon
-      key={0}
-      path={mdiFormatLetterStartsWith}
-      title="Start with"
-      size={1}
-    />,
-    <Icon key={1} path={mdiFormatLetterEndsWith} title="Ends with" size={1} />,
-    <Icon key={2} path={mdiFormatLetterMatches} title="Matches" size={1} />,
-    <Icon key={3} path={mdiRegex} title="Regex" size={1} />,
-    <Icon key={4} path={mdiBookSearch} title="Full text search" size={1} />,
-  ];
-  const modes = ['startsWith', 'endsWith', 'matches', 'regex', 'fullText'];
-
-  if (open) {
-    return books.some(book => book.path === primarySidebar) ? (
-      <div className="flex flex-col h-full">
-        <Box sx={{ display: 'flex' }}>
-          <TextField
-            value={search}
-            onChange={event => setSearch(event.target.value)}
-            id="standard-basic"
-            sx={{ width: '100%', margin: '2px' }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <IconButton
-                    aria-label="delete"
-                    onClick={() =>
-                      setSearchMode((searchMode + 1) % icons.length)
-                    }>
-                    {icons[searchMode]}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
-        </Box>
-        <div className="grow overflow-auto">
-          <List>
-            <BookListItem
-              book={books.find(book => book.path === primarySidebar) as Book}
-              search={search}
-              mode={modes[searchMode]}
-            />
-          </List>
-        </div>
-      </div>
-    ) : (
-      <></>
-    );
+  const workbenches = useSelector<State, Workbench[]>(
+    (state: State) => state.workbenches,
+  );
+  const onPageExplorerUpdate = React.useCallback(
+    (pageExplorer: SearchProperties) => {
+      dispatch(updatePageExplorerAction(pageExplorer));
+    },
+    [],
+  );
+  const onSearchModeUpdate = React.useCallback((searchMode: string) => {
+    dispatch(updateSearchModeAction(searchMode));
+  }, []);
+  const onSearchWordUpdate = React.useCallback((sw: string) => {
+    dispatch(updateSearchWordAction(sw));
+  }, []);
+  const workbench = workbenches.find(
+    w => w.book.path === primarySidebar.bookPath,
+  );
+  if (
+    !primarySidebar.display ||
+    primarySidebar.bookPath === null ||
+    workbench === undefined
+  ) {
+    return <></>;
   }
-  return <></>;
+  const { pageExplorers, searchModes, searchWord } = workbench;
+
+  return (
+    <div className="flex flex-col h-full">
+      <input
+        className="bg-transparent m-0.5 w-full"
+        value={searchWord}
+        onChange={event => onSearchWordUpdate(event.target.value)}
+        id="standard-basic"
+      />
+      <div className="text-xs">検索範囲</div>
+      <select
+        onChange={event => {
+          onSearchModeUpdate(event.target.value);
+        }}>
+        {searchModes.map(mode => (
+          <option key={mode} value={mode}>
+            {mode}
+          </option>
+        ))}
+      </select>
+      <div className="text-xs">検索方式</div>
+      <select
+        onChange={event => {
+          onPageExplorerUpdate(
+            pageExplorers.find(p => p.id === event.target.value) ?? {
+              id: '',
+              displayName: '',
+            },
+          );
+        }}>
+        {pageExplorers.map(explorer => (
+          <option key={explorer.id} value={explorer.id}>
+            {explorer.displayName}
+          </option>
+        ))}
+      </select>
+      <div className="grow overflow-auto">
+        <ul>
+          <Index />
+        </ul>
+      </div>
+    </div>
+  );
 }

@@ -1,12 +1,10 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React from 'react';
+import { useSelector } from 'react-redux';
 
-import { Mediator } from "../../Mediator";
-import { State } from "../../states/State";
+import { Mediator } from '../../Mediator';
+import { State } from '../../states/State';
 
-import Recursion from "./Recursion";
-
-const { api } = window;
+import Recursion from './Recursion';
 
 export default function CardRenderer({
   summary,
@@ -15,8 +13,9 @@ export default function CardRenderer({
 }: Mediator): JSX.Element {
   const editable = useSelector<State, boolean>(
     (state: State) =>
-      state.bookshelf.books.find(book => book.path === summary.bookPath)
-        ?.editable ?? false,
+      state.workbenches.find(
+        workbench => workbench.book.path === summary.bookPath,
+      )?.book.editable ?? false,
   );
   return (
     <Recursion

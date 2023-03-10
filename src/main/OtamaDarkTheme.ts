@@ -3,15 +3,15 @@ import StyleTheme from '../common/StyleTheme';
 import StyleThemeParameters from '../common/StyleThemeParameters';
 
 export default class OtamaDarkTheme extends StyleTheme {
-  public properties: StyleThemeProperties = {
+  public properties = async (): Promise<StyleThemeProperties> => ({
     name: 'Otama Dark Theme',
     id: 'otama-dark-theme',
     version: '0.1.0',
     type: 'style-theme',
     author: 'skytomo221',
-  };
+  });
 
-  readonly style = (): StyleThemeParameters => ({
+  readonly style = async (): Promise<StyleThemeParameters> => ({
     main: 'bg-slate-800 text-slate-300',
     menuBar: 'bg-slate-800',
     statuBar: 'bg-slate-700',
@@ -21,6 +21,7 @@ export default class OtamaDarkTheme extends StyleTheme {
     h4: 'text-3xl text-slate-100',
     h5: 'text-2xl text-slate-100',
     h6: 'text-xl text-slate-100',
+    p: 'mx-2 my-1 text-base text-slate-100',
     span: '',
     lg: 'text-lg text-slate-300',
     base: 'text-base text-slate-300',

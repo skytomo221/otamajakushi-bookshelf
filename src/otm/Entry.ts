@@ -1,11 +1,19 @@
-import * as t from 'io-ts';
+import { JSONSchemaType } from 'ajv';
 
 export type Entry = {
   id: number;
   form: string;
 }
 
-export const TEntry = t.type({
-  id: t.number,
-  form: t.string,
-});
+export const entryScheme: JSONSchemaType<Entry> = {
+  type: 'object',
+  properties: {
+    id: {
+      type: 'integer',
+    },
+    form: {
+      type: 'string',
+    },
+  },
+  required: ['id', 'form'],
+};

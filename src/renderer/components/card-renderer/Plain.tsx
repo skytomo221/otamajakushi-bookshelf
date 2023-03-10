@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { LayoutCard } from '../../../common/LayoutCard';
-import { WordCard } from '../../../common/WordCard';
+import { PageCard } from '../../../common/PageCard';
 import { Mediator } from '../../Mediator';
 import { SummaryWord } from '../../SummaryWord';
 import { pushSelectedWordAction } from '../../actions/SelectedWordsActions';
@@ -62,7 +62,7 @@ export default function Plain(
         editable: boolean;
         summary: SummaryWord;
         layout: LayoutCard;
-        word: WordCard;
+        word: PageCard;
       },
 ): JSX.Element {
   const theme = useSelector<State, ThemeParameter>(state => state.theme);

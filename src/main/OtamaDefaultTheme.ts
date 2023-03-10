@@ -3,15 +3,15 @@ import StyleTheme from '../common/StyleTheme';
 import StyleThemeParameters from '../common/StyleThemeParameters';
 
 export default class OtamaDefaultTheme extends StyleTheme {
-  public properties: StyleThemeProperties = {
+  public properties = async (): Promise<StyleThemeProperties> => ({
     name: 'Otama Default Theme',
     id: 'otama-default-theme',
     version: '0.1.0',
     type: 'style-theme',
     author: 'skytomo221',
-  };
+  });
 
-  readonly style = (): StyleThemeParameters => ({
+  readonly style = async (): Promise<StyleThemeParameters> => ({
     main: '',
     menuBar: 'bg-blue-500',
     statuBar: 'bg-slate-300',

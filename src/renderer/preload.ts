@@ -4,27 +4,51 @@ import log from 'electron-log';
 
 import { ExtensionProperties } from '../common/ExtensionProperties';
 import { LayoutCard } from '../common/LayoutCard';
+import { PageCard } from '../common/PageCard';
+import SearchProperties from '../common/SearchProperties';
 import StyleThemeParameters from '../common/StyleThemeParameters';
-import { WordCard } from '../common/WordCard';
-import { Mediator } from './Mediator';
+import TemplateProperties from '../common/TemplateProperties';
 
+import { Mediator } from './Mediator';
 import { SummaryWord } from './SummaryWord';
 
 contextBridge.exposeInMainWorld('api', {
   windowMinimize: () => ipcRenderer.invoke('window-minimize'),
   windowMaximize: () => ipcRenderer.invoke('window-maximize'),
   windowClose: () => ipcRenderer.invoke('window-close'),
+  newBook: (id: string): Promise<string[]> => ipcRenderer.invoke('new', id),
   open: (id: string): Promise<string[]> => ipcRenderer.invoke('open', id),
   save: (filePath: string): Promise<boolean> =>
     ipcRenderer.invoke('save', filePath),
-  readWords: (path: string): Promise<{ form: string; id: string | number }[]> =>
-    ipcRenderer.invoke('book-controller:words:read', path),
-  readWord: (word: SummaryWord): Promise<LayoutCard> =>
-    ipcRenderer.invoke('book-controller:word:read', word),
-  updateWord: (summary: SummaryWord, word: WordCard): Promise<LayoutCard> =>
-    ipcRenderer.invoke('book-controller:word:update', summary, word),
+  createPage: (bookPath: string, templateId: string): Promise<Mediator> =>
+    ipcRenderer.invoke('book-controller:page:create', bookPath, templateId),
+  deletePage: (word: SummaryWord): Promise<boolean> =>
+    ipcRenderer.invoke('book-controller:page:delete', word),
+  selectPage: (
+    bookPath: string,
+    pageExplorerId: string,
+    searchModeId: string,
+    searchWord: string,
+  ): Promise<Mediator[]> =>
+    ipcRenderer.invoke(
+      'book-controller:page:select',
+      bookPath,
+      pageExplorerId,
+      searchModeId,
+      searchWord,
+    ),
+  readPage: (word: SummaryWord): Promise<LayoutCard> =>
+    ipcRenderer.invoke('book-controller:page:read', word),
+  readPageExplorer: (): Promise<SearchProperties[]> =>
+    ipcRenderer.invoke('book-controller:page-explorer:read'),
+  readSearchMode: (bookPath: string): Promise<string[]> =>
+    ipcRenderer.invoke('book-controller:search-mode:read', bookPath),
+  readTemplates: (word: SummaryWord): Promise<TemplateProperties[]> =>
+    ipcRenderer.invoke('book-controller:templates:read', word),
+  updatePage: (summary: SummaryWord, word: PageCard): Promise<LayoutCard> =>
+    ipcRenderer.invoke('book-controller:page:update', summary, word),
   onClick: (summary: SummaryWord, onClick: string): Promise<Mediator> =>
-    ipcRenderer.invoke('book-controller:word:on-click', summary, onClick),
+    ipcRenderer.invoke('book-controller:page:on-click', summary, onClick),
   applyStyleTheme: (id: string): Promise<StyleThemeParameters> =>
     ipcRenderer.invoke('style-theme:apply', id),
   markdown: (text: string) => ipcRenderer.sendSync('markdown', text),

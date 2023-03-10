@@ -1,99 +1,79 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const path = require('path');
 
+const isDevelopment = process.env.NODE_ENV === 'development';
+
 const outputPath = path.join(__dirname, 'dist');
+const common = {
+  cache: true,
+  mode: isDevelopment ? 'development' : 'production',
+  devtool: isDevelopment ? 'inline-source-map' : undefined,
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        enforce: 'pre',
+        loader: 'eslint-loader',
+      },
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+      },
+      {
+        test: /\.css$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          { loader: 'css-loader', options: { sourceMap: isDevelopment } },
+          { loader: 'postcss-loader', options: { sourceMap: isDevelopment } },
+        ],
+      },
+      {
+        test: /\.(ico|png|svg|eot|woff?2?)$/,
+        type: 'asset/resource',
+      },
+    ],
+  },
+  resolve: {
+    extensions: ['.ts', '.tsx', '.js'],
+  },
+};
 const mainConfig = {
+  ...common,
   target: 'electron-main',
   entry: './src/main/index.ts',
-  cache: true,
-  mode: 'development',
-  devtool: 'source-map',
   output: {
     path: outputPath,
     filename: 'main.js',
   },
-  module: {
-    rules: [
-      {
-        test: /\.tsx?$/,
-        enforce: 'pre',
-        loader: 'eslint-loader',
-      },
-      {
-        test: /\.tsx?$/,
-        use: 'ts-loader',
-      },
-      {
-        test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader'],
-      },
-    ],
-  },
-  resolve: {
-    extensions: ['.ts', '.tsx', '.js'],
-  },
+  plugins: [
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: path.resolve(__dirname, 'src/assets'),
+          to: 'assets',
+        },
+      ],
+    }),
+  ],
 };
 const preloadConfig = {
+  ...common,
   target: 'electron-preload',
   entry: './src/renderer/preload.ts',
-  cache: true,
-  mode: 'development',
-  devtool: 'source-map',
   output: {
     path: outputPath,
     filename: 'preload.js',
   },
-  module: {
-    rules: [
-      {
-        test: /\.tsx?$/,
-        enforce: 'pre',
-        loader: 'eslint-loader',
-      },
-      {
-        test: /\.tsx?$/,
-        use: 'ts-loader',
-      },
-      {
-        test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader'],
-      },
-    ],
-  },
-  resolve: {
-    extensions: ['.ts', '.tsx', '.js'],
-  },
 };
 const rendererConfig = {
+  ...common,
   target: 'electron-renderer',
   entry: './src/renderer/index.tsx',
-  cache: true,
-  mode: 'development',
-  devtool: 'source-map',
   output: {
     path: outputPath,
     filename: 'renderer.js',
-  },
-  module: {
-    rules: [
-      {
-        test: /\.tsx?$/,
-        enforce: 'pre',
-        loader: 'eslint-loader',
-      },
-      {
-        test: /\.tsx?$/,
-        use: 'ts-loader',
-      },
-      {
-        test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader'],
-      },
-    ],
-  },
-  resolve: {
-    extensions: ['.ts', '.tsx', '.js'],
   },
   plugins: [
     new HtmlWebpackPlugin({

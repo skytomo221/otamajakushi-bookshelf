@@ -1,9 +1,20 @@
 import { reducerWithInitialState } from 'typescript-fsa-reducers';
 
-import { changePrimarySidebarAction } from '../actions/PrimarySidebarActions';
+import updatePrimarySidebarAction from '../actions/PrimarySidebarActions';
+import PrimarySidebarStates from '../states/PrimarySidebarState';
 
-const primarySidebarReducer = reducerWithInitialState<null | string>(null)
-  .case(changePrimarySidebarAction, (_state, payload) => payload)
+const initPrimarySidebarStates: PrimarySidebarStates = {
+  display: false,
+  bookPath: null,
+};
+
+const primarySidebarReducer = reducerWithInitialState<PrimarySidebarStates>(
+  initPrimarySidebarStates,
+)
+  .case(updatePrimarySidebarAction, (_, payload) => ({
+    display: payload !== null,
+    bookPath: payload,
+  }))
   .build();
 
 export default primarySidebarReducer;

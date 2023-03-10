@@ -2,8 +2,8 @@ import { actionCreatorFactory } from 'typescript-fsa';
 
 const actionCreator = actionCreatorFactory('primary-sidebar-action');
 
-export const changePrimarySidebarAction = actionCreator<Partial<null | string>>(
-  'change-sidebar',
+const updatePrimarySidebarAction = actionCreator<null | string>(
+  'update-book-path',
 );
 
-export default changePrimarySidebarAction;
+export default updatePrimarySidebarAction;

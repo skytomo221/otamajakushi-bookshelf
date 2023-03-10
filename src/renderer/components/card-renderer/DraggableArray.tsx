@@ -4,7 +4,7 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { LayoutComponent, LayoutCard } from '../../../common/LayoutCard';
-import { WordCard } from '../../../common/WordCard';
+import { PageCard } from '../../../common/PageCard';
 import { Mediator } from '../../Mediator';
 import { SummaryWord } from '../../SummaryWord';
 import { pushSelectedWordAction } from '../../actions/SelectedWordsActions';
@@ -21,7 +21,7 @@ interface Props {
   editable: boolean;
   summary: SummaryWord;
   layout: LayoutCard;
-  word: WordCard;
+  word: PageCard;
 }
 
 function swap<T>(items: T[], source: number, destination: number) {
@@ -33,7 +33,6 @@ function swap<T>(items: T[], source: number, destination: number) {
 
 export default function DraggableArray({
   baseReference,
-  className,
   content,
   editable,
   summary,

@@ -6,6 +6,7 @@ export interface FileFilter {
 
 export type ExtensionProperties =
   | BookControllerProperties
+  | PageExplorerProperties
   | LayoutBuilderProperties
   | StyleThemeProperties;
 
@@ -17,6 +18,14 @@ export interface BookControllerProperties {
   type: 'book-controller';
   format: 'file' | 'directory';
   filters: FileFilter[];
+}
+
+export interface PageExplorerProperties {
+  name: string;
+  id: string;
+  version: string;
+  author: string;
+  type: 'page-explorer';
 }
 
 export interface LayoutBuilderProperties {

@@ -5,7 +5,7 @@ import path from 'path';
 test('OtmController load test', () => {
   new OtmController()
     .load(path.join(__dirname, '..', '..', 'src', 'data', 'sample.json'))
-    .then((controller) => {
-      expect(controller.readWords().length).toEqual(8);
+    .then(async (controller) => {
+      expect((await controller.readSearchIndexes('form')).length).toEqual(8);
     });
 });

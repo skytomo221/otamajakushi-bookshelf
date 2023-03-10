@@ -1,18 +1,15 @@
 import BookIcon from '@mui/icons-material/Book';
-import {
-  ListItemButton,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Menu,
-  MenuItem,
-} from '@mui/material';
+import { ListItem, Menu, MenuItem } from '@mui/material';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { editBookAction, removeBookAction } from '../actions/BookshelfActions';
-import { changePrimarySidebarAction } from '../actions/PrimarySidebarActions';
+import updatePrimarySidebarAction from '../actions/PrimarySidebarActions';
+import {
+  editBookAction,
+  removeWorkbenchAction,
+} from '../actions/WorkbenchesActions';
 import Book from '../states/Book';
+import PrimarySidebarStates from '../states/PrimarySidebarState';
 import { State } from '../states/State';
 
 interface Props {
@@ -21,11 +18,13 @@ interface Props {
 
 export default function BookViewContainer({ book }: Props): JSX.Element {
   const dispatch = useDispatch();
-  const primarySidebar = useSelector<State, null | string>(
+  const primarySidebar = useSelector<State, PrimarySidebarStates>(
     (state: State) => state.primarySidebar,
   );
-  const onPrimarySidebarChange = React.useCallback((text: string | null) => {
-    dispatch(changePrimarySidebarAction(text));
+  const onPrimarySidebarChange = React.useCallback((newBook: Book | null) => {
+    dispatch(
+      updatePrimarySidebarAction(newBook === null ? null : newBook.path),
+    );
   }, []);
   const [contextMenu, setContextMenu] = React.useState<{
     mouseX: number;
@@ -53,7 +52,7 @@ export default function BookViewContainer({ book }: Props): JSX.Element {
     <ListItem
       onClick={() => {
         if (contextMenu === null)
-          onPrimarySidebarChange(primarySidebar === null ? book.path : null);
+          onPrimarySidebarChange(primarySidebar.display ? null : book);
       }}
       onContextMenu={handleClick}
       key={book.path}
@@ -80,7 +79,7 @@ export default function BookViewContainer({ book }: Props): JSX.Element {
         </MenuItem>
         <MenuItem
           onClick={() => {
-            dispatch(removeBookAction(book));
+            dispatch(removeWorkbenchAction(book.path));
             handleClose();
           }}>
           閉じる

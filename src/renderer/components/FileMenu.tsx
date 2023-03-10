@@ -11,8 +11,8 @@ import {
   StyleThemeProperties,
 } from '../../common/ExtensionProperties';
 import StyleThemeParameters from '../../common/StyleThemeParameters';
-import { addBookAction } from '../actions/BookshelfActions';
 import { applyStyleThemeAction } from '../actions/ThemeActions';
+import { initializeWorkbench } from '../actions/WorkbenchesActions';
 import Book from '../states/Book';
 import { State } from '../states/State';
 
@@ -67,14 +67,14 @@ export default function FileMenu(): JSX.Element {
   const theme = useTheme();
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
-  const books = useSelector<State, Book[]>(
-    (state: State) => state.bookshelf.books,
+  const books = useSelector<State, Book[]>((state: State) =>
+    state.workbenches.map(workbench => workbench.book),
   );
   const extensions = useSelector<State, ExtensionProperties[]>(
     (state: State) => state.extensions,
   );
-  const onBookUpdate = useCallback((book: Book) => {
-    dispatch(addBookAction(book));
+  const onWorkbenchInitialize = useCallback((book: Book) => {
+    dispatch(initializeWorkbench(book));
   }, []);
   const onStyleThemeApply = useCallback((styleTheme: StyleThemeParameters) => {
     dispatch(applyStyleThemeAction(styleTheme));
@@ -86,7 +86,7 @@ export default function FileMenu(): JSX.Element {
         .open(extension.id)
         .then(paths => {
           paths.forEach(path =>
-            onBookUpdate({
+            onWorkbenchInitialize({
               path,
               editable,
             }),
@@ -103,6 +103,28 @@ export default function FileMenu(): JSX.Element {
         });
     };
 
+  const newBook = (extension: ExtensionProperties) => () => {
+    api
+      .newBook(extension.id)
+      .then(paths => {
+        paths.forEach(path =>
+          onWorkbenchInitialize({
+            path,
+            editable: true,
+          }),
+        );
+      })
+      .catch(err => {
+        if (err instanceof Error) {
+          enqueueSnackbar(err.message);
+          api.log.error(err.message);
+        } else {
+          enqueueSnackbar('原因不明のエラー');
+          api.log.error('原因不明のエラー');
+        }
+      });
+  };
+
   const applyStyleTheme = (extension: StyleThemeProperties) => () => {
     api
       .applyStyleTheme(extension.id)
@@ -117,7 +139,25 @@ export default function FileMenu(): JSX.Element {
         </Typography>
       </MenuButton>
       <Menu id="file-menu" anchorEl={anchorEl} open={open}>
-        <MenuItem>辞書の新規作成</MenuItem>
+        <NestedMenuItem
+          rightIcon={<ChevronRightIcon />}
+          label="辞書の新規作成"
+          parentMenuOpen={open}>
+          {extensions
+            .filter(
+              (ext): ext is BookControllerProperties =>
+                ext.type === 'book-controller',
+            )
+            .map(ext => (
+              <MenuItem key={ext.id} onClick={newBook(ext)}>
+                {ext.filters.map(
+                  f =>
+                    `${f.name} (${f.extensions.map(e => `*.${e}`).join(', ')})`,
+                )}
+                形式で開く
+              </MenuItem>
+            ))}
+        </NestedMenuItem>
         <NestedMenuItem
           rightIcon={<ChevronRightIcon />}
           label="開く"

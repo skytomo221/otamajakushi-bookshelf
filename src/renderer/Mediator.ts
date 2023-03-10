@@ -1,6 +1,6 @@
 
 import { LayoutCard } from '../common/LayoutCard';
-import { WordCard } from '../common/WordCard';
+import { PageCard } from '../common/PageCard';
 
 import { SummaryWord } from './SummaryWord';
 
@@ -8,5 +8,5 @@ import { SummaryWord } from './SummaryWord';
 export interface Mediator {
   summary: SummaryWord;
   layout: LayoutCard;
-  word: WordCard;
+  word: PageCard;
 }

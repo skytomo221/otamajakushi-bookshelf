@@ -1,13 +1,19 @@
-import * as t from 'io-ts';
+import { JSONSchemaType } from 'ajv';
 
-import { Entry, TEntry } from './Entry';
+import { Entry, entryScheme } from './Entry';
 
 export type Relation = {
   title: string;
   entry: Entry;
 };
 
-export const TRelation = t.type({
-  title: t.string,
-  entry: TEntry,
-});
+export const relationScheme: JSONSchemaType<Relation> = {
+  type: 'object',
+  properties: {
+    title: {
+      type: 'string',
+    },
+    entry: entryScheme,
+  },
+  required: ['title', 'entry'],
+};

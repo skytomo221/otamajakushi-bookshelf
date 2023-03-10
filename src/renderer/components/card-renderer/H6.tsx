@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 
 import { LayoutComponent, LayoutCard } from '../../../common/LayoutCard';
-import { WordCard } from '../../../common/WordCard';
+import { PageCard } from '../../../common/PageCard';
 import { SummaryWord } from '../../SummaryWord';
 import { State } from '../../states/State';
 import ThemeParameter from '../../states/ThemeParameter';
@@ -18,7 +18,7 @@ interface Props {
   editable: boolean;
   summary: SummaryWord;
   layout: LayoutCard;
-  word: WordCard;
+  word: PageCard;
 }
 
 export default function H6({

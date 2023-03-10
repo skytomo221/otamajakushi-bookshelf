@@ -1,10 +1,12 @@
 import Extension from './Extension';
 import { LayoutBuilderProperties } from './ExtensionProperties';
 import { LayoutCard } from './LayoutCard';
-import { WordCard } from './WordCard';
+import { PageCard } from './PageCard';
 
 export default abstract class LayoutBuilder extends Extension {
-  public abstract readonly properties: LayoutBuilderProperties;
+  abstract properties(): Promise<LayoutBuilderProperties>;
 
-  abstract readonly layout: (word: WordCard) => LayoutCard;
+  abstract readonly layout: (word: PageCard) => Promise<LayoutCard>;
+
+  abstract readonly indexes: (words: PageCard[]) => Promise<LayoutCard[]>;
 }

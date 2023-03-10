@@ -1,11 +1,19 @@
-import * as t from 'io-ts';
+import { JSONSchemaType } from 'ajv';
 
 export type Variation = {
   title: string;
   form: string;
 }
 
-export const TVariation = t.type({
-  title: t.string,
-  form: t.string,
-});
+export const variationScheme: JSONSchemaType<Variation> = {
+  type: 'object',
+  properties: {
+    title: {
+      type: 'string',
+    },
+    form: {
+      type: 'string',
+    },
+  },
+  required: ['title', 'form'],
+};

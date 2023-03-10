@@ -1,3 +1,5 @@
+import Ajv, { JSONSchemaType } from 'ajv';
+
 import { LayoutBuilderProperties } from '../common/ExtensionProperties';
 import LayoutBuilder from '../common/LayoutBuilder';
 import {
@@ -7,18 +9,25 @@ import {
   Plain,
   P,
 } from '../common/LayoutCard';
-import { WordCard, Translation } from '../common/WordCard';
+import { PageCard } from '../common/PageCard';
+import { Translation } from '../otm/Translation';
+import { Word, wordScheme } from '../otm/Word';
 
 export default class OtmLayoutBuilder extends LayoutBuilder {
-  public properties: LayoutBuilderProperties = {
+  public properties = async (): Promise<LayoutBuilderProperties> => ({
     name: 'OTM Layout Builder',
     id: 'otm-layout-builder',
     version: '0.1.0',
     type: 'layout-builder',
     author: 'skytomo221',
-  };
+  });
 
-  public readonly layout = (word: WordCard): LayoutCard => {
+  public readonly layout = async (word: PageCard): Promise<LayoutCard> => {
+    const ajv = new Ajv();
+    const valid = ajv.validate(wordScheme, word);
+    if (!valid) {
+      throw new Error(ajv.errorsText());
+    }
     const rawContents = {
       baseReference: 'contents',
       component: 'draggable-array',
@@ -39,7 +48,7 @@ export default class OtmLayoutBuilder extends LayoutBuilder {
             contents: [
               {
                 component: 'text/markdown',
-                reference: `.description`,
+                reference: `.text`,
               } as LayoutComponent,
             ],
           },
@@ -75,13 +84,13 @@ export default class OtmLayoutBuilder extends LayoutBuilder {
                 component: 'chip',
                 key: {
                   component: 'text/plain',
-                  text: translation.partOfSpeech.join(', '),
+                  text: translation.title,
                 },
               },
-              ...translation.translatedWord.map(
+              ...translation.forms.map(
                 (_, twIndex): Plain => ({
                   component: 'text/plain',
-                  reference: `translations.${index}.translatedWord.${twIndex}`,
+                  reference: `translations.${index}.forms.${twIndex}`,
                 }),
               ),
             ],
@@ -98,12 +107,12 @@ export default class OtmLayoutBuilder extends LayoutBuilder {
             contents: [
               {
                 component: 'text/plain',
-                reference: 'form',
+                reference: 'entry.form',
               },
               ...(word.tags ?? []).map(
                 (tag): Chip => ({
                   component: 'chip',
-                  key: { component: 'text/plain', text: tag.name },
+                  key: { component: 'text/plain', text: tag },
                 }),
               ),
             ],
@@ -113,5 +122,34 @@ export default class OtmLayoutBuilder extends LayoutBuilder {
         ],
       },
     };
+  };
+
+  private wordsScheme: JSONSchemaType<Word[]> = {
+    type: 'array',
+    items: wordScheme,
+  };
+
+  public readonly indexes = async (words: PageCard[]): Promise<LayoutCard[]> => {
+    const ajv = new Ajv();
+    const valid = ajv.validate(this.wordsScheme, words);
+    if (!valid) {
+      throw new Error(ajv.errorsText());
+    }
+    return words.map(word => ({
+      layout: {
+        component: 'recursion',
+        contents: [
+          {
+            component: 'div',
+            contents: [
+              {
+                component: 'text/plain',
+                text: (word as unknown as Word).entry.form,
+              } as LayoutComponent,
+            ],
+          },
+        ],
+      },
+    }));
   };
 }

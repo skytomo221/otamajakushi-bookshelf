@@ -1,6 +1,6 @@
-import * as t from 'io-ts';
+import { JSONSchemaType } from 'ajv';
 
-import { Word, TWord } from './Word';
+import { Word, wordScheme } from './Word';
 
 export type Zpdic = {
   alphabetOrder?: string;
@@ -9,9 +9,31 @@ export type Zpdic = {
   defaultWord?: null | Word;
 };
 
-export const TZpdic = t.type({
-  alphabetOrder: t.union([t.undefined, t.string]),
-  plainInformationTitles: t.union([t.undefined, t.null, t.array(t.string)]),
-  informationTitleOrder: t.union([t.undefined, t.null, t.array(t.string)]),
-  defaultWord: t.union([t.undefined, t.null, TWord]),
-});
+export const zpdicScheme: JSONSchemaType<Zpdic> = {
+  type: 'object',
+  properties: {
+    alphabetOrder: {
+      type: 'string',
+      nullable: true,
+    },
+    plainInformationTitles: {
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+      nullable: true,
+    },
+    informationTitleOrder: {
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+      nullable: true,
+    },
+    defaultWord: {
+      ...wordScheme,
+      nullable: true,
+    },
+  },
+  required: [],
+};
