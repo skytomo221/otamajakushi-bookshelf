@@ -1,6 +1,6 @@
 {
-  "name": "otamashelf",
-  "version": "0.1.0",
+  "name": "otamajakushi-bookshelf",
+  "version": "0.2.0",
   "description": "OTM-JSONファイルで書かれた辞書が開けるアプリ",
   "main": "main.js",
   "scripts": {
