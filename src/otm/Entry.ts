@@ -1,5 +1,4 @@
 import { JSONSchemaType } from 'ajv';
-import * as t from 'io-ts';
 
 export type Entry = {
   id: number;

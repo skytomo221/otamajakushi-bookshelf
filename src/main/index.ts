@@ -7,12 +7,10 @@ import * as net from 'node:net';
 import path from 'node:path';
 
 import log from 'electron-log';
-import { apFirst } from 'fp-ts/lib/Apply';
 import getPort from 'get-port';
 import MarkdownIt from 'markdown-it';
 
 import BookController from '../common/BookController';
-import Extension from '../common/Extension';
 import { ExtensionProperties } from '../common/ExtensionProperties';
 import { PageCard } from '../common/PageCard';
 import PageExplorer from '../common/PageExplorer';
@@ -79,16 +77,19 @@ const createWindow = async () => {
   fs.readdir(path.join(__dirname, 'extensions'), (_err, files) => {
     files.forEach(file => {
       const extensionDirectory = path.join(__dirname, 'extensions', file);
-      const activateFile = path.join(extensionDirectory, 'activate.bat');
+      const activateFile = path.join(extensionDirectory, 'activate.json');
       fs.stat(activateFile, async (_err2, stats) => {
         const portNumber = await getPort();
         if (stats.isFile()) {
-          const command = fs
-            .readFileSync(activateFile)
-            .toString()
+          const command = JSON.parse(fs.readFileSync(activateFile).toString())
+            [process.platform].replace(
+              // eslint-disable-next-line no-template-curly-in-string
+              '${__dirname}',
+              extensionDirectory,
+            )
             // eslint-disable-next-line no-template-curly-in-string
             .replace('${portNumber}', portNumber.toString());
-          const server = net
+          net
             .createServer(socket => {
               socket.once(
                 'data',
@@ -125,22 +126,10 @@ const createWindow = async () => {
               socket.write(JSON.stringify({ action: 'properties' }));
             })
             .listen(portNumber);
-          const fixedCommand = command
-            .replace(
-              // eslint-disable-next-line no-template-curly-in-string
-              '${__dirname}',
-              extensionDirectory,
-            )
-            .replace(
-              // eslint-disable-next-line no-template-curly-in-string
-              '${portNumber}',
-              portNumber.toString(),
-            );
-          exec(fixedCommand);
-          log.info({ activateFile, fixedCommand, portNumber });
+          exec(command);
+          log.info({ activateFile, command, portNumber });
         }
       });
-      console.log(file);
     });
   });
 
@@ -233,16 +222,27 @@ const createWindow = async () => {
   });
 
   ipcMain.handle('open', async (_, id: string): Promise<string[]> => {
-    const bookController = state.extensions
-      .filter(
-        (ext): ext is () => BookController => ext() instanceof BookController,
-      )
-      .find(async ext => (await ext().properties()).id === id);
+    const isEqualToIds = await Promise.all(
+      state.extensions.map(async ext => (await ext().properties()).id === id),
+    );
+    const bookController = state.extensions[
+      isEqualToIds.findIndex(b => b)
+    ] as () => BookController;
+    if (!(bookController() instanceof BookController)) {
+      mainWindow.webContents.send(
+        'log:error',
+        `Extension ${id} is not a book controller.`,
+      );
+      return [];
+    }
     if (!bookController) {
       mainWindow.webContents.send('log:error', `Extension ${id} not found.`);
       return [];
     }
     const properties = await bookController().properties();
+    log.info(id);
+    log.info(bookController);
+    log.info(properties);
     const paths =
       properties.format === 'file'
         ? dialog.showOpenDialogSync(mainWindow, {
@@ -252,7 +252,6 @@ const createWindow = async () => {
           })
         : dialog.showOpenDialogSync(mainWindow, {
             buttonLabel: '開く',
-            filters: properties.filters,
             properties: ['openDirectory', 'createDirectory'],
           });
     if (!paths) return [];
@@ -382,6 +381,7 @@ const createWindow = async () => {
             searchWord,
           ),
         );
+        log.info(words);
         const indexes = await new OtmLayoutBuilder().indexes(words);
         return words.map((word, i) => ({
           summary: { id: word.id, bookPath },

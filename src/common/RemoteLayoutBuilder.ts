@@ -4,9 +4,7 @@ import LayoutBuilder from './LayoutBuilder';
 
 export default abstract class RemoteLayoutBuilder extends LayoutBuilder {
   public activate(port: number): void {
-    const client: net.Socket = net.connect(port, 'localhost', () => {
-      console.log("Connected to Otamajakushi Bookshelf's server.");
-    });
+    const client: net.Socket = net.connect(port, 'localhost');
     client.on('data', async (buffer: { toString: () => string }) => {
       const { action, data } = JSON.parse(buffer.toString());
       const result = await this.call(action, data);
@@ -14,6 +12,7 @@ export default abstract class RemoteLayoutBuilder extends LayoutBuilder {
     });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private call(action: string, data: any) {
     switch (action) {
       case 'properties':
@@ -23,7 +22,7 @@ export default abstract class RemoteLayoutBuilder extends LayoutBuilder {
       case 'indexes':
         return this.indexes(data.words);
       default:
-        break;
+        throw new Error("Unknown action");
     }
   }
 }
