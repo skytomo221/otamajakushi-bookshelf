@@ -1,9 +1,10 @@
-import Extension from './Extension';
+import Extension from 'otamashelf/Extension';
+
 import { StyleThemeProperties } from './ExtensionProperties';
 import StyleThemeParameters from './StyleThemeParameters';
 
 export default abstract class StyleTheme extends Extension {
-  abstract properties(): Promise<StyleThemeProperties>;
+  abstract readonly properties: StyleThemeProperties;
 
   abstract readonly style: () => Promise<StyleThemeParameters>;
 }

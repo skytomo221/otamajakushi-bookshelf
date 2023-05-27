@@ -9,6 +9,8 @@ import path from 'node:path';
 import log from 'electron-log';
 import getPort from 'get-port';
 import MarkdownIt from 'markdown-it';
+import { BookWithPath } from 'otamashelf/Book';
+import BookCreator from 'otamashelf/BookCreator';
 
 import BookController from '../common/BookController';
 import { ExtensionProperties } from '../common/ExtensionProperties';
@@ -28,12 +30,13 @@ import IncludesPageExplorer from './IncludesPageExplorer';
 import OtamaDarkTheme from './OtamaDarkTheme';
 import OtamaDefaultTheme from './OtamaDefaultTheme';
 import OtamaLightTheme from './OtamaLightTheme';
+import OtamashelfGui from './OtamashelfGui';
 import OtmController from './OtmController';
 import OtmLayoutBuilder from './OtmLayoutBuilder';
 import RegexPageExplorer from './RegexPageExplorer';
 import SocketBookController from './SocketBookController';
 import StartsWithPageExplorer from './StartsWithPageExplorer';
-import { State } from './State';
+import BookTimeMachine from 'otamashelf/BookTimeMachine';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
@@ -55,83 +58,103 @@ const createWindow = async () => {
       path.join(getResourceDirectory(), 'assets/otamachan.png'),
     ),
   });
-  // eslint-disable-next-line import/extensions, import/no-unresolved
-  const state: State = {
-    bookshelf: {
-      books: [],
-    },
-    extensions: [
-      () => new OtmController(),
-      () => new OtmLayoutBuilder(),
-      () => new OtamaDefaultTheme(),
-      () => new OtamaLightTheme(),
-      () => new OtamaDarkTheme(),
-      () => new StartsWithPageExplorer(),
-      () => new EndsWithPageExplorer(),
-      () => new IncludesPageExplorer(),
-      () => new RegexPageExplorer(),
-    ],
-  };
+  const otamashelf = new OtamashelfGui();
+  otamashelf.executeCommand(
+    'otamashelf.booksController.register',
+    () => new OtmController(),
+  );
+  otamashelf.executeCommand(
+    'otamashelf.bookLoadersRegistry.register',
+    () => new OtmLayoutBuilder(),
+  );
+  otamashelf.executeCommand(
+    'otamashelf.themeRegistry.register',
+    () => new OtamaDefaultTheme(),
+  );
+  otamashelf.executeCommand(
+    'otamashelf.themeRegistry.register',
+    () => new OtamaLightTheme(),
+  );
+  otamashelf.executeCommand(
+    'otamashelf.themeRegistry.register',
+    () => new OtamaDarkTheme(),
+  );
+  otamashelf.executeCommand(
+    'otamashelf.pageCardExploeresRegistry.register',
+    () => new StartsWithPageExplorer(),
+  );
+  otamashelf.executeCommand(
+    'otamashelf.pageCardExploeresRegistry.register',
+    () => new EndsWithPageExplorer(),
+  );
+  otamashelf.executeCommand(
+    'otamashelf.pageCardExploeresRegistry.register',
+    () => new IncludesPageExplorer(),
+  );
+  otamashelf.executeCommand(
+    'otamashelf.pageCardExploeresRegistry.register',
+    () => new RegexPageExplorer(),
+  );
   const md = new MarkdownIt();
 
-  fs.readdir(path.join(__dirname, 'extensions'), (_err, files) => {
-    files.forEach(file => {
-      const extensionDirectory = path.join(__dirname, 'extensions', file);
-      const activateFile = path.join(extensionDirectory, 'activate.json');
-      fs.stat(activateFile, async (_err2, stats) => {
-        const portNumber = await getPort();
-        if (stats.isFile()) {
-          const command = JSON.parse(fs.readFileSync(activateFile).toString())
-            [process.platform].replace(
-              // eslint-disable-next-line no-template-curly-in-string
-              '${__dirname}',
-              extensionDirectory,
-            )
-            // eslint-disable-next-line no-template-curly-in-string
-            .replace('${portNumber}', portNumber.toString());
-          net
-            .createServer(socket => {
-              socket.once(
-                'data',
-                async (buffer: { toString: () => string }) => {
-                  const { action, data } = JSON.parse(buffer.toString());
-                  log.info(buffer.toString());
-                  if (action === 'properties') {
-                    const properties = data as ExtensionProperties;
-                    if (
-                      state.extensions.every(
-                        async e =>
-                          (await e().properties()).id !== properties.id,
-                      )
-                    ) {
-                      state.extensions.push(
-                        () => new SocketBookController(socket),
-                      );
-                      mainWindow.webContents.send(
-                        'extensions:send',
-                        await Promise.all(
-                          state.extensions.map(async extension => {
-                            const ext = extension();
-                            return ext.properties();
-                          }),
-                        ),
-                      );
-                      log.info(
-                        `Extension loaded successfully. Extension id: ${properties.id}`,
-                      );
-                    }
-                  }
-                },
-              );
-              socket.write(JSON.stringify({ action: 'properties' }));
-            })
-            .listen(portNumber);
-          exec(command);
-          log.info({ activateFile, command, portNumber });
-        }
-      });
-    });
-  });
+  // fs.readdir(path.join(__dirname, 'extensions'), (_err, files) => {
+  //   files.forEach(file => {
+  //     const extensionDirectory = path.join(__dirname, 'extensions', file);
+  //     const activateFile = path.join(extensionDirectory, 'activate.json');
+  //     fs.stat(activateFile, async (_err2, stats) => {
+  //       const portNumber = await getPort();
+  //       if (stats.isFile()) {
+  //         const command = JSON.parse(fs.readFileSync(activateFile).toString())
+  //           [process.platform].replace(
+  //             // eslint-disable-next-line no-template-curly-in-string
+  //             '${__dirname}',
+  //             extensionDirectory,
+  //           )
+  //           // eslint-disable-next-line no-template-curly-in-string
+  //           .replace('${portNumber}', portNumber.toString());
+  //         net
+  //           .createServer(socket => {
+  //             socket.once(
+  //               'data',
+  //               async (buffer: { toString: () => string }) => {
+  //                 const { action, data } = JSON.parse(buffer.toString());
+  //                 log.info(buffer.toString());
+  //                 if (action === 'properties') {
+  //                   const properties = data as ExtensionProperties;
+  //                   if (
+  //                     state.extensions.every(
+  //                       async e =>
+  //                         (await e().properties()).id !== properties.id,
+  //                     )
+  //                   ) {
+  //                     state.extensions.push(
+  //                       () => new SocketBookController(socket),
+  //                     );
+  //                     mainWindow.webContents.send(
+  //                       'extensions:send',
+  //                       await Promise.all(
+  //                         state.extensions.map(async extension => {
+  //                           const ext = extension();
+  //                           return ext.properties();
+  //                         }),
+  //                       ),
+  //                     );
+  //                     log.info(
+  //                       `Extension loaded successfully. Extension id: ${properties.id}`,
+  //                     );
+  //                   }
+  //                 }
+  //               },
+  //             );
+  //             socket.write(JSON.stringify({ action: 'properties' }));
+  //           })
+  //           .listen(portNumber);
+  //         exec(command);
+  //         log.info({ activateFile, command, portNumber });
+  //       }
+  //     });
+  //   });
+  // });
 
   (() => {
     if (process.argv.find(arg => arg === '--debug')) {
@@ -157,15 +180,15 @@ const createWindow = async () => {
   }
 
   mainWindow.webContents.on('did-finish-load', async () => {
-    mainWindow.webContents.send(
-      'extensions:send',
-      await Promise.all(
-        state.extensions.map(async extension => {
-          const ext = extension();
-          return ext.properties();
-        }),
-      ),
-    );
+    // mainWindow.webContents.send(
+    //   'extensions:send',
+    //   await Promise.all(
+    //     state.extensions.map(async extension => {
+    //       const ext = extension();
+    //       return ext.properties();
+    //     }),
+    //   ),
+    // );
   });
 
   ipcMain.handle('window-minimize', () => {
@@ -183,35 +206,37 @@ const createWindow = async () => {
   });
 
   ipcMain.handle('new', async (_, id: string): Promise<string[]> => {
-    const bookController = state.extensions
-      .filter(
-        (ext): ext is () => BookController => ext() instanceof BookController,
-      )
-      .find(async ext => (await ext().properties()).id === id);
-    if (!bookController) {
-      mainWindow.webContents.send('log:error', `Extension ${id} not found.`);
+    const bookCreator = otamashelf.bookCreatorsRegistry.get(id);
+    if (!bookCreator) {
+      mainWindow.webContents.send(
+        'log:error',
+        `Book creator not found. id: ${id}`,
+      );
       return [];
     }
-    const properties = await bookController().properties();
+    const { format, filters } = bookCreator.properties;
+    const templatesReturns = await bookCreator.templates();
+    if (templatesReturns.status === 'reject') {
+      mainWindow.webContents.send('log:error', templatesReturns.returns.reason);
+      return [];
+    }
+    const { book } = templatesReturns.returns;
     const filePath =
-      properties.format === 'file'
+      format === 'file'
         ? dialog.showSaveDialogSync(mainWindow, {
             buttonLabel: '作成する',
-            filters: properties.filters,
+            filters,
             properties: ['createDirectory'],
           })
         : dialog.showOpenDialogSync(mainWindow, {
             buttonLabel: '作成する',
-            filters: properties.filters,
+            filters,
             properties: ['openDirectory', 'createDirectory'],
           })?.[0];
     if (!filePath) return [];
+    const bookWithPath = { path: filePath, ...book };
     try {
-      const bc = await bookController().newBook(filePath);
-      state.bookshelf.books.push({
-        path: filePath,
-        bookController: bc,
-      });
+      otamashelf.booksController.regesterBook(bookWithPath);
       return [filePath];
     } catch (error) {
       if (error instanceof Error) {
@@ -222,32 +247,20 @@ const createWindow = async () => {
   });
 
   ipcMain.handle('open', async (_, id: string): Promise<string[]> => {
-    const isEqualToIds = await Promise.all(
-      state.extensions.map(async ext => (await ext().properties()).id === id),
-    );
-    const bookController = state.extensions[
-      isEqualToIds.findIndex(b => b)
-    ] as () => BookController;
-    if (!(bookController() instanceof BookController)) {
+    const bookLoader = otamashelf.bookLoadersRegistry.get(id);
+    if (!bookLoader) {
       mainWindow.webContents.send(
         'log:error',
-        `Extension ${id} is not a book controller.`,
+        `Book loader not found. id: ${id}`,
       );
       return [];
     }
-    if (!bookController) {
-      mainWindow.webContents.send('log:error', `Extension ${id} not found.`);
-      return [];
-    }
-    const properties = await bookController().properties();
-    log.info(id);
-    log.info(bookController);
-    log.info(properties);
+    const { format, filters } = bookLoader.properties;
     const paths =
-      properties.format === 'file'
+      format === 'file'
         ? dialog.showOpenDialogSync(mainWindow, {
             buttonLabel: '開く',
-            filters: properties.filters,
+            filters,
             properties: ['openFile', 'createDirectory'],
           })
         : dialog.showOpenDialogSync(mainWindow, {
@@ -256,15 +269,27 @@ const createWindow = async () => {
           });
     if (!paths) return [];
     try {
-      const results: Array<Promise<Book>> = paths.map(
+      const results: Array<Promise<BookWithPath>> = paths.map(
         filePath =>
           new Promise((resolve, reject) => {
-            const bc = bookController();
-            bc.load(filePath)
-              .then(() => {
+            bookLoader
+              .load({
+                name: 'load',
+                path: filePath,
+              })
+              .then(returns => {
+                if (returns.status === 'reject') {
+                  reject(returns.returns.reason);
+                  return;
+                }
+                const { book } = returns.returns;
+                otamashelf.booksController.regesterBook({
+                  path: filePath,
+                  ...book,
+                });
                 resolve({
                   path: filePath,
-                  bookController: bc,
+                  ...book,
                 });
               })
               .catch(error => {
@@ -273,7 +298,6 @@ const createWindow = async () => {
           }),
       );
       const books = await Promise.all(results);
-      state.bookshelf.books.push(...books);
       return books.map(book => book.path);
     } catch (error) {
       if (error instanceof Error) {
@@ -284,7 +308,16 @@ const createWindow = async () => {
   });
 
   ipcMain.handle('save', async (_, filePath: string): Promise<boolean> => {
-    const book = state.bookshelf.books.find(b => b.path === filePath);
+    const bookRepository =
+      otamashelf.booksController.getBookRepository(filePath);
+    if (!bookRepository) {
+      mainWindow.webContents.send(
+        'log:error',
+        `File path ${filePath} not found.`,
+      );
+      return false;
+    }
+    const book = bookRepository.plainBookTimeMachine.currentBook;
     if (!book) {
       mainWindow.webContents.send(
         'log:error',
@@ -292,68 +325,166 @@ const createWindow = async () => {
       );
       return false;
     }
-    return book.bookController
-      .save(filePath)
-      .then(() => true)
-      .catch(error => {
-        mainWindow.webContents.send('log:error', error.message);
-        return false;
-      });
+    const bookSaver = await otamashelf.bookSaversRegistry.get('otm-saver');
+    if (!bookSaver) {
+      mainWindow.webContents.send(
+        'log:error',
+        `Book saver not found. id: otm-saver`,
+      );
+      return false;
+    }
+    const returns = await bookSaver.save({
+      name: 'save',
+      book: { path: filePath, ...book },
+    });
+    const { status } = returns;
+    if (status === 'reject') {
+      mainWindow.webContents.send('log:error', returns.returns.reason);
+      return false;
+    }
+    return true;
   });
 
   ipcMain.handle(
     'book-controller:templates:read',
     async (_, filePath: string): Promise<TemplateProperties[]> => {
-      const book = state.bookshelf.books.find(b => b.path === filePath);
-      if (book) {
-        return (await book.bookController.readTemplates()).map(word => ({
-          bookPath: book.path,
-          ...word,
-        }));
+      const bookRepository =
+        otamashelf.booksController.getBookRepository(filePath);
+      if (!bookRepository) {
+        mainWindow.webContents.send(
+          'log:error',
+          `File path ${filePath} not found.`,
+        );
+        throw new Error(`Invalid path: ${filePath}`);
       }
-      throw new Error(`Invalid path: ${filePath}`);
+      const book = bookRepository.plainBookTimeMachine.currentBook;
+      if (!book) {
+        mainWindow.webContents.send(
+          'log:error',
+          `File path ${filePath} not found.`,
+        );
+        throw new Error(`Invalid path: ${filePath}`);
+      }
+      const templatesReturns =
+        await otamashelf.pageCardCreatorsRegistry.templates('otm-creator');
+      if (templatesReturns.status === 'reject') {
+        mainWindow.webContents.send(
+          'log:error',
+          templatesReturns.returns.reason,
+        );
+        throw new Error(`Invalid path: ${filePath}`);
+      }
+      const { templates } = templatesReturns.returns;
+      return templates.map(template => ({
+        id: template,
+        name: template,
+      }));
     },
   );
 
   ipcMain.handle(
     'book-controller:page:create',
     async (_, bookPath: string, templateId: string): Promise<Mediator> => {
-      const book = state.bookshelf.books.find(b => b.path === bookPath);
-      if (book) {
-        const newId = await book.bookController.createPage(templateId);
-        const word = await book.bookController.readPage(newId);
-        const layout = await new OtmLayoutBuilder().layout(word);
-        return {
-          summary: { bookPath: book.path, id: word.id },
-          word,
-          layout,
-        };
+      const pageCardCreator = otamashelf.pageCardCreatorsRegistry.get(bookPath);
+      if (!pageCardCreator) {
+        mainWindow.webContents.send(
+          'log:error',
+          `Page card creator not found. id: ${bookPath}`,
+        );
+        throw new Error(`Invalid path: ${bookPath}`);
       }
-      throw new Error(`Invalid template: ${templateId}`);
+      const bookRepository =
+        otamashelf.booksController.getBookRepository(bookPath);
+      if (!bookRepository) {
+        mainWindow.webContents.send(
+          'log:error',
+          `File path ${bookPath} not found.`,
+        );
+        throw new Error(`Invalid path: ${bookPath}`);
+      }
+      const book = bookRepository.plainBookTimeMachine.currentBook;
+      if (!book) {
+        mainWindow.webContents.send(
+          'log:error',
+          `File path ${bookPath} not found.`,
+        );
+        throw new Error(`Invalid path: ${bookPath}`);
+      }
+      const creatorReturns = await pageCardCreator.create({
+        name: 'create',
+        templateId,
+        book,
+      });
+      if (creatorReturns.status === 'reject') {
+        mainWindow.webContents.send('log:error', creatorReturns.returns.reason);
+        throw new Error(`Invalid path: ${bookPath}`);
+      }
+      const { pageCard } = creatorReturns.returns;
+      const layout = await new OtmLayoutBuilder().layout(pageCard);
+      return {
+        summary: { bookPath, id: pageCard.id },
+        word: pageCard,
+        layout,
+      };
     },
   );
 
   ipcMain.handle(
     'book-controller:page:delete',
     async (_, summary: SummaryWord): Promise<boolean> => {
-      const book = state.bookshelf.books.find(b => b.path === summary.bookPath);
-      if (book) {
-        return book.bookController.deletePage(summary.id);
+      const { bookPath, id } = summary;
+      const bookRepository =
+        otamashelf.booksController.getBookRepository(bookPath);
+      if (!bookRepository) {
+        mainWindow.webContents.send(
+          'log:error',
+          `File path ${bookPath} not found.`,
+        );
+        throw new Error(`Invalid path: ${bookPath}`);
       }
-      throw new Error(`Invalid word: ${summary}`);
+      const bookTimeMachine = BookTimeMachine.fromPlain(
+        bookRepository.plainBookTimeMachine,
+      );
+      const pageCard = bookTimeMachine.currentBook.pageCards.find(
+        pc => pc.id === id,
+      );
+      if (!pageCard) {
+        mainWindow.webContents.send(
+          'log:error',
+          `Page card id ${id} not found.`,
+        );
+        throw new Error(`Invalid word: ${summary}`);
+      }
+      bookTimeMachine.removePageCard(pageCard, 'remove page card');
+      return true;
     },
   );
 
   ipcMain.handle(
     'book-controller:page:read',
     async (_, summary: SummaryWord): Promise<Mediator> => {
-      const book = state.bookshelf.books.find(b => b.path === summary.bookPath);
-      if (book) {
-        const word = await book.bookController.readPage(summary.id.toString());
-        const layout = await new OtmLayoutBuilder().layout(word);
-        return { summary, word, layout };
+      const book = otamashelf.booksController.getBookRepository(
+        summary.bookPath,
+      );
+      if (!book) {
+        mainWindow.webContents.send(
+          'log:error',
+          `File path ${summary.bookPath} not found.`,
+        );
+        throw new Error(`Invalid path: ${summary.bookPath}`);
       }
-      throw new Error(`Invalid word: ${summary}`);
+      const word = await book.plainBookTimeMachine.currentBook.pageCards.find(
+        w => w.id === summary.id.toString(),
+      );
+      if (!word) {
+        mainWindow.webContents.send(
+          'log:error',
+          `Page card id ${summary.id} not found.`,
+        );
+        throw new Error(`Invalid word: ${summary}`);
+      }
+      const layout = await new OtmLayoutBuilder().layout(word);
+      return { summary, word, layout };
     },
   );
 
@@ -366,76 +497,143 @@ const createWindow = async () => {
       searchModeId: string,
       searchWord: string,
     ): Promise<Mediator[]> => {
-      const book = state.bookshelf.books.find(b => b.path === bookPath);
-      const pageExplorer =
-        state.extensions
-          .filter(
-            (ext): ext is () => PageExplorer => ext() instanceof PageExplorer,
-          )
-          .find(async p => (await p().properties()).id === pageExplorerId) ??
-        (() => new AllPageExplorer());
-      if (book) {
-        const words = await book.bookController.readPages(
-          await pageExplorer().search(
-            await book.bookController.readSearchIndexes(searchModeId),
-            searchWord,
-          ),
+      const book = otamashelf.booksController.getBookRepository(bookPath);
+      if (!book) {
+        mainWindow.webContents.send(
+          'log:error',
+          `File path ${bookPath} not found.`,
         );
-        log.info(words);
-        const indexes = await new OtmLayoutBuilder().indexes(words);
-        return words.map((word, i) => ({
-          summary: { id: word.id, bookPath },
-          word,
-          layout: indexes[i],
-        }));
+        throw new Error(`Invalid path: ${bookPath}`);
       }
-      throw new Error(`Invalid path: ${bookPath}`);
+      const { pageCards } = book.plainBookTimeMachine.currentBook;
+      const pageExplorer =
+        otamashelf.pageCardExploeresRegistry.get(pageExplorerId);
+      if (!pageExplorer) {
+        mainWindow.webContents.send(
+          'log:error',
+          `Page explorer not found. id: ${pageExplorerId}`,
+        );
+        throw new Error(`Invalid path: ${bookPath}`);
+      }
+      const readSearchIndexes =
+        await otamashelf.bookIndexersRegistry.readSearchIndexes('otm-indexer', {
+          name: 'search-indexes',
+          searchModeId,
+          pageCards,
+        });
+      if (readSearchIndexes.status === 'reject') {
+        mainWindow.webContents.send(
+          'log:error',
+          readSearchIndexes.returns.reason,
+        );
+        throw new Error(`Invalid path: ${bookPath}`);
+      }
+      const { searchCards } = readSearchIndexes.returns;
+      const search = await pageExplorer.search({
+        name: 'search',
+        cards: searchCards,
+        searchWord,
+      });
+      if (search.status === 'reject') {
+        mainWindow.webContents.send('log:error', search.returns.reason);
+        throw new Error(`Invalid path: ${bookPath}`);
+      }
+      const { ids } = search.returns;
+      const words = pageCards.filter(pc => ids.includes(pc.id));
+      const indexes = await new OtmLayoutBuilder().indexes(words);
+      return words.map((word, i) => ({
+        summary: { id: word.id, bookPath },
+        word,
+        layout: indexes[i],
+      }));
     },
   );
 
   ipcMain.handle(
     'book-controller:page:update',
     async (_, summary: SummaryWord, word: PageCard): Promise<Mediator> => {
-      const book = state.bookshelf.books.find(b => b.path === summary.bookPath);
-      if (book) {
-        book.bookController.updatePage(word);
-        const newWord = await book.bookController.readPage(
-          summary.id.toString(),
+      otamashelf.booksController.commitPageCard(
+        summary.bookPath,
+        word,
+        'update page card',
+      );
+      const newWord = otamashelf.booksController
+        .currentBook(summary.bookPath)
+        .pageCards.find(w => w.id === summary.id.toString());
+      if (!newWord) {
+        mainWindow.webContents.send(
+          'log:error',
+          `Page card id ${summary.id} not found.`,
         );
-        const layout = await new OtmLayoutBuilder().layout(newWord);
-        return { summary, word: newWord, layout };
+        throw new Error(`Invalid word: ${summary}`);
       }
-      throw new Error(`Invalid word: ${summary} ${word}`);
+      const layout = await new OtmLayoutBuilder().layout(newWord);
+      return { summary, word: newWord, layout };
     },
   );
 
   ipcMain.handle(
     'book-controller:page:on-click',
     async (_, summary: SummaryWord, onClick: string): Promise<Mediator> => {
-      const book = state.bookshelf.books.find(b => b.path === summary.bookPath);
-      if (book) {
-        const newWord = await book.bookController.onClick(
-          onClick,
-          Number(summary.id),
+      const { bookPath, id } = summary;
+      const book = otamashelf.booksController.getBookRepository(bookPath);
+      if (!book) {
+        mainWindow.webContents.send(
+          'log:error',
+          `File path ${bookPath} not found.`,
         );
-        const layout = await new OtmLayoutBuilder().layout(newWord);
-        return { summary, word: newWord, layout };
+        throw new Error(`Invalid path: ${bookPath}`);
       }
-      throw new Error(`Invalid word: ${summary} ${onClick}`);
+      const pageCardProcessor =
+        otamashelf.pageCardProcessorsRegistry.get(onClick);
+      if (!pageCardProcessor) {
+        mainWindow.webContents.send(
+          'log:error',
+          `Page card processor not found. id: ${onClick}`,
+        );
+        throw new Error(`Invalid path: ${bookPath}`);
+      }
+      const word = book.plainBookTimeMachine.currentBook.pageCards.find(
+        w => w.id === id,
+      );
+      if (!word) {
+        mainWindow.webContents.send(
+          'log:error',
+          `Page card id ${id} not found.`,
+        );
+        throw new Error(`Invalid word: ${summary}`);
+      }
+      const processPage = await pageCardProcessor.processPage({
+        name: 'update-page',
+        pageCard: word,
+      });
+      if (processPage.status === 'reject') {
+        mainWindow.webContents.send('log:error', processPage.returns.reason);
+        throw new Error(`Invalid path: ${bookPath}`);
+      }
+      const { pageCard } = processPage.returns;
+      const layout = await new OtmLayoutBuilder().layout(pageCard);
+      return { summary, word: pageCard, layout };
     },
   );
 
   ipcMain.handle(
     'book-controller:page-explorer:read',
     async (): Promise<SearchProperites[]> => {
-      const pageExplorers = state.extensions.filter(
-        (ext): ext is () => PageExplorer => ext() instanceof PageExplorer,
+      const pageExplorers = otamashelf.pageCardExploeresRegistry.filterKeys(
+        p => p.id === 'otm-page-explorer',
       );
       return Promise.all(
-        pageExplorers.map(async pageExplorer => ({
-          id: (await pageExplorer().properties()).id,
-          displayName: await pageExplorer().name(),
-        })),
+        pageExplorers.map(async pageExplorer => {
+          const pe = otamashelf.pageCardExploeresRegistry.get(pageExplorer);
+          if (!pe) {
+            throw new Error(`Invalid page explorer: ${pageExplorer}`);
+          }
+          return {
+            id: pageExplorer,
+            displayName: pe.properties.name,
+          };
+        }),
       );
     },
   );
@@ -443,25 +641,36 @@ const createWindow = async () => {
   ipcMain.handle(
     'book-controller:search-mode:read',
     async (_, bookPath: string): Promise<string[]> => {
-      const book = state.bookshelf.books.find(b => b.path === bookPath);
-      if (book) {
-        return book.bookController.readSearchModes();
+      const bookIndexer = otamashelf.bookIndexersRegistry.get(bookPath);
+      if (!bookIndexer) {
+        mainWindow.webContents.send(
+          'log:error',
+          `File path ${bookPath} not found.`,
+        );
+        throw new Error(`Invalid path: ${bookPath}`);
       }
-      throw new Error(`Invalid path: ${bookPath}`);
+      const searchModes = await bookIndexer.readSearchModes();
+      if (searchModes.status === 'reject') {
+        mainWindow.webContents.send(
+          'log:error',
+          `File path ${bookPath} not found.`,
+        );
+        throw new Error(`Invalid path: ${bookPath}`);
+      }
+      const { modes } = searchModes.returns;
+      return modes;
     },
   );
 
   ipcMain.handle(
     'style-theme:apply',
     async (_, id: string): Promise<StyleThemeParameters> => {
-      const styleTheme = state.extensions
-        .filter((ext): ext is () => StyleTheme => ext() instanceof StyleTheme)
-        .find(async ext => (await ext().properties()).id === id);
+      const styleTheme = otamashelf.themeRegistry.get(id);
       if (!styleTheme) {
         mainWindow.webContents.send('log:error', `Extension ${id} not found.`);
         throw new Error(`Extension ${id} not found.`);
       }
-      return styleTheme().style();
+      return styleTheme.style();
     },
   );
 
