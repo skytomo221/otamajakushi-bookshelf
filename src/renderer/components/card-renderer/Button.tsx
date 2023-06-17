@@ -1,8 +1,7 @@
+import { PageCard, LayoutCard, LayoutComponent } from 'otamashelf';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { LayoutComponent, LayoutCard } from '../../../common/LayoutCard';
-import { PageCard } from '../../../common/PageCard';
 import { SummaryWord } from '../../SummaryWord';
 import { onClickAction } from '../../actions/SelectedWordsActions';
 import { State } from '../../states/State';

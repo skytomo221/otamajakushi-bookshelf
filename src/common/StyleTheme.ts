@@ -1,6 +1,6 @@
 import Extension from 'otamashelf/Extension';
+import { StyleThemeProperties } from 'otamashelf/ExtensionProperties';
 
-import { StyleThemeProperties } from './ExtensionProperties';
 import StyleThemeParameters from './StyleThemeParameters';
 
 export default abstract class StyleTheme extends Extension {

@@ -1,6 +1,8 @@
 import Otamashelf from 'otamashelf/Otamashelf';
 
-import ThemeRegistry, { StyleThemeGenerator } from './ThemeRegistry';
+import StyleTheme from '../common/StyleTheme';
+
+import ThemeRegistry from './ThemeRegistry';
 
 export default class OtamashelfGui extends Otamashelf {
   readonly themeRegistry = new ThemeRegistry();
@@ -13,8 +15,7 @@ export default class OtamashelfGui extends Otamashelf {
     );
     this.commandsRegistry.regesterCommand(
       'otamashelf.themeRegistry.register',
-      (styleTheme: StyleThemeGenerator) =>
-        this.themeRegistry.register(styleTheme),
+      (styleTheme: StyleTheme) => this.themeRegistry.register(styleTheme),
     );
   }
 }

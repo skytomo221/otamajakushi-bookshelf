@@ -1,4 +1,4 @@
-import { StyleThemeProperties } from '../common/ExtensionProperties';
+import { StyleThemeProperties } from '../common/O20fExtensionProperties';
 import StyleTheme from '../common/StyleTheme';
 import StyleThemeParameters from '../common/StyleThemeParameters';
 

@@ -1,9 +1,8 @@
 import flatten, { unflatten } from 'flat';
+import { PageCard, LayoutCard } from 'otamashelf';
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { LayoutCard } from '../../../common/LayoutCard';
-import { PageCard } from '../../../common/PageCard';
 import { Mediator } from '../../Mediator';
 import { SummaryWord } from '../../SummaryWord';
 import { pushSelectedWordAction } from '../../actions/SelectedWordsActions';

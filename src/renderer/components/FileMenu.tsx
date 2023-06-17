@@ -2,14 +2,13 @@ import { MenuUnstyledActions } from '@mui/base/MenuUnstyled';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { MenuItem, Typography, useTheme, Divider } from '@mui/material';
 import { useSnackbar } from 'notistack';
+import { BookCreatorProperties, BookLoaderProperties, ExtensionProperties } from 'otamashelf';
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
-  BookControllerProperties,
-  ExtensionProperties,
   StyleThemeProperties,
-} from '../../common/ExtensionProperties';
+} from '../../common/O20fExtensionProperties';
 import StyleThemeParameters from '../../common/StyleThemeParameters';
 import { applyStyleThemeAction } from '../actions/ThemeActions';
 import { initializeWorkbench } from '../actions/WorkbenchesActions';
@@ -145,8 +144,8 @@ export default function FileMenu(): JSX.Element {
           parentMenuOpen={open}>
           {extensions
             .filter(
-              (ext): ext is BookControllerProperties =>
-                ext.type === 'book-controller',
+              (ext): ext is BookCreatorProperties =>
+                ext.type === 'book-creator',
             )
             .map(ext => (
               <MenuItem key={ext.id} onClick={newBook(ext)}>
@@ -164,8 +163,8 @@ export default function FileMenu(): JSX.Element {
           parentMenuOpen={open}>
           {extensions
             .filter(
-              (ext): ext is BookControllerProperties =>
-                ext.type === 'book-controller',
+              (ext): ext is BookLoaderProperties =>
+                ext.type === 'book-loader',
             )
             .map(ext => (
               <MenuItem key={ext.id} onClick={openBook(ext, false)}>
@@ -183,8 +182,8 @@ export default function FileMenu(): JSX.Element {
           parentMenuOpen={open}>
           {extensions
             .filter(
-              (ext): ext is BookControllerProperties =>
-                ext.type === 'book-controller',
+              (ext): ext is BookLoaderProperties =>
+                ext.type === 'book-loader',
             )
             .map(ext => (
               <MenuItem key={ext.id} onClick={openBook(ext, true)}>

@@ -1,10 +1,9 @@
 import flatten, { unflatten } from 'flat';
+import { PageCard, LayoutCard, LayoutComponent } from 'otamashelf';
 import React from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { LayoutComponent, LayoutCard } from '../../../common/LayoutCard';
-import { PageCard } from '../../../common/PageCard';
 import { Mediator } from '../../Mediator';
 import { SummaryWord } from '../../SummaryWord';
 import { pushSelectedWordAction } from '../../actions/SelectedWordsActions';

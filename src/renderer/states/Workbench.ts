@@ -1,5 +1,6 @@
+import TemplateProperties from 'otamashelf/TemplateProperties';
+
 import SearchProperties from '../../common/SearchProperties';
-import TemplateProperties from '../../common/TemplateProperties';
 import { Mediator } from '../Mediator';
 
 import Book from './Book';

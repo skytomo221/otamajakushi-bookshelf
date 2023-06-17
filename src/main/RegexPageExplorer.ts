@@ -1,23 +1,34 @@
-import { PageExplorerProperties } from '../common/ExtensionProperties';
-import PageExplorer from '../common/PageExplorer';
-import { SearchCard } from '../common/SearchCard';
+import { PageExplorerProperties } from 'otamashelf';
+import PageExplorer, {
+  SearchProps,
+  SearchReturns,
+} from 'otamashelf/PageExplorer';
 
 export default class RegexPageExplorer extends PageExplorer {
-  public readonly properties = async (): Promise<PageExplorerProperties> => ({
-    name: 'RegexPageExplorer',
+  readonly properties: PageExplorerProperties = {
+    name: 'Regex Page Explorer',
     id: 'regex-page-explorer',
     version: '0.1.0',
     author: 'skytomo221',
     type: 'page-explorer',
-  });
+  };
 
-  public readonly name = async (): Promise<string> => '正規表現';
+  name = async (): Promise<string> => '正規表現';
 
-  public readonly search = async (
-    cards: SearchCard[],
-    searchWord: string,
-  ): Promise<string[]> =>
-    cards
-      .filter(card => card.targets.some(t => t.match(searchWord)))
-      .map(card => card.id);
+  readonly search = ({
+    cards,
+    searchWord,
+  }: SearchProps): Promise<SearchReturns> =>
+    new Promise(resolve => {
+      const ids = cards
+        .filter(card => card.targets.some(t => t.match(searchWord)))
+        .map(card => card.id);
+      resolve({
+        name: 'search',
+        status: 'resolve',
+        returns: {
+          ids,
+        },
+      });
+    });
 }

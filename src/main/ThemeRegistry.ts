@@ -1,18 +1,20 @@
+import Registry from 'otamashelf/Registry';
+
+import { StyleThemeProperties } from '../common/O20fExtensionProperties';
 import StyleTheme from '../common/StyleTheme';
+import StyleThemeParameters from '../common/StyleThemeParameters';
 
-export type StyleThemeGenerator = () => StyleTheme;
-
-export default class ThemeRegistry {
-  protected readonly themes: Map<string, StyleThemeGenerator> = new Map();
-
-  public register(styleThemeGenerator: StyleThemeGenerator): void {
-    const { id } = styleThemeGenerator().properties;
-    this.themes.set(id, styleThemeGenerator);
+export default class ThemeRegistry<
+  K extends string,
+  V extends StyleTheme,
+> extends Registry<K, V> {
+  properties(): IterableIterator<StyleThemeProperties> {
+    return super.properties() as IterableIterator<StyleThemeProperties>;
   }
 
-  public get(id: string): StyleTheme | undefined {
-    const styleTheme = this.themes.get(id);
-    if (!styleTheme) return undefined;
-    return styleTheme();
+  public style(id: K): Promise<StyleThemeParameters> {
+    const v = this.get(id);
+    if (!v) return Promise.reject(new Error('StyleTheme not found.'));
+    return v.style();
   }
 }

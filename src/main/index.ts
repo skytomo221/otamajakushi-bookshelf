@@ -9,34 +9,33 @@ import path from 'node:path';
 import log from 'electron-log';
 import getPort from 'get-port';
 import MarkdownIt from 'markdown-it';
+import { ExtensionProperties } from 'otamashelf';
 import { BookWithPath } from 'otamashelf/Book';
-import BookCreator from 'otamashelf/BookCreator';
+import BookTimeMachine from 'otamashelf/BookTimeMachine';
+import { PageCard } from 'otamashelf/PageCard';
+import TemplateProperties from 'otamashelf/TemplateProperties';
+import EndsWithPageExplorer from 'otamashelf/extensions/EndsWithPageExplorer';
+import IncludesPageExplorer from 'otamashelf/extensions/IncludesPageExplorer';
+import OtmCreator from 'otamashelf/extensions/OtmCreator';
+import OtmIndexer from 'otamashelf/extensions/OtmIndexer';
+import OtmLayoutBuilder from 'otamashelf/extensions/OtmLayoutBuilder';
+import OtmLoader from 'otamashelf/extensions/OtmLoader';
+import OtmSaver from 'otamashelf/extensions/OtmSaver';
+import OtmUpdater from 'otamashelf/extensions/OtmUpdater';
+import StartsWithPageExplorer from 'otamashelf/extensions/StartsWithPageExplorer';
 
-import BookController from '../common/BookController';
-import { ExtensionProperties } from '../common/ExtensionProperties';
-import { PageCard } from '../common/PageCard';
-import PageExplorer from '../common/PageExplorer';
 import SearchProperites from '../common/SearchProperties';
-import StyleTheme from '../common/StyleTheme';
 import StyleThemeParameters from '../common/StyleThemeParameters';
-import TemplateProperties from '../common/TemplateProperties';
 import { Mediator } from '../renderer/Mediator';
 import { SummaryWord } from '../renderer/SummaryWord';
 
-import AllPageExplorer from './AllPageExplorer';
-import Book from './Book';
-import EndsWithPageExplorer from './EndsWithPageExplorer';
-import IncludesPageExplorer from './IncludesPageExplorer';
 import OtamaDarkTheme from './OtamaDarkTheme';
 import OtamaDefaultTheme from './OtamaDefaultTheme';
 import OtamaLightTheme from './OtamaLightTheme';
 import OtamashelfGui from './OtamashelfGui';
-import OtmController from './OtmController';
-import OtmLayoutBuilder from './OtmLayoutBuilder';
+// import OtmController from './OtmController';
 import RegexPageExplorer from './RegexPageExplorer';
-import SocketBookController from './SocketBookController';
-import StartsWithPageExplorer from './StartsWithPageExplorer';
-import BookTimeMachine from 'otamashelf/BookTimeMachine';
+
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
@@ -59,41 +58,26 @@ const createWindow = async () => {
     ),
   });
   const otamashelf = new OtamashelfGui();
-  otamashelf.executeCommand(
-    'otamashelf.booksController.register',
-    () => new OtmController(),
-  );
-  otamashelf.executeCommand(
-    'otamashelf.bookLoadersRegistry.register',
-    () => new OtmLayoutBuilder(),
-  );
-  otamashelf.executeCommand(
-    'otamashelf.themeRegistry.register',
-    () => new OtamaDefaultTheme(),
-  );
-  otamashelf.executeCommand(
-    'otamashelf.themeRegistry.register',
-    () => new OtamaLightTheme(),
-  );
-  otamashelf.executeCommand(
-    'otamashelf.themeRegistry.register',
-    () => new OtamaDarkTheme(),
-  );
+  // otamashelf.executeCommand(
+  //   'otamashelf.booksController.register',
+  //   new OtmController(),
+  // );
+  otamashelf.themeRegistry.register(new OtamaDarkTheme());
+  otamashelf.layoutBuilderRegistry.register(new OtmLayoutBuilder());
+  otamashelf.themeRegistry.register(new OtamaDefaultTheme());
+  otamashelf.themeRegistry.register(new OtamaLightTheme());
+  otamashelf.themeRegistry.register(new OtamaDarkTheme());
+  otamashelf.bookCreatorsRegistry.register(new OtmCreator());
+  otamashelf.bookIndexersRegistry.register(new OtmIndexer());
+  otamashelf.bookLoadersRegistry.register(new OtmLoader());
+  otamashelf.bookSaversRegistry.register(new OtmSaver());
+  otamashelf.bookUpdatersRegistry.register(new OtmUpdater());
+  otamashelf.pageCardExploeresRegistry.register(new StartsWithPageExplorer());
+  otamashelf.pageCardExploeresRegistry.register(new EndsWithPageExplorer());
+  otamashelf.pageCardExploeresRegistry.register(new IncludesPageExplorer());
   otamashelf.executeCommand(
     'otamashelf.pageCardExploeresRegistry.register',
-    () => new StartsWithPageExplorer(),
-  );
-  otamashelf.executeCommand(
-    'otamashelf.pageCardExploeresRegistry.register',
-    () => new EndsWithPageExplorer(),
-  );
-  otamashelf.executeCommand(
-    'otamashelf.pageCardExploeresRegistry.register',
-    () => new IncludesPageExplorer(),
-  );
-  otamashelf.executeCommand(
-    'otamashelf.pageCardExploeresRegistry.register',
-    () => new RegexPageExplorer(),
+    new RegexPageExplorer(),
   );
   const md = new MarkdownIt();
 
@@ -180,15 +164,90 @@ const createWindow = async () => {
   }
 
   mainWindow.webContents.on('did-finish-load', async () => {
-    // mainWindow.webContents.send(
-    //   'extensions:send',
-    //   await Promise.all(
-    //     state.extensions.map(async extension => {
-    //       const ext = extension();
-    //       return ext.properties();
-    //     }),
-    //   ),
-    // );
+    const bookCreatorProperties = Array.from(
+      otamashelf.bookCreatorsRegistry.keys(),
+    ).map(id => {
+      const bookCreator = otamashelf.bookCreatorsRegistry.get(id);
+      if (!bookCreator) {
+        throw new Error(`Book creator not found. id: ${id}`);
+      }
+      return bookCreator.properties;
+    });
+    const bookIndexersProperties = Array.from(
+      otamashelf.bookIndexersRegistry.keys(),
+    ).map(id => {
+      const bookIndexer = otamashelf.bookIndexersRegistry.get(id);
+      if (!bookIndexer) {
+        throw new Error(`Book indexer not found. id: ${id}`);
+      }
+      return bookIndexer.properties;
+    });
+    const bookLoadersProperties = Array.from(
+      otamashelf.bookLoadersRegistry.keys(),
+    ).map(id => {
+      const bookLoader = otamashelf.bookLoadersRegistry.get(id);
+      if (!bookLoader) {
+        throw new Error(`Book saver not found. id: ${id}`);
+      }
+      return bookLoader.properties;
+    });
+    const bookSaversProperties = Array.from(
+      otamashelf.bookSaversRegistry.keys(),
+    ).map(id => {
+      const bookSaver = otamashelf.bookSaversRegistry.get(id);
+      if (!bookSaver) {
+        throw new Error(`Book saver not found. id: ${id}`);
+      }
+      return bookSaver.properties;
+    });
+    const bookUpdatersProperties = Array.from(
+      otamashelf.bookUpdatersRegistry.keys(),
+    ).map(id => {
+      const bookUpdater = otamashelf.bookUpdatersRegistry.get(id);
+      if (!bookUpdater) {
+        throw new Error(`Book updater not found. id: ${id}`);
+      }
+      return bookUpdater.properties;
+    });
+    const pageCardCreatorsProperties = Array.from(
+      otamashelf.pageCardCreatorsRegistry.keys(),
+    ).map(id => {
+      const pageCardCreator = otamashelf.pageCardCreatorsRegistry.get(id);
+      if (!pageCardCreator) {
+        throw new Error(`Page card creator not found. id: ${id}`);
+      }
+      return pageCardCreator.properties;
+    });
+    const pageCardExplorersProperties = Array.from(
+      otamashelf.pageCardExploeresRegistry.keys(),
+    ).map(id => {
+      const pageCardExploer = otamashelf.pageCardExploeresRegistry.get(id);
+      if (!pageCardExploer) {
+        throw new Error(`Page card explorer not found. id: ${id}`);
+      }
+      return pageCardExploer.properties;
+    });
+    const pageCardProcessorsProperties = Array.from(
+      otamashelf.pageCardProcessorsRegistry.keys(),
+    ).map(id => {
+      const pageCardProcessor = otamashelf.pageCardProcessorsRegistry.get(id);
+      if (!pageCardProcessor) {
+        throw new Error(`Page card processor not found. id: ${id}`);
+      }
+      return pageCardProcessor.properties;
+    });
+    const extensionProperties: ExtensionProperties[] = [
+      ...bookCreatorProperties,
+      ...bookIndexersProperties,
+      ...bookLoadersProperties,
+      ...bookSaversProperties,
+      ...bookUpdatersProperties,
+      ...pageCardCreatorsProperties,
+      ...pageCardExplorersProperties,
+      ...pageCardProcessorsProperties,
+    ];
+    log.info(extensionProperties);
+    mainWindow.webContents.send('extensions:send', extensionProperties);
   });
 
   ipcMain.handle('window-minimize', () => {
@@ -620,9 +679,9 @@ const createWindow = async () => {
   ipcMain.handle(
     'book-controller:page-explorer:read',
     async (): Promise<SearchProperites[]> => {
-      const pageExplorers = otamashelf.pageCardExploeresRegistry.filterKeys(
-        p => p.id === 'otm-page-explorer',
-      );
+      const pageExplorers = Array.from(
+        otamashelf.pageCardExploeresRegistry.keys(),
+      ).filter(id => id === 'otm-page-explorer');
       return Promise.all(
         pageExplorers.map(async pageExplorer => {
           const pe = otamashelf.pageCardExploeresRegistry.get(pageExplorer);

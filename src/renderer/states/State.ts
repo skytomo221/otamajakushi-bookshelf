@@ -1,5 +1,6 @@
 
-import { ExtensionProperties } from '../../common/ExtensionProperties';
+import { ExtensionProperties } from 'otamashelf';
+
 import { Mediator } from '../Mediator';
 
 import PrimarySidebarStates from './PrimarySidebarState';

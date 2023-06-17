@@ -1,6 +1,5 @@
 
-import { LayoutCard } from '../common/LayoutCard';
-import { PageCard } from '../common/PageCard';
+import { PageCard, LayoutCard } from 'otamashelf';
 
 import { SummaryWord } from './SummaryWord';
 

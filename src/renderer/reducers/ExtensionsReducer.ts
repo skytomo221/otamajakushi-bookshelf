@@ -1,6 +1,6 @@
+import { ExtensionProperties } from 'otamashelf';
 import { reducerWithInitialState } from 'typescript-fsa-reducers';
 
-import { ExtensionProperties } from '../../common/ExtensionProperties';
 import { updateExtensionsAction } from '../actions/ExtensionsActions';
 
 const updateExtensionsReducer = reducerWithInitialState<ExtensionProperties[]>([])
