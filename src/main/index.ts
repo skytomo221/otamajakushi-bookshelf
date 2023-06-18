@@ -20,6 +20,7 @@ import OtmCreator from 'otamashelf/extensions/OtmCreator';
 import OtmIndexer from 'otamashelf/extensions/OtmIndexer';
 import OtmLayoutBuilder from 'otamashelf/extensions/OtmLayoutBuilder';
 import OtmLoader from 'otamashelf/extensions/OtmLoader';
+import OtmPageCardCreator from 'otamashelf/extensions/OtmPageCardCreator';
 import OtmSaver from 'otamashelf/extensions/OtmSaver';
 import OtmUpdater from 'otamashelf/extensions/OtmUpdater';
 import StartsWithPageExplorer from 'otamashelf/extensions/StartsWithPageExplorer';
@@ -35,7 +36,6 @@ import OtamaLightTheme from './OtamaLightTheme';
 import OtamashelfGui from './OtamashelfGui';
 // import OtmController from './OtmController';
 import RegexPageExplorer from './RegexPageExplorer';
-
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
@@ -72,6 +72,7 @@ const createWindow = async () => {
   otamashelf.bookLoadersRegistry.register(new OtmLoader());
   otamashelf.bookSaversRegistry.register(new OtmSaver());
   otamashelf.bookUpdatersRegistry.register(new OtmUpdater());
+  otamashelf.pageCardCreatorsRegistry.register(new OtmPageCardCreator());
   otamashelf.pageCardExploeresRegistry.register(new StartsWithPageExplorer());
   otamashelf.pageCardExploeresRegistry.register(new EndsWithPageExplorer());
   otamashelf.pageCardExploeresRegistry.register(new IncludesPageExplorer());
@@ -187,7 +188,7 @@ const createWindow = async () => {
     ).map(id => {
       const bookLoader = otamashelf.bookLoadersRegistry.get(id);
       if (!bookLoader) {
-        throw new Error(`Book saver not found. id: ${id}`);
+        throw new Error(`Book loader not found. id: ${id}`);
       }
       return bookLoader.properties;
     });
@@ -425,7 +426,9 @@ const createWindow = async () => {
         throw new Error(`Invalid path: ${filePath}`);
       }
       const templatesReturns =
-        await otamashelf.pageCardCreatorsRegistry.templates('otm-creator');
+        await otamashelf.pageCardCreatorsRegistry.templates(
+          'otm-page-card-creator',
+        );
       if (templatesReturns.status === 'reject') {
         mainWindow.webContents.send(
           'log:error',
@@ -444,7 +447,9 @@ const createWindow = async () => {
   ipcMain.handle(
     'book-controller:page:create',
     async (_, bookPath: string, templateId: string): Promise<Mediator> => {
-      const pageCardCreator = otamashelf.pageCardCreatorsRegistry.get(bookPath);
+      const pageCardCreator = otamashelf.pageCardCreatorsRegistry.get(
+        'otm-page-card-creator',
+      );
       if (!pageCardCreator) {
         mainWindow.webContents.send(
           'log:error',
@@ -681,7 +686,7 @@ const createWindow = async () => {
     async (): Promise<SearchProperites[]> => {
       const pageExplorers = Array.from(
         otamashelf.pageCardExploeresRegistry.keys(),
-      ).filter(id => id === 'otm-page-explorer');
+      );
       return Promise.all(
         pageExplorers.map(async pageExplorer => {
           const pe = otamashelf.pageCardExploeresRegistry.get(pageExplorer);
@@ -700,7 +705,17 @@ const createWindow = async () => {
   ipcMain.handle(
     'book-controller:search-mode:read',
     async (_, bookPath: string): Promise<string[]> => {
-      const bookIndexer = otamashelf.bookIndexersRegistry.get(bookPath);
+      // TODO: bookPathだけでは動かないので、bookPathとsearchModeIdを渡すようにする
+      const bookRepository =
+        otamashelf.booksController.getBookRepository(bookPath);
+      if (!bookRepository) {
+        mainWindow.webContents.send(
+          'log:error',
+          `File path ${bookPath} not found.`,
+        );
+        throw new Error(`Invalid path: ${bookPath}`);
+      }
+      const bookIndexer = otamashelf.bookIndexersRegistry.get('otm-indexer');
       if (!bookIndexer) {
         mainWindow.webContents.send(
           'log:error',
