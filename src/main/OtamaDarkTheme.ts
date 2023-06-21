@@ -4,6 +4,7 @@ import StyleThemeParameters from '../common/StyleThemeParameters';
 
 export default class OtamaDarkTheme extends StyleTheme {
   readonly properties: StyleThemeProperties = {
+    action: 'properties',
     name: 'Otama Dark Theme',
     id: 'otama-dark-theme',
     version: '0.1.0',

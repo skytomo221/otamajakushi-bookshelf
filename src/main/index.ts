@@ -20,7 +20,7 @@ import OtmCreator from 'otamashelf/extensions/OtmCreator';
 import OtmIndexer from 'otamashelf/extensions/OtmIndexer';
 import OtmLayoutBuilder from 'otamashelf/extensions/OtmLayoutBuilder';
 import OtmLoader from 'otamashelf/extensions/OtmLoader';
-import OtmPageCardCreator from 'otamashelf/extensions/OtmPageCardCreator';
+import OtmPageCreator from 'otamashelf/extensions/OtmPageCreator';
 import OtmSaver from 'otamashelf/extensions/OtmSaver';
 import OtmUpdater from 'otamashelf/extensions/OtmUpdater';
 import StartsWithPageExplorer from 'otamashelf/extensions/StartsWithPageExplorer';
@@ -72,12 +72,12 @@ const createWindow = async () => {
   otamashelf.bookLoadersRegistry.register(new OtmLoader());
   otamashelf.bookSaversRegistry.register(new OtmSaver());
   otamashelf.bookUpdatersRegistry.register(new OtmUpdater());
-  otamashelf.pageCardCreatorsRegistry.register(new OtmPageCardCreator());
-  otamashelf.pageCardExploeresRegistry.register(new StartsWithPageExplorer());
-  otamashelf.pageCardExploeresRegistry.register(new EndsWithPageExplorer());
-  otamashelf.pageCardExploeresRegistry.register(new IncludesPageExplorer());
+  otamashelf.pageCreatorsRegistry.register(new OtmPageCreator());
+  otamashelf.pageExplorersRegistry.register(new StartsWithPageExplorer());
+  otamashelf.pageExplorersRegistry.register(new EndsWithPageExplorer());
+  otamashelf.pageExplorersRegistry.register(new IncludesPageExplorer());
   otamashelf.executeCommand(
-    'otamashelf.pageCardExploeresRegistry.register',
+    'otamashelf.pageExploeresRegistry.register',
     new RegexPageExplorer(),
   );
   const md = new MarkdownIt();
@@ -211,27 +211,27 @@ const createWindow = async () => {
       return bookUpdater.properties;
     });
     const pageCardCreatorsProperties = Array.from(
-      otamashelf.pageCardCreatorsRegistry.keys(),
+      otamashelf.pageCreatorsRegistry.keys(),
     ).map(id => {
-      const pageCardCreator = otamashelf.pageCardCreatorsRegistry.get(id);
+      const pageCardCreator = otamashelf.pageCreatorsRegistry.get(id);
       if (!pageCardCreator) {
         throw new Error(`Page card creator not found. id: ${id}`);
       }
       return pageCardCreator.properties;
     });
     const pageCardExplorersProperties = Array.from(
-      otamashelf.pageCardExploeresRegistry.keys(),
+      otamashelf.pageExplorersRegistry.keys(),
     ).map(id => {
-      const pageCardExploer = otamashelf.pageCardExploeresRegistry.get(id);
+      const pageCardExploer = otamashelf.pageExplorersRegistry.get(id);
       if (!pageCardExploer) {
         throw new Error(`Page card explorer not found. id: ${id}`);
       }
       return pageCardExploer.properties;
     });
     const pageCardProcessorsProperties = Array.from(
-      otamashelf.pageCardProcessorsRegistry.keys(),
+      otamashelf.pageProcessorsRegistry.keys(),
     ).map(id => {
-      const pageCardProcessor = otamashelf.pageCardProcessorsRegistry.get(id);
+      const pageCardProcessor = otamashelf.pageProcessorsRegistry.get(id);
       if (!pageCardProcessor) {
         throw new Error(`Page card processor not found. id: ${id}`);
       }
@@ -275,7 +275,9 @@ const createWindow = async () => {
       return [];
     }
     const { format, filters } = bookCreator.properties;
-    const templatesReturns = await bookCreator.templates();
+    const templatesReturns = await bookCreator.templates({
+      action: 'templates',
+    });
     if (templatesReturns.status === 'reject') {
       mainWindow.webContents.send('log:error', templatesReturns.returns.reason);
       return [];
@@ -334,7 +336,7 @@ const createWindow = async () => {
           new Promise((resolve, reject) => {
             bookLoader
               .load({
-                name: 'load',
+                action: 'load',
                 path: filePath,
               })
               .then(returns => {
@@ -394,7 +396,7 @@ const createWindow = async () => {
       return false;
     }
     const returns = await bookSaver.save({
-      name: 'save',
+      action: 'save',
       book: { path: filePath, ...book },
     });
     const { status } = returns;
@@ -425,10 +427,10 @@ const createWindow = async () => {
         );
         throw new Error(`Invalid path: ${filePath}`);
       }
-      const templatesReturns =
-        await otamashelf.pageCardCreatorsRegistry.templates(
-          'otm-page-card-creator',
-        );
+      const templatesReturns = await otamashelf.pageCreatorsRegistry.templates(
+        'otm-page-card-creator',
+        { action: 'templates' },
+      );
       if (templatesReturns.status === 'reject') {
         mainWindow.webContents.send(
           'log:error',
@@ -447,7 +449,7 @@ const createWindow = async () => {
   ipcMain.handle(
     'book-controller:page:create',
     async (_, bookPath: string, templateId: string): Promise<Mediator> => {
-      const pageCardCreator = otamashelf.pageCardCreatorsRegistry.get(
+      const pageCardCreator = otamashelf.pageCreatorsRegistry.get(
         'otm-page-card-creator',
       );
       if (!pageCardCreator) {
@@ -475,7 +477,7 @@ const createWindow = async () => {
         throw new Error(`Invalid path: ${bookPath}`);
       }
       const creatorReturns = await pageCardCreator.create({
-        name: 'create',
+        action: 'create',
         templateId,
         book,
       });
@@ -570,8 +572,7 @@ const createWindow = async () => {
         throw new Error(`Invalid path: ${bookPath}`);
       }
       const { pageCards } = book.plainBookTimeMachine.currentBook;
-      const pageExplorer =
-        otamashelf.pageCardExploeresRegistry.get(pageExplorerId);
+      const pageExplorer = otamashelf.pageExplorersRegistry.get(pageExplorerId);
       if (!pageExplorer) {
         mainWindow.webContents.send(
           'log:error',
@@ -581,7 +582,7 @@ const createWindow = async () => {
       }
       const readSearchIndexes =
         await otamashelf.bookIndexersRegistry.readSearchIndexes('otm-indexer', {
-          name: 'search-indexes',
+          action: 'search-indexes',
           searchModeId,
           pageCards,
         });
@@ -594,7 +595,7 @@ const createWindow = async () => {
       }
       const { searchCards } = readSearchIndexes.returns;
       const search = await pageExplorer.search({
-        name: 'search',
+        action: 'search',
         cards: searchCards,
         searchWord,
       });
@@ -648,8 +649,7 @@ const createWindow = async () => {
         );
         throw new Error(`Invalid path: ${bookPath}`);
       }
-      const pageCardProcessor =
-        otamashelf.pageCardProcessorsRegistry.get(onClick);
+      const pageCardProcessor = otamashelf.pageProcessorsRegistry.get(onClick);
       if (!pageCardProcessor) {
         mainWindow.webContents.send(
           'log:error',
@@ -668,7 +668,7 @@ const createWindow = async () => {
         throw new Error(`Invalid word: ${summary}`);
       }
       const processPage = await pageCardProcessor.processPage({
-        name: 'update-page',
+        action: 'update-page',
         pageCard: word,
       });
       if (processPage.status === 'reject') {
@@ -684,12 +684,10 @@ const createWindow = async () => {
   ipcMain.handle(
     'book-controller:page-explorer:read',
     async (): Promise<SearchProperites[]> => {
-      const pageExplorers = Array.from(
-        otamashelf.pageCardExploeresRegistry.keys(),
-      );
+      const pageExplorers = Array.from(otamashelf.pageExplorersRegistry.keys());
       return Promise.all(
         pageExplorers.map(async pageExplorer => {
-          const pe = otamashelf.pageCardExploeresRegistry.get(pageExplorer);
+          const pe = otamashelf.pageExplorersRegistry.get(pageExplorer);
           if (!pe) {
             throw new Error(`Invalid page explorer: ${pageExplorer}`);
           }
@@ -705,7 +703,6 @@ const createWindow = async () => {
   ipcMain.handle(
     'book-controller:search-mode:read',
     async (_, bookPath: string): Promise<string[]> => {
-      // TODO: bookPathだけでは動かないので、bookPathとsearchModeIdを渡すようにする
       const bookRepository =
         otamashelf.booksController.getBookRepository(bookPath);
       if (!bookRepository) {
@@ -723,7 +720,9 @@ const createWindow = async () => {
         );
         throw new Error(`Invalid path: ${bookPath}`);
       }
-      const searchModes = await bookIndexer.readSearchModes();
+      const searchModes = await bookIndexer.readSearchModes({
+        action: 'search-modes',
+      });
       if (searchModes.status === 'reject') {
         mainWindow.webContents.send(
           'log:error',

@@ -1,11 +1,13 @@
 import { PageExplorerProperties } from 'otamashelf';
 import PageExplorer, {
+  NameReturns,
   SearchProps,
   SearchReturns,
 } from 'otamashelf/PageExplorer';
 
 export default class RegexPageExplorer extends PageExplorer {
   readonly properties: PageExplorerProperties = {
+    action: 'properties',
     name: 'Regex Page Explorer',
     id: 'regex-page-explorer',
     version: '0.1.0',
@@ -13,22 +15,25 @@ export default class RegexPageExplorer extends PageExplorer {
     type: 'page-explorer',
   };
 
-  name = async (): Promise<string> => '正規表現';
+  // eslint-disable-next-line class-methods-use-this
+  async name(): Promise<NameReturns> {
+    return {
+      action: 'name',
+      name: '正規表現',
+    };
+  }
 
-  readonly search = ({
-    cards,
-    searchWord,
-  }: SearchProps): Promise<SearchReturns> =>
-    new Promise(resolve => {
-      const ids = cards
-        .filter(card => card.targets.some(t => t.match(searchWord)))
-        .map(card => card.id);
-      resolve({
-        name: 'search',
-        status: 'resolve',
-        returns: {
-          ids,
-        },
-      });
-    });
+  // eslint-disable-next-line class-methods-use-this
+  async search({ cards, searchWord }: SearchProps): Promise<SearchReturns> {
+    const ids = cards
+      .filter(card => card.targets.some(t => t.match(searchWord)))
+      .map(card => card.id);
+    return {
+      action: 'search',
+      status: 'resolve',
+      returns: {
+        ids,
+      },
+    };
+  }
 }

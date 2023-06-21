@@ -4,6 +4,7 @@ import StyleThemeParameters from '../common/StyleThemeParameters';
 
 export default class OtamaLightTheme extends StyleTheme {
   public properties: StyleThemeProperties = {
+    action: 'properties',
     name: 'Otama Light Theme',
     id: 'otama-light-theme',
     version: '0.1.0',

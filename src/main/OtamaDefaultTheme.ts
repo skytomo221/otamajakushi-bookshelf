@@ -4,6 +4,7 @@ import StyleThemeParameters from '../common/StyleThemeParameters';
 
 export default class OtamaDefaultTheme extends StyleTheme {
   public properties: StyleThemeProperties = {
+    action: 'properties',
     name: 'Otama Default Theme',
     id: 'otama-default-theme',
     version: '0.1.0',
