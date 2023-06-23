@@ -1,43 +1,40 @@
 import * as net from 'node:net';
 
-import { PageExplorerProperties } from 'otamashelf/ExtensionProperties';
-import PageExplorer, {
-  NameProps,
-  SearchProps,
-  SearchReturns,
-} from 'otamashelf/PageExplorer';
+import { PageCard, LayoutCard } from 'otamashelf';
+import { LayoutBuilderProperties } from 'otamashelf/ExtensionProperties';
+import LayoutBuilder from 'otamashelf/LayoutBuilder';
 
-export default class SocketPageeExplorer extends PageExplorer {
-  readonly properties: PageExplorerProperties;
+export default class SocketPageCreator extends LayoutBuilder {
+  readonly properties: LayoutBuilderProperties;
 
   socket: net.Socket;
 
-  constructor(properties: PageExplorerProperties, socket: net.Socket) {
+  constructor(properties: LayoutBuilderProperties, socket: net.Socket) {
     super();
     this.properties = properties;
     this.socket = socket;
   }
 
-  name: (props: NameProps) => Promise<string> = props =>
+  layout: (word: PageCard) => Promise<LayoutCard> = props =>
     new Promise(resolve => {
       const onData = (buffer: Buffer) => {
         const { action, data } = JSON.parse(buffer.toString());
         if (action === 'name') {
           this.socket.removeListener('data', onData);
-          resolve(data as string);
+          resolve(data as LayoutCard);
         }
       };
       this.socket.on('data', onData);
       this.socket.write(JSON.stringify(props));
     });
 
-  search: (props: SearchProps) => Promise<SearchReturns> = props =>
+  indexes: (words: PageCard[]) => Promise<LayoutCard[]> = props =>
     new Promise(resolve => {
       const onData = (buffer: Buffer) => {
         const { action, data } = JSON.parse(buffer.toString());
-        if (action === 'search') {
+        if (action === 'name') {
           this.socket.removeListener('data', onData);
-          resolve(data as SearchReturns);
+          resolve(data as LayoutCard[]);
         }
       };
       this.socket.on('data', onData);

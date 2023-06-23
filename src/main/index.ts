@@ -34,8 +34,16 @@ import OtamaDarkTheme from './OtamaDarkTheme';
 import OtamaDefaultTheme from './OtamaDefaultTheme';
 import OtamaLightTheme from './OtamaLightTheme';
 import OtamashelfGui from './OtamashelfGui';
-// import OtmController from './OtmController';
 import RegexPageExplorer from './RegexPageExplorer';
+import SocketBookCreator from './SocketBookCreator';
+import SocketBookIndexer from './SocketBookIndexer';
+import SocketBookLoader from './SocketBookLoader';
+import SocketBookSaver from './SocketBookSaver';
+import SocketBookUpdater from './SocketBookUpdater';
+import SocketLayoutBuilder from './SocketLayoutBuilder';
+import SocketPageCreator from './SocketPageCreator';
+import SocketPageExplorer from './SocketPageExplorer';
+import SocketPageProcessor from './SocketPageProcessor';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
@@ -82,64 +90,113 @@ const createWindow = async () => {
   );
   const md = new MarkdownIt();
 
-  // fs.readdir(path.join(__dirname, 'extensions'), (_err, files) => {
-  //   files.forEach(file => {
-  //     const extensionDirectory = path.join(__dirname, 'extensions', file);
-  //     const activateFile = path.join(extensionDirectory, 'activate.json');
-  //     fs.stat(activateFile, async (_err2, stats) => {
-  //       const portNumber = await getPort();
-  //       if (stats.isFile()) {
-  //         const command = JSON.parse(fs.readFileSync(activateFile).toString())
-  //           [process.platform].replace(
-  //             // eslint-disable-next-line no-template-curly-in-string
-  //             '${__dirname}',
-  //             extensionDirectory,
-  //           )
-  //           // eslint-disable-next-line no-template-curly-in-string
-  //           .replace('${portNumber}', portNumber.toString());
-  //         net
-  //           .createServer(socket => {
-  //             socket.once(
-  //               'data',
-  //               async (buffer: { toString: () => string }) => {
-  //                 const { action, data } = JSON.parse(buffer.toString());
-  //                 log.info(buffer.toString());
-  //                 if (action === 'properties') {
-  //                   const properties = data as ExtensionProperties;
-  //                   if (
-  //                     state.extensions.every(
-  //                       async e =>
-  //                         (await e().properties()).id !== properties.id,
-  //                     )
-  //                   ) {
-  //                     state.extensions.push(
-  //                       () => new SocketBookController(socket),
-  //                     );
-  //                     mainWindow.webContents.send(
-  //                       'extensions:send',
-  //                       await Promise.all(
-  //                         state.extensions.map(async extension => {
-  //                           const ext = extension();
-  //                           return ext.properties();
-  //                         }),
-  //                       ),
-  //                     );
-  //                     log.info(
-  //                       `Extension loaded successfully. Extension id: ${properties.id}`,
-  //                     );
-  //                   }
-  //                 }
-  //               },
-  //             );
-  //             socket.write(JSON.stringify({ action: 'properties' }));
-  //           })
-  //           .listen(portNumber);
-  //         exec(command);
-  //         log.info({ activateFile, command, portNumber });
-  //       }
-  //     });
-  //   });
-  // });
+  fs.readdir(path.join(__dirname, 'extensions'), (_err, files) => {
+    files.forEach(file => {
+      const extensionDirectory = path.join(__dirname, 'extensions', file);
+      const activateFile = path.join(extensionDirectory, 'activate.json');
+      fs.stat(activateFile, async (_err2, stats) => {
+        const portNumber = await getPort();
+        if (stats.isFile()) {
+          const command = JSON.parse(fs.readFileSync(activateFile).toString())
+            [process.platform].replace(
+              // eslint-disable-next-line no-template-curly-in-string
+              '${__dirname}',
+              extensionDirectory,
+            )
+            // eslint-disable-next-line no-template-curly-in-string
+            .replace('${portNumber}', portNumber.toString());
+          net
+            .createServer(socket => {
+              socket.once(
+                'data',
+                async (buffer: { toString: () => string }) => {
+                  const { action, data } = JSON.parse(buffer.toString());
+                  log.info(buffer.toString());
+                  if (action === 'properties') {
+                    const properties = data as ExtensionProperties;
+                    switch (properties.type) {
+                      case 'book-creator':
+                        if (!otamashelf.bookCreatorsRegistry.has(properties.id))
+                          otamashelf.bookCreatorsRegistry.register(
+                            new SocketBookCreator(properties, socket),
+                          );
+                        break;
+                      case 'book-indexer':
+                        if (!otamashelf.bookIndexersRegistry.has(properties.id))
+                          otamashelf.bookIndexersRegistry.register(
+                            new SocketBookIndexer(properties, socket),
+                          );
+                        break;
+                      case 'book-loader':
+                        if (!otamashelf.bookLoadersRegistry.has(properties.id))
+                          otamashelf.bookLoadersRegistry.register(
+                            new SocketBookLoader(properties, socket),
+                          );
+                        break;
+                      case 'book-saver':
+                        if (!otamashelf.bookSaversRegistry.has(properties.id))
+                          otamashelf.bookSaversRegistry.register(
+                            new SocketBookSaver(properties, socket),
+                          );
+                        break;
+                      case 'book-updater':
+                        if (!otamashelf.bookUpdatersRegistry.has(properties.id))
+                          otamashelf.bookUpdatersRegistry.register(
+                            new SocketBookUpdater(properties, socket),
+                          );
+                        break;
+                      case 'layout-builder':
+                        if (
+                          !otamashelf.layoutBuilderRegistry.has(properties.id)
+                        )
+                          otamashelf.layoutBuilderRegistry.register(
+                            new SocketLayoutBuilder(properties, socket),
+                          );
+                        break;
+                      case 'page-card-creator':
+                        if (!otamashelf.pageCreatorsRegistry.has(properties.id))
+                          otamashelf.pageCreatorsRegistry.register(
+                            new SocketPageCreator(properties, socket),
+                          );
+                        break;
+                      case 'page-explorer':
+                        if (
+                          !otamashelf.pageExplorersRegistry.has(properties.id)
+                        )
+                          otamashelf.pageExplorersRegistry.register(
+                            new SocketPageExplorer(properties, socket),
+                          );
+                        break;
+                      case 'page-card-processor':
+                        if (
+                          !otamashelf.pageProcessorsRegistry.has(properties.id)
+                        )
+                          otamashelf.pageProcessorsRegistry.register(
+                            new SocketPageProcessor(properties, socket),
+                          );
+                        break;
+                      default:
+                        break;
+                    }
+                    mainWindow.webContents.send(
+                      'extensions:send',
+                      otamashelf.extensionProperties(),
+                    );
+                    log.info(
+                      `Extension loaded successfully. Extension id: ${properties.id}`,
+                    );
+                  }
+                },
+              );
+              socket.write(JSON.stringify({ action: 'properties' }));
+            })
+            .listen(portNumber);
+          exec(command);
+          log.info({ activateFile, command, portNumber });
+        }
+      });
+    });
+  });
 
   (() => {
     if (process.argv.find(arg => arg === '--debug')) {
@@ -165,88 +222,7 @@ const createWindow = async () => {
   }
 
   mainWindow.webContents.on('did-finish-load', async () => {
-    const bookCreatorProperties = Array.from(
-      otamashelf.bookCreatorsRegistry.keys(),
-    ).map(id => {
-      const bookCreator = otamashelf.bookCreatorsRegistry.get(id);
-      if (!bookCreator) {
-        throw new Error(`Book creator not found. id: ${id}`);
-      }
-      return bookCreator.properties;
-    });
-    const bookIndexersProperties = Array.from(
-      otamashelf.bookIndexersRegistry.keys(),
-    ).map(id => {
-      const bookIndexer = otamashelf.bookIndexersRegistry.get(id);
-      if (!bookIndexer) {
-        throw new Error(`Book indexer not found. id: ${id}`);
-      }
-      return bookIndexer.properties;
-    });
-    const bookLoadersProperties = Array.from(
-      otamashelf.bookLoadersRegistry.keys(),
-    ).map(id => {
-      const bookLoader = otamashelf.bookLoadersRegistry.get(id);
-      if (!bookLoader) {
-        throw new Error(`Book loader not found. id: ${id}`);
-      }
-      return bookLoader.properties;
-    });
-    const bookSaversProperties = Array.from(
-      otamashelf.bookSaversRegistry.keys(),
-    ).map(id => {
-      const bookSaver = otamashelf.bookSaversRegistry.get(id);
-      if (!bookSaver) {
-        throw new Error(`Book saver not found. id: ${id}`);
-      }
-      return bookSaver.properties;
-    });
-    const bookUpdatersProperties = Array.from(
-      otamashelf.bookUpdatersRegistry.keys(),
-    ).map(id => {
-      const bookUpdater = otamashelf.bookUpdatersRegistry.get(id);
-      if (!bookUpdater) {
-        throw new Error(`Book updater not found. id: ${id}`);
-      }
-      return bookUpdater.properties;
-    });
-    const pageCardCreatorsProperties = Array.from(
-      otamashelf.pageCreatorsRegistry.keys(),
-    ).map(id => {
-      const pageCardCreator = otamashelf.pageCreatorsRegistry.get(id);
-      if (!pageCardCreator) {
-        throw new Error(`Page card creator not found. id: ${id}`);
-      }
-      return pageCardCreator.properties;
-    });
-    const pageCardExplorersProperties = Array.from(
-      otamashelf.pageExplorersRegistry.keys(),
-    ).map(id => {
-      const pageCardExploer = otamashelf.pageExplorersRegistry.get(id);
-      if (!pageCardExploer) {
-        throw new Error(`Page card explorer not found. id: ${id}`);
-      }
-      return pageCardExploer.properties;
-    });
-    const pageCardProcessorsProperties = Array.from(
-      otamashelf.pageProcessorsRegistry.keys(),
-    ).map(id => {
-      const pageCardProcessor = otamashelf.pageProcessorsRegistry.get(id);
-      if (!pageCardProcessor) {
-        throw new Error(`Page card processor not found. id: ${id}`);
-      }
-      return pageCardProcessor.properties;
-    });
-    const extensionProperties: ExtensionProperties[] = [
-      ...bookCreatorProperties,
-      ...bookIndexersProperties,
-      ...bookLoadersProperties,
-      ...bookSaversProperties,
-      ...bookUpdatersProperties,
-      ...pageCardCreatorsProperties,
-      ...pageCardExplorersProperties,
-      ...pageCardProcessorsProperties,
-    ];
+    const extensionProperties = otamashelf.extensionProperties();
     log.info(extensionProperties);
     mainWindow.webContents.send('extensions:send', extensionProperties);
   });

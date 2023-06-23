@@ -1,19 +1,19 @@
 import * as net from 'node:net';
 
-import { PageCardCreatorProperties } from 'otamashelf/ExtensionProperties';
-import PageCardProcessor, {
+import { PageCreatorProperties } from 'otamashelf/ExtensionProperties';
+import PageCreator, {
   CreateProps,
   CreateReturns,
   TemplatesProps,
   TemplatesReturns,
-} from 'otamashelf/PageCardCreator';
+} from 'otamashelf/PageCreator';
 
-export default class SocketPageCardProcessor extends PageCardProcessor {
-  readonly properties: PageCardCreatorProperties;
+export default class SocketPageCreator extends PageCreator {
+  readonly properties: PageCreatorProperties;
 
   socket: net.Socket;
 
-  constructor(properties: PageCardCreatorProperties, socket: net.Socket) {
+  constructor(properties: PageCreatorProperties, socket: net.Socket) {
     super();
     this.properties = properties;
     this.socket = socket;
