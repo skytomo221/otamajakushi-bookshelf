@@ -1,10 +1,9 @@
 import log from 'electron-log';
+import { ExtensionProperties, PageCard } from 'otamashelf';
+import TemplateProperties from 'otamashelf/TemplateProperties';
 
-import { ExtensionProperties } from '../common/ExtensionProperties';
-import { PageCard } from '../common/PageCard';
 import SearchProperties from '../common/SearchProperties';
 import StyleThemeParameters from '../common/StyleThemeParameters';
-import TemplateProperties from '../common/TemplateProperties';
 
 import { Mediator } from './Mediator';
 import { SummaryWord } from './SummaryWord';

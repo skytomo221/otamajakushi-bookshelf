@@ -1,6 +1,5 @@
+import { ExtensionProperties } from 'otamashelf';
 import { actionCreatorFactory } from 'typescript-fsa';
-
-import { ExtensionProperties } from '../../common/ExtensionProperties';
 
 const actionCreator = actionCreatorFactory('extensions-action');
 

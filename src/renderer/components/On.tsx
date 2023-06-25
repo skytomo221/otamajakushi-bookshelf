@@ -1,8 +1,8 @@
 import { useSnackbar } from 'notistack';
+import { ExtensionProperties } from 'otamashelf';
 import React, { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { ExtensionProperties } from '../../common/ExtensionProperties';
 import { updateExtensionsAction } from '../actions/ExtensionsActions';
 
 const { api } = window;

@@ -1,15 +1,16 @@
-import { StyleThemeProperties } from '../common/ExtensionProperties';
+import { StyleThemeProperties } from '../common/O20fExtensionProperties';
 import StyleTheme from '../common/StyleTheme';
 import StyleThemeParameters from '../common/StyleThemeParameters';
 
 export default class OtamaDarkTheme extends StyleTheme {
-  public properties = async (): Promise<StyleThemeProperties> => ({
+  readonly properties: StyleThemeProperties = {
+    action: 'properties',
     name: 'Otama Dark Theme',
     id: 'otama-dark-theme',
     version: '0.1.0',
     type: 'style-theme',
     author: 'skytomo221',
-  });
+  };
 
   readonly style = async (): Promise<StyleThemeParameters> => ({
     main: 'bg-slate-800 text-slate-300',

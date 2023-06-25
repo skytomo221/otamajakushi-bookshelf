@@ -1,15 +1,16 @@
-import { StyleThemeProperties } from '../common/ExtensionProperties';
+import { StyleThemeProperties } from '../common/O20fExtensionProperties';
 import StyleTheme from '../common/StyleTheme';
 import StyleThemeParameters from '../common/StyleThemeParameters';
 
 export default class OtamaDefaultTheme extends StyleTheme {
-  public properties = async (): Promise<StyleThemeProperties> => ({
+  public properties: StyleThemeProperties = {
+    action: 'properties',
     name: 'Otama Default Theme',
     id: 'otama-default-theme',
     version: '0.1.0',
     type: 'style-theme',
     author: 'skytomo221',
-  });
+  };
 
   readonly style = async (): Promise<StyleThemeParameters> => ({
     main: '',

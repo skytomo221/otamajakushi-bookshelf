@@ -1,8 +1,7 @@
 import flatten from 'flat';
+import { PageCard, LayoutCard, LayoutComponent } from 'otamashelf';
 import React from 'react';
 
-import { LayoutComponent, LayoutCard } from '../../../common/LayoutCard';
-import { PageCard } from '../../../common/PageCard';
 import { SummaryWord } from '../../SummaryWord';
 
 // eslint-disable-next-line import/no-cycle

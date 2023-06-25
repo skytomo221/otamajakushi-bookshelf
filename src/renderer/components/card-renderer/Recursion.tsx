@@ -1,8 +1,7 @@
 /* eslint-disable import/no-cycle */
+import { PageCard, LayoutCard, LayoutComponent } from 'otamashelf';
 import React from 'react';
 
-import { LayoutComponent, LayoutCard } from '../../../common/LayoutCard';
-import { PageCard } from '../../../common/PageCard';
 import { SummaryWord } from '../../SummaryWord';
 
 import Array from './Array';
