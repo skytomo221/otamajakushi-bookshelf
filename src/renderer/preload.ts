@@ -57,8 +57,24 @@ contextBridge.exposeInMainWorld('api', {
       extensions: ExtensionProperties[],
     ) => void,
   ) => ipcRenderer.on(channel, (event, argv) => callback(event, argv)),
+  onDefaultLog: (
+    channel: 'log:default',
+    callback: (event: Electron.IpcRendererEvent, log: string) => void,
+  ) => ipcRenderer.on(channel, (event, argv) => callback(event, argv)),
   onErrorLog: (
     channel: 'log:error',
+    callback: (event: Electron.IpcRendererEvent, log: string) => void,
+  ) => ipcRenderer.on(channel, (event, argv) => callback(event, argv)),
+  onInfoLog: (
+    channel: 'log:info',
+    callback: (event: Electron.IpcRendererEvent, log: string) => void,
+  ) => ipcRenderer.on(channel, (event, argv) => callback(event, argv)),
+  onSuccessLog: (
+    channel: 'log:success',
+    callback: (event: Electron.IpcRendererEvent, log: string) => void,
+  ) => ipcRenderer.on(channel, (event, argv) => callback(event, argv)),
+  onWarningLog: (
+    channel: 'log:warning',
     callback: (event: Electron.IpcRendererEvent, log: string) => void,
   ) => ipcRenderer.on(channel, (event, argv) => callback(event, argv)),
   log,
