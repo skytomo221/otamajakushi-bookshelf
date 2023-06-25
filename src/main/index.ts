@@ -233,7 +233,28 @@ const createWindow = async () => {
     const curr = log.transports.file.fileName;
     log.transports.file.fileName = `${prefix}_${curr}`;
   })();
-  log.info('Change filename');
+  otamashelf.emit(
+    'log.success',
+    `Welcome to Otamajakushi Bookshelf ${process.env.npm_package_version}!
+    ╭───────┬──╮                      ╭──╮     ╭──╮              ╭──╮  ╭──╮
+    │   ┬   │  └─.───.─.────────.───.─┼──.───.─│  ├──.──.──.─────┤  └──┼──┤
+    │.  │   │   ─┤  ─  │  ╷  ╷  │  ─  │  │  ─  │    <│  │  │__ ──┤  ╷  │  │
+    │.  │   │────┴───.─┴──┴──┴──┴───.─┤  │───.─┴──┴──┴─────┴─────┴──┴──┴──┘
+    │:  ┴   │                        ╭┘  │
+    │::.. . │ ╭───────╮           ╭──╰───╯    ╭──╮        ╭──┬────╮
+    ╰───────╯ │ ╭┬┬┬╮ .─────.─────┤  ├──.─────│  └──.─────┤  │   ─┤
+              │.╰┴┴┴╯ │  ─  │  ─  │    <│__ ──┤  ╷  │  ─__│  │  ┌─┘
+              │.╭┬┬┬╮ ├─────┴─────┴──┴──┴─────┴──┴──┴─────┴──┴──┘  ${process.env.npm_package_version}
+              │:╰┴┴┴╯ ╰────╮
+              │::.. . O20f │
+              ╰────────────╯
+    Repository URL: https://github.com/skytomo221/otamajakushi-bookshelf
+    Please submit it to Issues in the repository above if you have a problem.
+
+    Otamajakushi Bookshelf ${process.env.npm_package_version}へようこそ！
+    次のリポジトリで開発を行っています：https://github.com/skytomo221/otamajakushi-bookshelf
+    問題がある場合は、上記のリポジトリの Issues に投稿してください。`,
+  );
 
   // 読み込む index.html。
   // tsc でコンパイルするので、出力先の dist の相対パスで指定する。
