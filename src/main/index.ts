@@ -232,6 +232,7 @@ const createWindow = async () => {
       `00${d.getDate()}`.slice(-2);
     const curr = log.transports.file.fileName;
     log.transports.file.fileName = `${prefix}_${curr}`;
+    otamashelf.emit('log.info', `The log file renamed ${prefix}_${curr}`);
   })();
   otamashelf.emit(
     'log.success',
