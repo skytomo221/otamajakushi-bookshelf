@@ -18,6 +18,12 @@ export default class OtamashelfGui extends Otamashelf {
       'otamashelf.themeRegistry.register',
       (styleTheme: StyleTheme) => this.themeRegistry.register(styleTheme),
     );
+    ['error', 'warn', 'info', 'success', 'verbose', 'debug', 'silly'].forEach(command => {
+      this.commandsRegistry.regesterCommand(
+        `log.${command}`,
+        (...message: unknown[]) => this.emit(`log.${command}`, ...message),
+      );
+    });
   }
 
   extensionProperties(): ExtensionProperties[] {

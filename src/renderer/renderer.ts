@@ -44,8 +44,24 @@ export interface Api {
       extensions: ExtensionProperties[],
     ) => void,
   ) => Electron.IpcRenderer;
+  onDefaultLog: (
+    channel: 'log:default',
+    callback: (event: Electron.IpcRendererEvent, log: string) => void,
+  ) => Electron.IpcRenderer;
   onErrorLog: (
     channel: 'log:error',
+    callback: (event: Electron.IpcRendererEvent, log: string) => void,
+  ) => Electron.IpcRenderer;
+  onInfoLog: (
+    channel: 'log:info',
+    callback: (event: Electron.IpcRendererEvent, log: string) => void,
+  ) => Electron.IpcRenderer;
+  onSuccessLog: (
+    channel: 'log:success',
+    callback: (event: Electron.IpcRendererEvent, log: string) => void,
+  ) => Electron.IpcRenderer;
+  onWarningLog: (
+    channel: 'log:warning',
     callback: (event: Electron.IpcRendererEvent, log: string) => void,
   ) => Electron.IpcRenderer;
   log: log.ElectronLog & {
