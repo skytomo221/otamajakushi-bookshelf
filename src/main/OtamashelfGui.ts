@@ -99,6 +99,15 @@ export default class OtamashelfGui extends Otamashelf {
       }
       return pageCardProcessor.properties;
     });
+    const themeProperties = Array.from(
+      this.themeRegistry.keys(),
+    ).map(id => {
+      const theme = this.themeRegistry.get(id);
+      if (!theme) {
+        throw new Error(`theme not found. id: ${id}`);
+      }
+      return theme.properties;
+    });
     return [
       ...bookCreatorProperties,
       ...bookIndexersProperties,
@@ -108,6 +117,7 @@ export default class OtamashelfGui extends Otamashelf {
       ...pageCardCreatorsProperties,
       ...pageCardExplorersProperties,
       ...pageCardProcessorsProperties,
+      ...themeProperties,
     ];
   }
 }
