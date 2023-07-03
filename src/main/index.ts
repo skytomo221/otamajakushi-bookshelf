@@ -148,6 +148,14 @@ const createWindow = async () => {
   );
   const md = new MarkdownIt();
 
+  const extensionsDirectoryPath = path.join(__dirname, 'extensions');
+  if (fs.existsSync(extensionsDirectoryPath)) {
+    otamashelf.emit('log.verbose', `The extensions directory does exist: ${extensionsDirectoryPath}.`);
+  } else {
+    otamashelf.emit('log.verbose', `The extensions directory does not exist: ${extensionsDirectoryPath}.`);
+    fs.mkdirSync(extensionsDirectoryPath);
+    otamashelf.emit('log.verbose', `Created the extensions directory: ${extensionsDirectoryPath}.`);
+  }
   fs.readdir(path.join(__dirname, 'extensions'), (_err, files) => {
     files.forEach(file => {
       const extensionDirectory = path.join(__dirname, 'extensions', file);
