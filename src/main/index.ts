@@ -110,6 +110,42 @@ const createWindow = async () => {
   });
   otamashelf.on('log.debug', log.debug);
   otamashelf.on('log.silly', log.silly);
+  (() => {
+    if (process.argv.find(arg => arg === '--debug')) {
+      log.transports.file.level = 'debug';
+      log.transports.console.level = 'debug';
+    }
+    const d = new Date();
+    const prefix =
+      d.getFullYear() +
+      `00${d.getMonth() + 1}`.slice(-2) +
+      `00${d.getDate()}`.slice(-2);
+    const curr = log.transports.file.fileName;
+    log.transports.file.fileName = `${prefix}_${curr}`;
+    otamashelf.emit('log.info', `The log file renamed ${prefix}_${curr}`);
+  })();
+  otamashelf.emit(
+    'log.success',
+    `Welcome to Otamajakushi Bookshelf ${process.env.npm_package_version}!
+    ╭───────┬──╮                      ╭──╮     ╭──╮              ╭──╮  ╭──╮
+    │   ┬   │  └─.───.─.────────.───.─┼──.───.─│  ├──.──.──.─────┤  └──┼──┤
+    │.  │   │   ─┤  ─  │  ╷  ╷  │  ─  │  │  ─  │    <│  │  │__ ──┤  ╷  │  │
+    │.  │   │────┴───.─┴──┴──┴──┴───.─┤  │───.─┴──┴──┴─────┴─────┴──┴──┴──┘
+    │:  ┴   │                        ╭┘  │
+    │::.. . │ ╭───────╮           ╭──╰───╯    ╭──╮        ╭──┬────╮
+    ╰───────╯ │ ╭┬┬┬╮ .─────.─────┤  ├──.─────│  └──.─────┤  │   ─┤
+              │.╰┴┴┴╯ │  ─  │  ─  │    <│__ ──┤  ╷  │  ─__│  │  ┌─┘
+              │.╭┬┬┬╮ ├─────┴─────┴──┴──┴─────┴──┴──┴─────┴──┴──┘  ${process.env.npm_package_version}
+              │:╰┴┴┴╯ ╰────╮
+              │::.. . O20f │
+              ╰────────────╯
+    Repository URL: https://github.com/skytomo221/otamajakushi-bookshelf
+    Please submit it to Issues in the repository above if you have a problem.
+
+    Otamajakushi Bookshelf ${process.env.npm_package_version}へようこそ！
+    次のリポジトリで開発を行っています：https://github.com/skytomo221/otamajakushi-bookshelf
+    問題がある場合は、上記のリポジトリの Issues に投稿してください。`,
+  );
   const md = new MarkdownIt();
 
   fs.readdir(path.join(__dirname, 'extensions'), (_err, files) => {
@@ -219,43 +255,6 @@ const createWindow = async () => {
       });
     });
   });
-
-  (() => {
-    if (process.argv.find(arg => arg === '--debug')) {
-      log.transports.file.level = 'debug';
-      log.transports.console.level = 'debug';
-    }
-    const d = new Date();
-    const prefix =
-      d.getFullYear() +
-      `00${d.getMonth() + 1}`.slice(-2) +
-      `00${d.getDate()}`.slice(-2);
-    const curr = log.transports.file.fileName;
-    log.transports.file.fileName = `${prefix}_${curr}`;
-    otamashelf.emit('log.info', `The log file renamed ${prefix}_${curr}`);
-  })();
-  otamashelf.emit(
-    'log.success',
-    `Welcome to Otamajakushi Bookshelf ${process.env.npm_package_version}!
-    ╭───────┬──╮                      ╭──╮     ╭──╮              ╭──╮  ╭──╮
-    │   ┬   │  └─.───.─.────────.───.─┼──.───.─│  ├──.──.──.─────┤  └──┼──┤
-    │.  │   │   ─┤  ─  │  ╷  ╷  │  ─  │  │  ─  │    <│  │  │__ ──┤  ╷  │  │
-    │.  │   │────┴───.─┴──┴──┴──┴───.─┤  │───.─┴──┴──┴─────┴─────┴──┴──┴──┘
-    │:  ┴   │                        ╭┘  │
-    │::.. . │ ╭───────╮           ╭──╰───╯    ╭──╮        ╭──┬────╮
-    ╰───────╯ │ ╭┬┬┬╮ .─────.─────┤  ├──.─────│  └──.─────┤  │   ─┤
-              │.╰┴┴┴╯ │  ─  │  ─  │    <│__ ──┤  ╷  │  ─__│  │  ┌─┘
-              │.╭┬┬┬╮ ├─────┴─────┴──┴──┴─────┴──┴──┴─────┴──┴──┘  ${process.env.npm_package_version}
-              │:╰┴┴┴╯ ╰────╮
-              │::.. . O20f │
-              ╰────────────╯
-    Repository URL: https://github.com/skytomo221/otamajakushi-bookshelf
-    Please submit it to Issues in the repository above if you have a problem.
-
-    Otamajakushi Bookshelf ${process.env.npm_package_version}へようこそ！
-    次のリポジトリで開発を行っています：https://github.com/skytomo221/otamajakushi-bookshelf
-    問題がある場合は、上記のリポジトリの Issues に投稿してください。`,
-  );
 
   // 読み込む index.html。
   // tsc でコンパイルするので、出力先の dist の相対パスで指定する。
