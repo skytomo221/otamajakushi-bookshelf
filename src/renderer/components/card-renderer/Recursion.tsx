@@ -171,18 +171,18 @@ export default function Recursion({
                 word={word}
               />
             );
-            case 'p':
-              return (
-                <P
-                  baseReference={baseReference}
-                  className={child.class}
-                  contents={child.contents}
-                  editable={editable}
-                  summary={summary}
-                  layout={layout}
-                  word={word}
-                />
-              );
+          case 'p':
+            return (
+              <P
+                baseReference={baseReference}
+                className={child.class}
+                contents={child.contents}
+                editable={editable}
+                summary={summary}
+                layout={layout}
+                word={word}
+              />
+            );
           case 'span':
             return (
               <Span
@@ -195,26 +195,12 @@ export default function Recursion({
                 word={word}
               />
             );
-          case 'text/plain':
-            return 'text' in child ? (
+          case 'text':
+            return (
               <Plain text={child.text} editable={editable} layout={layout} />
-            ) : (
-              <Plain
-                reference={
-                  child.reference.startsWith('.')
-                    ? baseReference + child.reference
-                    : child.reference
-                }
-                editable={editable}
-                summary={summary}
-                layout={layout}
-                word={word}
-              />
             );
-          case 'text/markdown':
-            return 'text' in child ? (
-              <Markdown text={child.text} editable={editable} layout={layout} />
-            ) : (
+          case 'reference':
+            return (
               <Markdown
                 reference={
                   child.reference.startsWith('.')

@@ -219,7 +219,7 @@ const createWindow = async () => {
                             new SocketLayoutBuilder(properties, socket),
                           );
                         break;
-                      case 'page-card-creator':
+                      case 'page-creator':
                         if (!otamashelf.pageCreatorsRegistry.has(properties.id))
                           otamashelf.pageCreatorsRegistry.register(
                             new SocketPageCreator(properties, socket),
@@ -233,7 +233,7 @@ const createWindow = async () => {
                             new SocketPageExplorer(properties, socket),
                           );
                         break;
-                      case 'page-card-processor':
+                      case 'page-processor':
                         if (
                           !otamashelf.pageProcessorsRegistry.has(properties.id)
                         )
@@ -434,7 +434,7 @@ const createWindow = async () => {
         throw new Error(`Invalid path: ${filePath}`);
       }
       const templatesReturns = await otamashelf.pageCreatorsRegistry.templates(
-        'otm-page-card-creator',
+        'otm-page-creator',
         { action: 'templates' },
       );
       if (templatesReturns.status === 'reject') {
@@ -453,7 +453,7 @@ const createWindow = async () => {
     'book-controller:page:create',
     async (_, bookPath: string, templateId: string): Promise<Mediator> => {
       const pageCardCreator = otamashelf.pageCreatorsRegistry.get(
-        'otm-page-card-creator',
+        'otm-page-creator',
       );
       if (!pageCardCreator) {
         otamashelf.emit(
@@ -641,7 +641,7 @@ const createWindow = async () => {
         throw new Error(`Invalid word: ${summary}`);
       }
       const processPage = await pageCardProcessor.processPage({
-        action: 'update-page',
+        action: 'process-page',
         pageCard: word,
       });
       if (processPage.status === 'reject') {
