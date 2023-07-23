@@ -14,6 +14,7 @@ import { BookWithPath } from 'otamashelf/Book';
 import BookTimeMachine from 'otamashelf/BookTimeMachine';
 import { PageCard } from 'otamashelf/PageCard';
 import TemplateProperties from 'otamashelf/TemplateProperties';
+import { ConvertProps, ConvertReturns } from 'otamashelf/TextConverter';
 import EndsWithPageExplorer from 'otamashelf/extensions/EndsWithPageExplorer';
 import IncludesPageExplorer from 'otamashelf/extensions/IncludesPageExplorer';
 import OtmCreator from 'otamashelf/extensions/OtmCreator';
@@ -30,6 +31,7 @@ import StyleThemeParameters from '../common/StyleThemeParameters';
 import { Mediator } from '../renderer/Mediator';
 import { SummaryWord } from '../renderer/SummaryWord';
 
+import MarkdownTextConverter from './MarkdownTextConverter';
 import OtamaDarkTheme from './OtamaDarkTheme';
 import OtamaDefaultTheme from './OtamaDefaultTheme';
 import OtamaLightTheme from './OtamaLightTheme';
@@ -44,6 +46,7 @@ import SocketLayoutBuilder from './SocketLayoutBuilder';
 import SocketPageCreator from './SocketPageCreator';
 import SocketPageExplorer from './SocketPageExplorer';
 import SocketPageProcessor from './SocketPageProcessor';
+import SocketTextConverter from './SocketTextConverter';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
@@ -84,6 +87,7 @@ const createWindow = async () => {
   otamashelf.pageExplorersRegistry.register(new StartsWithPageExplorer());
   otamashelf.pageExplorersRegistry.register(new EndsWithPageExplorer());
   otamashelf.pageExplorersRegistry.register(new IncludesPageExplorer());
+  otamashelf.textConvertersRegistry.register(new MarkdownTextConverter());
   otamashelf.executeCommand(
     'otamashelf.pageExploeresRegistry.register',
     new RegexPageExplorer(),
@@ -239,6 +243,14 @@ const createWindow = async () => {
                         )
                           otamashelf.pageProcessorsRegistry.register(
                             new SocketPageProcessor(properties, socket),
+                          );
+                        break;
+                      case 'text-converter':
+                        if (
+                          !otamashelf.textConvertersRegistry.has(properties.id)
+                        )
+                          otamashelf.textConvertersRegistry.register(
+                            new SocketTextConverter(properties, socket),
                           );
                         break;
                       default:
@@ -711,9 +723,13 @@ const createWindow = async () => {
     },
   );
 
-  ipcMain.on('markdown', (event: Electron.IpcMainEvent, text: string) => {
-    // eslint-disable-next-line no-param-reassign
-    event.returnValue = md.render(text);
+  ipcMain.handle('text-converter:convert', async (_, id: string, props: ConvertProps): Promise<ConvertReturns> => {
+    const textConverter = otamashelf.textConvertersRegistry.get(id);
+    if (!textConverter) {
+      otamashelf.emit('log.error', `Extension ${id} not found.`);
+      throw new Error(`Extension ${id} not found.`);
+    }
+    return textConverter.convert(props);
   });
 };
 

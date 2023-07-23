@@ -14,7 +14,7 @@ import H3 from './H3';
 import H4 from './H4';
 import H5 from './H5';
 import H6 from './H6';
-import Markdown from './Markdown';
+import NotPlain from './NotPlain';
 import P from './P';
 import Plain from './Plain';
 import Span from './Span';
@@ -195,24 +195,52 @@ export default function Recursion({
                 word={word}
               />
             );
-          case 'text':
+          case 'text': {
+            if (child.mime === 'text/plain') {
+              return (
+                <Plain text={child.text} editable={editable} layout={layout} />
+              );
+            }
             return (
-              <Plain text={child.text} editable={editable} layout={layout} />
+              <NotPlain
+                text={child.text}
+                mime={child.mime}
+                editable={editable}
+                layout={layout}
+              />
             );
-          case 'reference':
+          }
+          case 'reference': {
+            if (child.mime === 'text/plain') {
+              return (
+                <Plain
+                  reference={
+                    child.reference.startsWith('.')
+                      ? baseReference + child.reference
+                      : child.reference
+                  }
+                  editable={editable}
+                  summary={summary}
+                  layout={layout}
+                  word={word}
+                />
+              );
+            }
             return (
-              <Markdown
+              <NotPlain
                 reference={
                   child.reference.startsWith('.')
                     ? baseReference + child.reference
                     : child.reference
                 }
+                mime={child.mime}
                 editable={editable}
                 summary={summary}
                 layout={layout}
                 word={word}
               />
             );
+          }
           default:
             return <></>;
         }
