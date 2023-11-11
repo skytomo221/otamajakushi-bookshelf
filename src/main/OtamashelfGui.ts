@@ -108,6 +108,15 @@ export default class OtamashelfGui extends Otamashelf {
       }
       return theme.properties;
     });
+    const textConverterProperties = Array.from(
+      this.textConvertersRegistry.keys(),
+    ).map(id => {
+      const theme = this.textConvertersRegistry.get(id);
+      if (!theme) {
+        throw new Error(`Text converter not found. id: ${id}`);
+      }
+      return theme.properties;
+    });
     return [
       ...bookCreatorProperties,
       ...bookIndexersProperties,
@@ -118,6 +127,7 @@ export default class OtamashelfGui extends Otamashelf {
       ...pageCardExplorersProperties,
       ...pageCardProcessorsProperties,
       ...themeProperties,
+      ...textConverterProperties,
     ];
   }
 }

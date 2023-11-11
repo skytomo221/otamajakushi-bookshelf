@@ -1,4 +1,4 @@
-import { PageCard, LayoutCard, Plain } from 'otamashelf';
+import { PageCard, LayoutCard, Text, Reference } from 'otamashelf';
 import React from 'react';
 import { useSelector } from 'react-redux';
 
@@ -13,8 +13,8 @@ import styleJoin from './styleJoin';
 interface Props {
   baseReference: string;
   className?: string;
-  keyword: Plain;
-  value: Plain | undefined;
+  keyword: Text | Reference;
+  value: Text | Reference | undefined;
   editable: boolean;
   summary: SummaryWord;
   layout: LayoutCard;
@@ -35,7 +35,7 @@ export default function Chip({
   return (
     <span className={styleJoin(theme.style.Chip, className)}>
       <span className={theme.style['Chip.Key']}>
-        {'text' in keyword ? (
+        {keyword.component === 'text' ? (
           <TextPlain text={keyword.text} editable={editable} layout={layout} />
         ) : (
           <TextPlain
@@ -53,7 +53,7 @@ export default function Chip({
       </span>
       {value && (
         <span className={theme.style['Chip.Value']}>
-          {'text' in value ? (
+          {value.component === 'text' ? (
             <TextPlain text={value.text} editable={editable} layout={layout} />
           ) : (
             <TextPlain

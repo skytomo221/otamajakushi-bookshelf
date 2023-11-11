@@ -1,6 +1,7 @@
 import log from 'electron-log';
 import { ExtensionProperties, PageCard } from 'otamashelf';
 import TemplateProperties from 'otamashelf/TemplateProperties';
+import { ConvertProps, ConvertReturns } from 'otamashelf/TextConverter';
 
 import SearchProperties from '../common/SearchProperties';
 import StyleThemeParameters from '../common/StyleThemeParameters';
@@ -36,7 +37,7 @@ export interface Api {
   updatePage: (summary: SummaryWord, word: PageCard) => Promise<Mediator>;
   onClick: (summary: SummaryWord, onClick: string) => Promise<Mediator>;
   applyStyleTheme: (id: string) => Promise<StyleThemeParameters>;
-  markdown: (text: string) => string;
+  convertHtml: (id: string, props: ConvertProps) => Promise<ConvertReturns>;
   onExtensions: (
     channel: 'extensions:send',
     callback: (

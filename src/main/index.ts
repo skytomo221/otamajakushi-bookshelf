@@ -14,6 +14,7 @@ import { BookWithPath } from 'otamashelf/Book';
 import BookTimeMachine from 'otamashelf/BookTimeMachine';
 import { PageCard } from 'otamashelf/PageCard';
 import TemplateProperties from 'otamashelf/TemplateProperties';
+import { ConvertProps, ConvertReturns } from 'otamashelf/TextConverter';
 import EndsWithPageExplorer from 'otamashelf/extensions/EndsWithPageExplorer';
 import IncludesPageExplorer from 'otamashelf/extensions/IncludesPageExplorer';
 import OtmCreator from 'otamashelf/extensions/OtmCreator';
@@ -30,6 +31,7 @@ import StyleThemeParameters from '../common/StyleThemeParameters';
 import { Mediator } from '../renderer/Mediator';
 import { SummaryWord } from '../renderer/SummaryWord';
 
+import MarkdownTextConverter from './MarkdownTextConverter';
 import OtamaDarkTheme from './OtamaDarkTheme';
 import OtamaDefaultTheme from './OtamaDefaultTheme';
 import OtamaLightTheme from './OtamaLightTheme';
@@ -44,6 +46,7 @@ import SocketLayoutBuilder from './SocketLayoutBuilder';
 import SocketPageCreator from './SocketPageCreator';
 import SocketPageExplorer from './SocketPageExplorer';
 import SocketPageProcessor from './SocketPageProcessor';
+import SocketTextConverter from './SocketTextConverter';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
@@ -84,6 +87,7 @@ const createWindow = async () => {
   otamashelf.pageExplorersRegistry.register(new StartsWithPageExplorer());
   otamashelf.pageExplorersRegistry.register(new EndsWithPageExplorer());
   otamashelf.pageExplorersRegistry.register(new IncludesPageExplorer());
+  otamashelf.textConvertersRegistry.register(new MarkdownTextConverter());
   otamashelf.executeCommand(
     'otamashelf.pageExploeresRegistry.register',
     new RegexPageExplorer(),
@@ -219,7 +223,7 @@ const createWindow = async () => {
                             new SocketLayoutBuilder(properties, socket),
                           );
                         break;
-                      case 'page-card-creator':
+                      case 'page-creator':
                         if (!otamashelf.pageCreatorsRegistry.has(properties.id))
                           otamashelf.pageCreatorsRegistry.register(
                             new SocketPageCreator(properties, socket),
@@ -233,12 +237,20 @@ const createWindow = async () => {
                             new SocketPageExplorer(properties, socket),
                           );
                         break;
-                      case 'page-card-processor':
+                      case 'page-processor':
                         if (
                           !otamashelf.pageProcessorsRegistry.has(properties.id)
                         )
                           otamashelf.pageProcessorsRegistry.register(
                             new SocketPageProcessor(properties, socket),
+                          );
+                        break;
+                      case 'text-converter':
+                        if (
+                          !otamashelf.textConvertersRegistry.has(properties.id)
+                        )
+                          otamashelf.textConvertersRegistry.register(
+                            new SocketTextConverter(properties, socket),
                           );
                         break;
                       default:
@@ -434,7 +446,7 @@ const createWindow = async () => {
         throw new Error(`Invalid path: ${filePath}`);
       }
       const templatesReturns = await otamashelf.pageCreatorsRegistry.templates(
-        'otm-page-card-creator',
+        'otm-page-creator',
         { action: 'templates' },
       );
       if (templatesReturns.status === 'reject') {
@@ -453,7 +465,7 @@ const createWindow = async () => {
     'book-controller:page:create',
     async (_, bookPath: string, templateId: string): Promise<Mediator> => {
       const pageCardCreator = otamashelf.pageCreatorsRegistry.get(
-        'otm-page-card-creator',
+        'otm-page-creator',
       );
       if (!pageCardCreator) {
         otamashelf.emit(
@@ -641,7 +653,7 @@ const createWindow = async () => {
         throw new Error(`Invalid word: ${summary}`);
       }
       const processPage = await pageCardProcessor.processPage({
-        action: 'update-page',
+        action: 'process-page',
         pageCard: word,
       });
       if (processPage.status === 'reject') {
@@ -711,9 +723,13 @@ const createWindow = async () => {
     },
   );
 
-  ipcMain.on('markdown', (event: Electron.IpcMainEvent, text: string) => {
-    // eslint-disable-next-line no-param-reassign
-    event.returnValue = md.render(text);
+  ipcMain.handle('text-converter:convert', async (_, id: string, props: ConvertProps): Promise<ConvertReturns> => {
+    const textConverter = otamashelf.textConvertersRegistry.get(id);
+    if (!textConverter) {
+      otamashelf.emit('log.error', `Extension ${id} not found.`);
+      throw new Error(`Extension ${id} not found.`);
+    }
+    return textConverter.convert(props);
   });
 };
 

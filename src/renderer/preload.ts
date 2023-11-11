@@ -3,6 +3,7 @@ import { contextBridge, ipcRenderer } from 'electron';
 import log from 'electron-log';
 import { ExtensionProperties, LayoutCard, PageCard } from 'otamashelf';
 import TemplateProperties from 'otamashelf/TemplateProperties';
+import { ConvertProps, ConvertReturns } from 'otamashelf/TextConverter';
 
 import SearchProperties from '../common/SearchProperties';
 import StyleThemeParameters from '../common/StyleThemeParameters';
@@ -49,7 +50,8 @@ contextBridge.exposeInMainWorld('api', {
     ipcRenderer.invoke('book-controller:page:on-click', summary, onClick),
   applyStyleTheme: (id: string): Promise<StyleThemeParameters> =>
     ipcRenderer.invoke('style-theme:apply', id),
-  markdown: (text: string) => ipcRenderer.sendSync('markdown', text),
+  convertHtml: (id: string, props: ConvertProps): Promise<ConvertReturns> =>
+    ipcRenderer.invoke('text-converter:convert', id, props),
   onExtensions: (
     channel: 'extensions:send',
     callback: (
