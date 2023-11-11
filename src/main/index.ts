@@ -22,6 +22,7 @@ import OtmIndexer from 'otamashelf/extensions/OtmIndexer';
 import OtmLayoutBuilder from 'otamashelf/extensions/OtmLayoutBuilder';
 import OtmLoader from 'otamashelf/extensions/OtmLoader';
 import OtmPageCreator from 'otamashelf/extensions/OtmPageCreator';
+import OtmPageUpdater from 'otamashelf/extensions/OtmPageUpdater';
 import OtmSaver from 'otamashelf/extensions/OtmSaver';
 import OtmUpdater from 'otamashelf/extensions/OtmUpdater';
 import StartsWithPageExplorer from 'otamashelf/extensions/StartsWithPageExplorer';
@@ -87,6 +88,7 @@ const createWindow = async () => {
   otamashelf.pageExplorersRegistry.register(new StartsWithPageExplorer());
   otamashelf.pageExplorersRegistry.register(new EndsWithPageExplorer());
   otamashelf.pageExplorersRegistry.register(new IncludesPageExplorer());
+  otamashelf.pageUpdatersRegistry.register(new OtmPageUpdater());
   otamashelf.textConvertersRegistry.register(new MarkdownTextConverter());
   otamashelf.executeCommand(
     'otamashelf.pageExploeresRegistry.register',
@@ -637,11 +639,11 @@ const createWindow = async () => {
         otamashelf.emit('log.error', `File path ${bookPath} not found.`);
         throw new Error(`Invalid path: ${bookPath}`);
       }
-      const pageCardProcessor = otamashelf.pageProcessorsRegistry.get(onClick);
-      if (!pageCardProcessor) {
+      const pageUpdater = otamashelf.pageUpdatersRegistry.get('otm-page-updater');
+      if (!pageUpdater) {
         otamashelf.emit(
           'log.error',
-          `Page card processor not found. id: ${onClick}`,
+          `Page updater not found. id: ${onClick}`,
         );
         throw new Error(`Invalid path: ${bookPath}`);
       }
@@ -652,15 +654,16 @@ const createWindow = async () => {
         otamashelf.emit('log.error', `Page card id ${id} not found.`);
         throw new Error(`Invalid word: ${summary}`);
       }
-      const processPage = await pageCardProcessor.processPage({
-        action: 'process-page',
+      const updatedPage = await pageUpdater.updatePage({
+        action: 'update-page',
+        script: 'content/add',
         pageCard: word,
       });
-      if (processPage.status === 'reject') {
-        otamashelf.emit('log.error', processPage.returns.reason);
+      if (updatedPage.status === 'reject') {
+        otamashelf.emit('log.error', updatedPage.returns.reason);
         throw new Error(`Invalid path: ${bookPath}`);
       }
-      const { pageCard } = processPage.returns;
+      const { pageCard } = updatedPage.returns;
       const layout = await new OtmLayoutBuilder().layout(pageCard);
       return { summary, word: pageCard, layout };
     },
