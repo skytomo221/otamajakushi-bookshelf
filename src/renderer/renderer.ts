@@ -35,7 +35,11 @@ export interface Api {
   readSearchMode: (bookPath: string) => Promise<string[]>;
   readTemplates: (path: string) => Promise<TemplateProperties[]>;
   updatePage: (summary: SummaryWord, word: PageCard) => Promise<Mediator>;
-  onClick: (summary: SummaryWord, onClick: string) => Promise<Mediator>;
+  onClick: (summary: SummaryWord, onClick: {
+    type: string;
+    id: string;
+    script: string;
+  }) => Promise<Mediator>;
   applyStyleTheme: (id: string) => Promise<StyleThemeParameters>;
   convertHtml: (id: string, props: ConvertProps) => Promise<ConvertReturns>;
   onExtensions: (

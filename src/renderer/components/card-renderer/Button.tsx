@@ -38,7 +38,11 @@ export default function Button({
 }: Props): JSX.Element {
   const theme = useSelector<State, ThemeParameter>(state => state.theme);
   const dispatch = useDispatch();
-  const onClick = React.useCallback((s: SummaryWord, c: string) => {
+  const onClick = React.useCallback((s: SummaryWord, c: {
+    type: string;
+    id: string;
+    script: string;
+  }) => {
     dispatch(onClickAction({ summary: s, onClick: c }));
   }, []);
   return editable ? (
@@ -46,7 +50,7 @@ export default function Button({
       aria-label="Save"
       className={styleJoin(theme.style.button, className)}
       onClick={() => {
-        onClick(summary, onClickButton.script);
+        onClick(summary, onClickButton);
       }}
       type="submit">
       <Recursion

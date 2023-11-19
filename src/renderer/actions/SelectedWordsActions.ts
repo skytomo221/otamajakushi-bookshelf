@@ -23,5 +23,9 @@ export const pushSelectedWordAction =
   actionCreator<Mediator>('selected-word/push');
 export const onClickAction = actionCreator<{
   summary: SummaryWord;
-  onClick: string;
+  onClick: {
+    type: string;
+    id: string;
+    script: string;
+  };
 }>('selected-word/on-click');

@@ -632,20 +632,29 @@ const createWindow = async () => {
 
   ipcMain.handle(
     'book-controller:page:on-click',
-    async (_, summary: SummaryWord, onClick: string): Promise<Mediator> => {
+    async (_, summary: SummaryWord, onClick: {
+      type: string;
+      id: string;
+      script: string;
+    }): Promise<Mediator> => {
       const { bookPath, id } = summary;
       const book = otamashelf.booksController.getBookRepository(bookPath);
       if (!book) {
         otamashelf.emit('log.error', `File path ${bookPath} not found.`);
         throw new Error(`Invalid path: ${bookPath}`);
       }
-      const pageUpdater = otamashelf.pageUpdatersRegistry.get('otm-page-updater');
+      const {type, id: onClickId, script} = onClick;
+      if (type !== 'page-updater') {
+        otamashelf.emit('log.error', `Invalid type: ${type}`);
+        throw new Error(`Invalid type: ${type}`);
+      }
+      const pageUpdater = otamashelf.pageUpdatersRegistry.get(onClickId);
       if (!pageUpdater) {
         otamashelf.emit(
           'log.error',
-          `Page updater not found. id: ${onClick}`,
+          `Page updater not found. id: ${onClickId}`,
         );
-        throw new Error(`Invalid path: ${bookPath}`);
+        throw new Error(`Invalid page updater: ${onClickId}`);
       }
       const word = book.plainBookTimeMachine.currentBook.pageCards.find(
         w => w.id === id,
@@ -656,12 +665,12 @@ const createWindow = async () => {
       }
       const updatedPage = await pageUpdater.updatePage({
         action: 'update-page',
-        script: 'content/add',
+        script,
         pageCard: word,
       });
       if (updatedPage.status === 'reject') {
         otamashelf.emit('log.error', updatedPage.returns.reason);
-        throw new Error(`Invalid path: ${bookPath}`);
+        throw new Error(`${onClickId} occured error: ${updatedPage.returns.reason}`);
       }
       const { pageCard } = updatedPage.returns;
       const layout = await new OtmLayoutBuilder().layout(pageCard);
