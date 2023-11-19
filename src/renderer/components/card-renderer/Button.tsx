@@ -15,7 +15,11 @@ interface Props {
   baseReference: string;
   className?: string;
   contents: LayoutComponent[];
-  onClick: string;
+  onClick: {
+    type: string;
+    id: string;
+    script: string;
+  };
   editable: boolean;
   summary: SummaryWord;
   layout: LayoutCard;
@@ -26,7 +30,7 @@ export default function Button({
   baseReference,
   className,
   contents,
-  onClick: script,
+  onClick: onClickButton,
   editable,
   summary,
   layout,
@@ -42,7 +46,7 @@ export default function Button({
       aria-label="Save"
       className={styleJoin(theme.style.button, className)}
       onClick={() => {
-        onClick(summary, script);
+        onClick(summary, onClickButton.script);
       }}
       type="submit">
       <Recursion
