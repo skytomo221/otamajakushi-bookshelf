@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { Mediator } from '../../Mediator';
 import { State } from '../../states/State';
 
+import DragDropRenderer from './DragDropRenderer';
 import Recursion from './Recursion';
 
 export default function CardRenderer({
@@ -18,17 +19,19 @@ export default function CardRenderer({
       )?.book.editable ?? false,
   );
   return (
-    <Recursion
-      baseReference=""
-      layout={layout}
-      summary={summary}
-      word={word}
-      contents={
-        layout.layout.component === 'recursion'
-          ? layout.layout.contents
-          : [layout.layout]
-      }
-      editable={editable}
-    />
+    <DragDropRenderer summary={summary} word={word} layout={layout}>
+      <Recursion
+        baseReference=""
+        layout={layout}
+        summary={summary}
+        word={word}
+        contents={
+          layout.layout.component === 'recursion'
+            ? layout.layout.contents
+            : [layout.layout]
+        }
+        editable={editable}
+      />
+    </DragDropRenderer>
   );
 }

@@ -4,11 +4,11 @@ import React from 'react';
 
 import { SummaryWord } from '../../SummaryWord';
 
-import Array from './Array';
 import Button from './Button';
 import Chip from './Chip';
 import Div from './Div';
-import DraggableArray from './DraggableArray';
+import Draggable from './Draggable';
+import Droppable from './Droppable';
 import H2 from './H2';
 import H3 from './H3';
 import H4 from './H4';
@@ -38,24 +38,13 @@ export default function Recursion({
 }: Props): JSX.Element {
   return (
     <>
-      {contents.map(child => {
+      {contents.map((child, index) => {
         switch (child.component) {
           case 'recursion':
             return (
               <Recursion
                 baseReference={baseReference}
                 contents={child.contents}
-                editable={editable}
-                summary={summary}
-                layout={layout}
-                word={word}
-              />
-            );
-          case 'array':
-            return (
-              <Array
-                baseReference={child.baseReference}
-                content={child.content}
                 editable={editable}
                 summary={summary}
                 layout={layout}
@@ -88,11 +77,32 @@ export default function Recursion({
                 word={word}
               />
             );
-          case 'draggable-array':
+          case 'draggable': {
+            const draggableIndex = contents
+              .slice(0, index)
+              .filter(c => c.component === 'draggable').length;
             return (
-              <DraggableArray
-                baseReference={child.baseReference}
-                content={child.content}
+              <Draggable
+                baseReference={baseReference}
+                className={child.class}
+                reference={child.reference}
+                index={draggableIndex}
+                contents={child.contents}
+                editable={editable}
+                summary={summary}
+                layout={layout}
+                word={word}
+              />
+            );
+          }
+          case 'droppable':
+            return (
+              <Droppable
+                baseReference={baseReference}
+                className={child.class}
+                contents={child.contents}
+                reference={child.reference}
+                type={child.type}
                 editable={editable}
                 summary={summary}
                 layout={layout}

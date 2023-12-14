@@ -156,11 +156,20 @@ const createWindow = async () => {
 
   const extensionsDirectoryPath = path.join(__dirname, 'extensions');
   if (fs.existsSync(extensionsDirectoryPath)) {
-    otamashelf.emit('log.verbose', `The extensions directory does exist: ${extensionsDirectoryPath}.`);
+    otamashelf.emit(
+      'log.verbose',
+      `The extensions directory does exist: ${extensionsDirectoryPath}.`,
+    );
   } else {
-    otamashelf.emit('log.verbose', `The extensions directory does not exist: ${extensionsDirectoryPath}.`);
+    otamashelf.emit(
+      'log.verbose',
+      `The extensions directory does not exist: ${extensionsDirectoryPath}.`,
+    );
     fs.mkdirSync(extensionsDirectoryPath);
-    otamashelf.emit('log.verbose', `Created the extensions directory: ${extensionsDirectoryPath}.`);
+    otamashelf.emit(
+      'log.verbose',
+      `Created the extensions directory: ${extensionsDirectoryPath}.`,
+    );
   }
   fs.readdir(path.join(__dirname, 'extensions'), (_err, files) => {
     files.forEach(file => {
@@ -466,9 +475,8 @@ const createWindow = async () => {
   ipcMain.handle(
     'book-controller:page:create',
     async (_, bookPath: string, templateId: string): Promise<Mediator> => {
-      const pageCardCreator = otamashelf.pageCreatorsRegistry.get(
-        'otm-page-creator',
-      );
+      const pageCardCreator =
+        otamashelf.pageCreatorsRegistry.get('otm-page-creator');
       if (!pageCardCreator) {
         otamashelf.emit(
           'log.error',
@@ -632,18 +640,22 @@ const createWindow = async () => {
 
   ipcMain.handle(
     'book-controller:page:on-click',
-    async (_, summary: SummaryWord, onClick: {
-      type: string;
-      id: string;
-      script: string;
-    }): Promise<Mediator> => {
+    async (
+      _,
+      summary: SummaryWord,
+      onClick: {
+        type: string;
+        id: string;
+        script: string;
+      },
+    ): Promise<Mediator> => {
       const { bookPath, id } = summary;
       const book = otamashelf.booksController.getBookRepository(bookPath);
       if (!book) {
         otamashelf.emit('log.error', `File path ${bookPath} not found.`);
         throw new Error(`Invalid path: ${bookPath}`);
       }
-      const {type, id: onClickId, script} = onClick;
+      const { type, id: onClickId, script } = onClick;
       if (type !== 'page-updater') {
         otamashelf.emit('log.error', `Invalid type: ${type}`);
         throw new Error(`Invalid type: ${type}`);
@@ -670,7 +682,9 @@ const createWindow = async () => {
       });
       if (updatedPage.status === 'reject') {
         otamashelf.emit('log.error', updatedPage.returns.reason);
-        throw new Error(`${onClickId} occured error: ${updatedPage.returns.reason}`);
+        throw new Error(
+          `${onClickId} occured error: ${updatedPage.returns.reason}`,
+        );
       }
       const { pageCard } = updatedPage.returns;
       const layout = await new OtmLayoutBuilder().layout(pageCard);
@@ -735,14 +749,17 @@ const createWindow = async () => {
     },
   );
 
-  ipcMain.handle('text-converter:convert', async (_, id: string, props: ConvertProps): Promise<ConvertReturns> => {
-    const textConverter = otamashelf.textConvertersRegistry.get(id);
-    if (!textConverter) {
-      otamashelf.emit('log.error', `Extension ${id} not found.`);
-      throw new Error(`Extension ${id} not found.`);
-    }
-    return textConverter.convert(props);
-  });
+  ipcMain.handle(
+    'text-converter:convert',
+    async (_, id: string, props: ConvertProps): Promise<ConvertReturns> => {
+      const textConverter = otamashelf.textConvertersRegistry.get(id);
+      if (!textConverter) {
+        otamashelf.emit('log.error', `Extension ${id} not found.`);
+        throw new Error(`Extension ${id} not found.`);
+      }
+      return textConverter.convert(props);
+    },
+  );
 };
 
 // Electronの起動準備が終わったら、ウィンドウを作成する。
