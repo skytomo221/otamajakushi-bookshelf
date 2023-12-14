@@ -20,6 +20,7 @@ function MinimizeButton(): JSX.Element {
   return (
     // eslint-disable-next-line jsx-a11y/click-events-have-key-events
     <div
+      aria-label='最小化'
       className={
         theme.style['ControlBox.MinimizeButton'] ?? defaultMinximizeStyle
       }
@@ -37,6 +38,7 @@ function MaximizeButton(): JSX.Element {
   return (
     // eslint-disable-next-line jsx-a11y/click-events-have-key-events
     <div
+      aria-label='最大化'
       className={
         theme.style['ControlBox.MaximizeButton'] ?? defaultMinximizeStyle
       }
@@ -54,6 +56,7 @@ function CloseButton(): JSX.Element {
   return (
     // eslint-disable-next-line jsx-a11y/click-events-have-key-events
     <div
+      aria-label='閉じる'
       className={theme.style['ControlBox.CloseButton'] ?? defaultCloseStyle}
       id="close-button"
       onClick={api.windowClose}

@@ -15,7 +15,11 @@ interface Props {
   baseReference: string;
   className?: string;
   contents: LayoutComponent[];
-  onClick: string;
+  onClick: {
+    type: string;
+    id: string;
+    script: string;
+  };
   editable: boolean;
   summary: SummaryWord;
   layout: LayoutCard;
@@ -26,7 +30,7 @@ export default function Button({
   baseReference,
   className,
   contents,
-  onClick: script,
+  onClick: onClickButton,
   editable,
   summary,
   layout,
@@ -34,7 +38,11 @@ export default function Button({
 }: Props): JSX.Element {
   const theme = useSelector<State, ThemeParameter>(state => state.theme);
   const dispatch = useDispatch();
-  const onClick = React.useCallback((s: SummaryWord, c: string) => {
+  const onClick = React.useCallback((s: SummaryWord, c: {
+    type: string;
+    id: string;
+    script: string;
+  }) => {
     dispatch(onClickAction({ summary: s, onClick: c }));
   }, []);
   return editable ? (
@@ -42,7 +50,7 @@ export default function Button({
       aria-label="Save"
       className={styleJoin(theme.style.button, className)}
       onClick={() => {
-        onClick(summary, script);
+        onClick(summary, onClickButton);
       }}
       type="submit">
       <Recursion

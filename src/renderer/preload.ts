@@ -46,7 +46,11 @@ contextBridge.exposeInMainWorld('api', {
     ipcRenderer.invoke('book-controller:templates:read', word),
   updatePage: (summary: SummaryWord, word: PageCard): Promise<LayoutCard> =>
     ipcRenderer.invoke('book-controller:page:update', summary, word),
-  onClick: (summary: SummaryWord, onClick: string): Promise<Mediator> =>
+  onClick: (summary: SummaryWord, onClick: {
+    type: string;
+    id: string;
+    script: string;
+  }): Promise<Mediator> =>
     ipcRenderer.invoke('book-controller:page:on-click', summary, onClick),
   applyStyleTheme: (id: string): Promise<StyleThemeParameters> =>
     ipcRenderer.invoke('style-theme:apply', id),

@@ -81,6 +81,7 @@ function Index(): JSX.Element {
       {(mediators ?? []).map(mediator => (
         <li key={mediator.summary.id} className={theme.style['Index.li']}>
           <button
+            aria-label={mediator.word.title}
             className={theme.style['Index.button']}
             onClick={() => {
               if (
@@ -103,6 +104,7 @@ function Index(): JSX.Element {
           {editable && (
             <button
               type="button"
+              aria-label={mediator.word.title}
               className="flex"
               onClick={() => {
                 onDelete(mediator.summary);
