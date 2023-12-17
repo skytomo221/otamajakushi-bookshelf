@@ -18,6 +18,7 @@ import NotPlain from './NotPlain';
 import P from './P';
 import Plain from './Plain';
 import Span from './Span';
+import createKey from './createKey';
 
 interface Props {
   baseReference: string;
@@ -39,10 +40,12 @@ export default function Recursion({
   return (
     <>
       {contents.map((child, index) => {
+        const key = createKey(contents, index, word);
         switch (child.component) {
           case 'recursion':
             return (
               <Recursion
+                key={key}
                 baseReference={baseReference}
                 contents={child.contents}
                 editable={editable}
@@ -54,6 +57,7 @@ export default function Recursion({
           case 'button':
             return (
               <Button
+                key={key}
                 baseReference={baseReference}
                 className={child.class}
                 onClick={child.onClick}
@@ -67,6 +71,7 @@ export default function Recursion({
           case 'chip':
             return (
               <Chip
+                key={key}
                 baseReference={baseReference}
                 className={child.class}
                 keyword={child.key}
@@ -83,6 +88,8 @@ export default function Recursion({
               .filter(c => c.component === 'draggable').length;
             return (
               <Draggable
+                key={key}
+                draggableId={key}
                 baseReference={baseReference}
                 className={child.class}
                 reference={child.reference}
@@ -98,6 +105,7 @@ export default function Recursion({
           case 'droppable':
             return (
               <Droppable
+                key={key}
                 baseReference={baseReference}
                 className={child.class}
                 contents={child.contents}
@@ -112,6 +120,7 @@ export default function Recursion({
           case 'div':
             return (
               <Div
+                key={key}
                 baseReference={baseReference}
                 className={child.class}
                 contents={child.contents}
@@ -124,6 +133,7 @@ export default function Recursion({
           case 'h2':
             return (
               <H2
+                key={key}
                 baseReference={baseReference}
                 className={child.class}
                 contents={child.contents}
@@ -136,6 +146,7 @@ export default function Recursion({
           case 'h3':
             return (
               <H3
+                key={key}
                 baseReference={baseReference}
                 className={child.class}
                 contents={child.contents}
@@ -148,6 +159,7 @@ export default function Recursion({
           case 'h4':
             return (
               <H4
+                key={key}
                 baseReference={baseReference}
                 className={child.class}
                 contents={child.contents}
@@ -160,6 +172,7 @@ export default function Recursion({
           case 'h5':
             return (
               <H5
+                key={key}
                 baseReference={baseReference}
                 className={child.class}
                 contents={child.contents}
@@ -172,6 +185,7 @@ export default function Recursion({
           case 'h6':
             return (
               <H6
+                key={key}
                 baseReference={baseReference}
                 className={child.class}
                 contents={child.contents}
@@ -184,6 +198,7 @@ export default function Recursion({
           case 'p':
             return (
               <P
+                key={key}
                 baseReference={baseReference}
                 className={child.class}
                 contents={child.contents}
@@ -196,6 +211,7 @@ export default function Recursion({
           case 'span':
             return (
               <Span
+                key={key}
                 baseReference={baseReference}
                 className={child.class}
                 contents={child.contents}
@@ -208,11 +224,17 @@ export default function Recursion({
           case 'text': {
             if (child.mime === 'text/plain') {
               return (
-                <Plain text={child.text} editable={editable} layout={layout} />
+                <Plain
+                  key={key}
+                  text={child.text}
+                  editable={editable}
+                  layout={layout}
+                />
               );
             }
             return (
               <NotPlain
+                key={key}
                 text={child.text}
                 mime={child.mime}
                 editable={editable}
@@ -224,6 +246,7 @@ export default function Recursion({
             if (child.mime === 'text/plain') {
               return (
                 <Plain
+                  key={key}
                   reference={
                     child.reference.startsWith('.')
                       ? baseReference + child.reference
@@ -238,6 +261,7 @@ export default function Recursion({
             }
             return (
               <NotPlain
+                key={key}
                 reference={
                   child.reference.startsWith('.')
                     ? baseReference + child.reference
