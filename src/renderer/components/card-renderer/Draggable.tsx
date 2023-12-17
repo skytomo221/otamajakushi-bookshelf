@@ -11,6 +11,7 @@ import ThemeParameter from '../../states/ThemeParameter';
 import Recursion from './Recursion';
 
 interface Props {
+  draggableId: string;
   reference: string;
   index: number;
   baseReference: string;
@@ -23,7 +24,7 @@ interface Props {
 }
 
 export default function Draggable({
-  reference,
+  draggableId,
   index,
   baseReference,
   contents,
@@ -35,7 +36,7 @@ export default function Draggable({
   const theme = useSelector<State, ThemeParameter>(state => state.theme);
   return (
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    <RawDraggable draggableId={reference} index={index}>
+    <RawDraggable draggableId={draggableId} index={index}>
       {(draggableProvided, draggableSnapshot) => (
         <div
           ref={draggableProvided.innerRef}
