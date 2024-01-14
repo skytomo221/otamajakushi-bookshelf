@@ -14,6 +14,7 @@ interface Props {
   baseReference: string;
   className?: string;
   contents: LayoutComponent[];
+  edit: () => void;
   editable: boolean;
   summary: SummaryWord;
   layout: LayoutCard;
@@ -24,6 +25,7 @@ export default function H6({
   baseReference,
   className,
   contents,
+  edit,
   editable,
   summary,
   layout,
@@ -35,6 +37,7 @@ export default function H6({
       <Recursion
         baseReference={baseReference}
         contents={contents}
+        edit={edit}
         editable={editable}
         summary={summary}
         layout={layout}

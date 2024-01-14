@@ -10,8 +10,10 @@ export default interface StyleThemeParameters {
   h4?: string;
   h5?: string;
   h6?: string;
+  label?: string;
   p?: string;
   span?: string;
+  textarea?: string;
   lg?: string;
   base?: string;
   Array?: string;
@@ -26,6 +28,12 @@ export default interface StyleThemeParameters {
   'ControlBox.MinimizeButton'?: string;
   'ControlBox.MaximizeButton'?: string;
   'ControlBox.CloseButton'?: string;
+  EditableDiv?: string;
+  EditableSpan?: string;
+  EditButton?: string;
+  Error?: string;
+  FormDiv?: string;
+  FormSpan?: string;
   'Hero'?: string;
   'Hero.h2'?: string;
   'Hero.h3'?: string;
@@ -33,8 +41,11 @@ export default interface StyleThemeParameters {
   'Hero.BookControllerDiv'?: string;
   'Hero.ButtonGroup'?: string;
   'Hero.button'?: string;
-  'Index.li'?: string,
-  'Index.button'?: string,
+  'Index.li'?: string;
+  'Index.button'?: string;
+  InputReset?: string;
+  InputSubmit?: string;
+  InputText?: string;
   'Menu.listbox'?: string;
   'Menu.root'?: string;
   Tab?: string;

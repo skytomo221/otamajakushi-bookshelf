@@ -2,30 +2,34 @@ import { flatten } from 'flat';
 import { LayoutComponent } from 'otamashelf/LayoutCard';
 import { PageCard } from 'otamashelf/PageCard';
 
+import { convertReferenceInForm } from './createKeyInForm';
+
 function convertReference(
   layoutComponent: LayoutComponent[],
-  word: PageCard,
+  flattenCard: { [key: string]: string },
 ): { [key: string]: unknown }[] {
   return layoutComponent.map((child, index) => {
+    if (typeof child === 'string') return { text: child };
     const { component } = child;
     switch (component) {
       case 'chip':
       case 'divider':
-      case 'text':
+      case 'delete-button':
+      case 'edit-button':
+      case 'mime':
         return { index, ...child };
-      case 'reference': {
-        const flattenCard = flatten(word) as { [key: string]: string };
+      case 'editable':
         return {
           index,
           ...child,
-          reference: flattenCard[child.reference],
+          inputs: convertReferenceInForm(child.inputs, flattenCard),
+          outputs: convertReference(child.outputs, flattenCard),
         };
-      }
       default:
         return {
           index,
           ...child,
-          contents: convertReference(child.contents, word),
+          contents: convertReference(child.contents, flattenCard),
         };
     }
   });
@@ -38,6 +42,8 @@ export default function createKey(
 ): string {
   return JSON.stringify({
     index,
-    ...convertReference(contents, word)[index],
+    ...convertReference(contents, flatten(word) as { [key: string]: string })[
+      index
+    ],
   });
 }

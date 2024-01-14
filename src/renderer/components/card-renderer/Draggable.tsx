@@ -12,11 +12,11 @@ import Recursion from './Recursion';
 
 interface Props {
   draggableId: string;
-  reference: string;
   index: number;
   baseReference: string;
   className?: string;
   contents: LayoutComponent[];
+  edit: () => void;
   editable: boolean;
   summary: SummaryWord;
   layout: LayoutCard;
@@ -28,6 +28,7 @@ export default function Draggable({
   index,
   baseReference,
   contents,
+  edit,
   editable,
   summary,
   layout,
@@ -52,6 +53,7 @@ export default function Draggable({
           <Recursion
             baseReference={baseReference}
             contents={contents}
+            edit={edit}
             editable={editable}
             summary={summary}
             layout={layout}

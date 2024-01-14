@@ -13,9 +13,10 @@ import Recursion from './Recursion';
 interface Props {
   baseReference: string;
   className?: string;
-  reference: string;
+  droppableId: string;
   type: string;
   contents: LayoutComponent[];
+  edit: () => void;
   editable: boolean;
   summary: SummaryWord;
   layout: LayoutCard;
@@ -25,8 +26,9 @@ interface Props {
 export default function Droppable({
   baseReference,
   contents,
-  reference,
+  droppableId,
   type,
+  edit,
   editable,
   summary,
   layout,
@@ -35,7 +37,10 @@ export default function Droppable({
   const theme = useSelector<State, ThemeParameter>(state => state.theme);
   return (
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    <RawDroppable droppableId={reference} isDropDisabled={!editable} type={type}>
+    <RawDroppable
+      droppableId={droppableId}
+      isDropDisabled={!editable}
+      type={type}>
       {(droppableProvided, droppableSnapshot) => (
         <div
           ref={droppableProvided.innerRef}
@@ -49,6 +54,7 @@ export default function Droppable({
           <Recursion
             baseReference={baseReference}
             contents={contents}
+            edit={edit}
             editable={editable}
             summary={summary}
             layout={layout}
