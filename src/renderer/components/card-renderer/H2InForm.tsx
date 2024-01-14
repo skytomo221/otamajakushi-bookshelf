@@ -1,4 +1,4 @@
-import { PageCard, LayoutCard, LayoutComponent } from 'otamashelf';
+import { LayoutCard, FormDivComponent } from 'otamashelf';
 import React from 'react';
 import { useSelector } from 'react-redux';
 
@@ -7,45 +7,48 @@ import { State } from '../../states/State';
 import ThemeParameter from '../../states/ThemeParameter';
 
 // eslint-disable-next-line import/no-cycle
-import Recursion from './Recursion';
+import RecursionInForm from './RecursionInForm';
 import styleJoin from './styleJoin';
 
 interface Props {
   baseReference: string;
   className?: string;
-  contents: LayoutComponent[];
-  edit: () => void;
-  editable: boolean;
+  contents: FormDivComponent[];
+  submit: () => void;
+  reset: () => void;
   summary: SummaryWord;
   layout: LayoutCard;
-  word: PageCard;
+  flattenCard: { [key: string]: string };
+  setFlattenCard: (flattenCard: { [key: string]: string }) => void;
 }
 
-export default function H5({
+export default function H2InForm({
   baseReference,
   className,
   contents,
-  edit,
-  editable,
+  submit,
+  reset,
   summary,
   layout,
-  word,
+  flattenCard,
+  setFlattenCard,
 }: Props): JSX.Element {
   const theme = useSelector<State, ThemeParameter>(state => state.theme);
   return (
-    <h5 className={styleJoin(theme.style.h5, className)}>
-      <Recursion
+    <h2 className={styleJoin(theme.style.h2, className)}>
+      <RecursionInForm
         baseReference={baseReference}
         contents={contents}
-        edit={edit}
-        editable={editable}
+        submit={submit}
+        reset={reset}
         summary={summary}
         layout={layout}
-        word={word}
+        flattenCard={flattenCard}
+        setFlattenCard={setFlattenCard}
       />
-    </h5>
+    </h2>
   );
 }
-H5.defaultProps = {
+H2InForm.defaultProps = {
   className: '',
 };

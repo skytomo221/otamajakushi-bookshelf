@@ -26,10 +26,13 @@ export default function CardRenderer({
         summary={summary}
         word={word}
         contents={
-          layout.layout.component === 'recursion'
+          typeof layout.layout !== 'string' && layout.layout.component === 'recursion'
             ? layout.layout.contents
             : [layout.layout]
         }
+        edit={() => {
+          // do nothing.
+        }}
         editable={editable}
       />
     </DragDropRenderer>

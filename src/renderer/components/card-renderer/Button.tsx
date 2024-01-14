@@ -20,6 +20,7 @@ interface Props {
     id: string;
     script: string;
   };
+  edit: () => void;
   editable: boolean;
   summary: SummaryWord;
   layout: LayoutCard;
@@ -31,6 +32,7 @@ export default function Button({
   className,
   contents,
   onClick: onClickButton,
+  edit,
   editable,
   summary,
   layout,
@@ -56,6 +58,7 @@ export default function Button({
       <Recursion
         baseReference={baseReference}
         contents={contents}
+        edit={edit}
         editable={editable}
         summary={summary}
         layout={layout}

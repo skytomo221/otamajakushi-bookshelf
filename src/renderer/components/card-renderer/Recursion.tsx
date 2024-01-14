@@ -9,20 +9,24 @@ import Chip from './Chip';
 import Div from './Div';
 import Draggable from './Draggable';
 import Droppable from './Droppable';
+import EditButton from './EditButton';
+import EditableDiv from './EditableDiv';
+import EditableSpan from './EditableSpan';
 import H2 from './H2';
 import H3 from './H3';
 import H4 from './H4';
 import H5 from './H5';
 import H6 from './H6';
-import NotPlain from './NotPlain';
 import P from './P';
-import Plain from './Plain';
 import Span from './Span';
+import Text from './Text';
 import createKey from './createKey';
+import Mime from './Mime';
 
 interface Props {
   baseReference: string;
   contents: LayoutComponent[];
+  edit: () => void;
   editable: boolean;
   summary: SummaryWord;
   layout: LayoutCard;
@@ -32,6 +36,7 @@ interface Props {
 export default function Recursion({
   baseReference,
   contents,
+  edit,
   editable,
   summary,
   layout,
@@ -41,6 +46,7 @@ export default function Recursion({
     <>
       {contents.map((child, index) => {
         const key = createKey(contents, index, word);
+        if (typeof child === 'string') return <Text key={key} text={child} />;
         switch (child.component) {
           case 'recursion':
             return (
@@ -48,6 +54,7 @@ export default function Recursion({
                 key={key}
                 baseReference={baseReference}
                 contents={child.contents}
+                edit={edit}
                 editable={editable}
                 summary={summary}
                 layout={layout}
@@ -62,6 +69,7 @@ export default function Recursion({
                 className={child.class}
                 onClick={child.onClick}
                 contents={child.contents}
+                edit={edit}
                 editable={editable}
                 summary={summary}
                 layout={layout}
@@ -72,29 +80,26 @@ export default function Recursion({
             return (
               <Chip
                 key={key}
-                baseReference={baseReference}
                 className={child.class}
                 keyword={child.key}
                 value={child.value}
-                editable={editable}
-                summary={summary}
-                layout={layout}
-                word={word}
               />
             );
           case 'draggable': {
             const draggableIndex = contents
               .slice(0, index)
-              .filter(c => c.component === 'draggable').length;
+              .filter(
+                c => typeof c !== 'string' && c.component === 'draggable',
+              ).length;
             return (
               <Draggable
                 key={key}
                 draggableId={key}
                 baseReference={baseReference}
                 className={child.class}
-                reference={child.reference}
                 index={draggableIndex}
                 contents={child.contents}
+                edit={edit}
                 editable={editable}
                 summary={summary}
                 layout={layout}
@@ -109,8 +114,9 @@ export default function Recursion({
                 baseReference={baseReference}
                 className={child.class}
                 contents={child.contents}
-                reference={child.reference}
+                droppableId={child.droppableId}
                 type={child.type}
+                edit={edit}
                 editable={editable}
                 summary={summary}
                 layout={layout}
@@ -124,10 +130,20 @@ export default function Recursion({
                 baseReference={baseReference}
                 className={child.class}
                 contents={child.contents}
+                edit={edit}
                 editable={editable}
                 summary={summary}
                 layout={layout}
                 word={word}
+              />
+            );
+          case 'edit-button':
+            return (
+              <EditButton
+                key={key}
+                className={child.class}
+                edit={edit}
+                editable={editable}
               />
             );
           case 'h2':
@@ -137,6 +153,7 @@ export default function Recursion({
                 baseReference={baseReference}
                 className={child.class}
                 contents={child.contents}
+                edit={edit}
                 editable={editable}
                 summary={summary}
                 layout={layout}
@@ -150,6 +167,7 @@ export default function Recursion({
                 baseReference={baseReference}
                 className={child.class}
                 contents={child.contents}
+                edit={edit}
                 editable={editable}
                 summary={summary}
                 layout={layout}
@@ -163,6 +181,7 @@ export default function Recursion({
                 baseReference={baseReference}
                 className={child.class}
                 contents={child.contents}
+                edit={edit}
                 editable={editable}
                 summary={summary}
                 layout={layout}
@@ -176,6 +195,7 @@ export default function Recursion({
                 baseReference={baseReference}
                 className={child.class}
                 contents={child.contents}
+                edit={edit}
                 editable={editable}
                 summary={summary}
                 layout={layout}
@@ -189,12 +209,15 @@ export default function Recursion({
                 baseReference={baseReference}
                 className={child.class}
                 contents={child.contents}
+                edit={edit}
                 editable={editable}
                 summary={summary}
                 layout={layout}
                 word={word}
               />
             );
+          case 'mime':
+            return <Mime key={key} text={child.text} mime={child.mime} />;
           case 'p':
             return (
               <P
@@ -202,6 +225,7 @@ export default function Recursion({
                 baseReference={baseReference}
                 className={child.class}
                 contents={child.contents}
+                edit={edit}
                 editable={editable}
                 summary={summary}
                 layout={layout}
@@ -215,65 +239,44 @@ export default function Recursion({
                 baseReference={baseReference}
                 className={child.class}
                 contents={child.contents}
+                edit={edit}
                 editable={editable}
                 summary={summary}
                 layout={layout}
                 word={word}
               />
             );
-          case 'text': {
-            if (child.mime === 'text/plain') {
-              return (
-                <Plain
-                  key={key}
-                  text={child.text}
-                  editable={editable}
-                  layout={layout}
-                />
-              );
+          case 'editable': {
+            switch (child.element) {
+              case 'div':
+                return (
+                  <EditableDiv
+                    key={key}
+                    baseReference={baseReference}
+                    inputs={child.inputs}
+                    outputs={child.outputs}
+                    editable={editable}
+                    summary={summary}
+                    layout={layout}
+                    word={word}
+                  />
+                );
+              case 'span':
+                return (
+                  <EditableSpan
+                    key={key}
+                    baseReference={baseReference}
+                    inputs={child.inputs}
+                    outputs={child.outputs}
+                    editable={editable}
+                    summary={summary}
+                    layout={layout}
+                    word={word}
+                  />
+                );
+              default:
+                return <></>;
             }
-            return (
-              <NotPlain
-                key={key}
-                text={child.text}
-                mime={child.mime}
-                editable={editable}
-                layout={layout}
-              />
-            );
-          }
-          case 'reference': {
-            if (child.mime === 'text/plain') {
-              return (
-                <Plain
-                  key={key}
-                  reference={
-                    child.reference.startsWith('.')
-                      ? baseReference + child.reference
-                      : child.reference
-                  }
-                  editable={editable}
-                  summary={summary}
-                  layout={layout}
-                  word={word}
-                />
-              );
-            }
-            return (
-              <NotPlain
-                key={key}
-                reference={
-                  child.reference.startsWith('.')
-                    ? baseReference + child.reference
-                    : child.reference
-                }
-                mime={child.mime}
-                editable={editable}
-                summary={summary}
-                layout={layout}
-                word={word}
-              />
-            );
           }
           default:
             return <></>;
