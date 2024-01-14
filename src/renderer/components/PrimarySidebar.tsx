@@ -2,6 +2,7 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { VList } from 'virtua';
 
 import SearchProperties from '../../common/SearchProperties';
 import { Mediator } from '../Mediator';
@@ -62,10 +63,10 @@ function Index(): JSX.Element {
   const { editable } = book;
 
   return (
-    <>
+    <VList>
       {editable &&
         (templates ?? []).map(template => (
-          <li key={template.id} className={theme.style['Index.li']}>
+          <div key={template.id} className={theme.style['Index.li']}>
             <button
               className={theme.style['Index.button']}
               onClick={async () => {
@@ -76,10 +77,10 @@ function Index(): JSX.Element {
               <AddIcon fontSize="small" />
               {template.name}
             </button>
-          </li>
+          </div>
         ))}
       {(mediators ?? []).map(mediator => (
-        <li key={mediator.summary.id} className={theme.style['Index.li']}>
+        <div key={mediator.summary.id} className={theme.style['Index.li']}>
           <button
             aria-label={mediator.word.title}
             className={theme.style['Index.button']}
@@ -113,9 +114,9 @@ function Index(): JSX.Element {
               <DeleteIcon />
             </button>
           )}
-        </li>
+        </div>
       ))}
-    </>
+    </VList>
   );
 }
 
@@ -187,9 +188,7 @@ export default function PrimarySidebar(): JSX.Element {
         ))}
       </select>
       <div className="grow overflow-auto">
-        <ul>
-          <Index />
-        </ul>
+        <Index />
       </div>
     </div>
   );
