@@ -443,9 +443,9 @@ const createWindow = async () => {
   });
 
   ipcMain.handle(
-    'book-controller:templates:read',
+    'templates:read',
     async (_, filePath: string): Promise<TemplateProperties[]> => {
-      otamashelf.emit('log.debug', 'book-controller:templates:read 1');
+      otamashelf.emit('log.debug', 'templates:read 1');
       const bookRepository =
         otamashelf.booksController.getBookRepository(filePath);
       if (!bookRepository) {
@@ -466,7 +466,7 @@ const createWindow = async () => {
         throw new Error(`Invalid path: ${filePath}`);
       }
       const { templates } = templatesReturns.returns;
-      otamashelf.emit('log.debug', 'book-controller:templates:read 2');
+      otamashelf.emit('log.debug', 'templates:read 2');
       return templates.map(template => ({
         id: template,
         name: template,
@@ -475,9 +475,9 @@ const createWindow = async () => {
   );
 
   ipcMain.handle(
-    'book-controller:page:create',
+    'page:create',
     async (_, bookPath: string, templateId: string): Promise<Mediator> => {
-      otamashelf.emit('log.debug', 'book-controller:page:create 1');
+      otamashelf.emit('log.debug', 'page:create 1');
       const pageCardCreator =
         otamashelf.pageCreatorsRegistry.get('otm-page-creator');
       if (!pageCardCreator) {
@@ -509,7 +509,7 @@ const createWindow = async () => {
       }
       const { pageCard } = creatorReturns.returns;
       const layout = await new OtmLayoutBuilder().layout(pageCard);
-      otamashelf.emit('log.debug', 'book-controller:page:create 2');
+      otamashelf.emit('log.debug', 'page:create 2');
       return {
         summary: { bookPath, id: pageCard.id },
         word: pageCard,
@@ -519,9 +519,9 @@ const createWindow = async () => {
   );
 
   ipcMain.handle(
-    'book-controller:page:delete',
+    'page:delete',
     async (_, summary: SummaryWord): Promise<boolean> => {
-      otamashelf.emit('log.debug', 'book-controller:page:delete 1');
+      otamashelf.emit('log.debug', 'page:delete 1');
       const { bookPath, id } = summary;
       const bookRepository =
         otamashelf.booksController.getBookRepository(bookPath);
@@ -540,15 +540,15 @@ const createWindow = async () => {
         throw new Error(`Invalid word: ${summary}`);
       }
       bookTimeMachine.removePageCard(pageCard, 'remove page card');
-      otamashelf.emit('log.debug', 'book-controller:page:delete 2');
+      otamashelf.emit('log.debug', 'page:delete 2');
       return true;
     },
   );
 
   ipcMain.handle(
-    'book-controller:page:read',
+    'page:read',
     async (_, summary: SummaryWord): Promise<Mediator> => {
-      otamashelf.emit('log.debug', 'book-controller:page:read 1');
+      otamashelf.emit('log.debug', 'page:read 1');
       const book = otamashelf.booksController.getBookRepository(
         summary.bookPath,
       );
@@ -567,13 +567,13 @@ const createWindow = async () => {
         throw new Error(`Invalid word: ${summary}`);
       }
       const layout = await new OtmLayoutBuilder().layout(word);
-      otamashelf.emit('log.debug', 'book-controller:page:read 2');
+      otamashelf.emit('log.debug', 'page:read 2');
       return { summary, word, layout };
     },
   );
 
   ipcMain.handle(
-    'book-controller:page:select',
+    'page:select',
     async (
       _,
       bookPath: string,
@@ -581,7 +581,7 @@ const createWindow = async () => {
       searchModeId: string,
       searchWord: string,
     ): Promise<Mediator[]> => {
-      otamashelf.emit('log.debug', 'book-controller:page:select 1');
+      otamashelf.emit('log.debug', 'page:select 1');
       const book = otamashelf.booksController.getBookRepository(bookPath);
       if (!book) {
         otamashelf.emit('log.error', `File path ${bookPath} not found.`);
@@ -619,7 +619,7 @@ const createWindow = async () => {
       const { ids } = search.returns;
       const words = pageCards.filter(pc => ids.includes(pc.id));
       const indexes = await new OtmLayoutBuilder().indexes(words);
-      otamashelf.emit('log.debug', 'book-controller:page:select 2');
+      otamashelf.emit('log.debug', 'page:select 2');
       return words.map((word, i) => ({
         summary: { id: word.id, bookPath },
         word,
@@ -629,9 +629,9 @@ const createWindow = async () => {
   );
 
   ipcMain.handle(
-    'book-controller:page:update',
+    'page:update',
     async (_, summary: SummaryWord, word: PageCard): Promise<Mediator> => {
-      otamashelf.emit('log.debug', 'book-controller:page:update 1');
+      otamashelf.emit('log.debug', 'page:update 1');
       otamashelf.booksController.commitPageCard(
         summary.bookPath,
         word,
@@ -645,13 +645,13 @@ const createWindow = async () => {
         throw new Error(`Invalid word: ${summary}`);
       }
       const layout = await new OtmLayoutBuilder().layout(newWord);
-      otamashelf.emit('log.debug', 'book-controller:page:update 2');
+      otamashelf.emit('log.debug', 'page:update 2');
       return { summary, word: newWord, layout };
     },
   );
 
   ipcMain.handle(
-    'book-controller:page:on-click',
+    'page:on-click',
     async (
       _,
       summary: SummaryWord,
@@ -662,7 +662,7 @@ const createWindow = async () => {
       },
     ): Promise<Mediator> => {
       const { bookPath, id } = summary;
-      otamashelf.emit('log.debug', 'book-controller:page:on-click 1');
+      otamashelf.emit('log.debug', 'page:on-click 1');
       const book = otamashelf.booksController.getBookRepository(bookPath);
       if (!book) {
         otamashelf.emit('log.error', `File path ${bookPath} not found.`);
@@ -701,17 +701,17 @@ const createWindow = async () => {
       }
       const { pageCard } = updatedPage.returns;
       const layout = await new OtmLayoutBuilder().layout(pageCard);
-      otamashelf.emit('log.debug', 'book-controller:page:on-click 2');
+      otamashelf.emit('log.debug', 'page:on-click 2');
       return { summary, word: pageCard, layout };
     },
   );
 
   ipcMain.handle(
-    'book-controller:page-explorer:read',
+    'page-explorer:read',
     async (): Promise<SearchProperites[]> => {
-      otamashelf.emit('log.debug', 'book-controller:page-explorer:read 1');
+      otamashelf.emit('log.debug', 'page-explorer:read 1');
       const pageExplorers = Array.from(otamashelf.pageExplorersRegistry.keys());
-      otamashelf.emit('log.debug', 'book-controller:page-explorer:read 2');
+      otamashelf.emit('log.debug', 'page-explorer:read 2');
       return Promise.all(
         pageExplorers.map(async pageExplorer => {
           const pe = otamashelf.pageExplorersRegistry.get(pageExplorer);
@@ -728,9 +728,9 @@ const createWindow = async () => {
   );
 
   ipcMain.handle(
-    'book-controller:search-mode:read',
+    'search-mode:read',
     async (_, bookPath: string): Promise<string[]> => {
-      otamashelf.emit('log.debug', 'book-controller:search-mode:read 1');
+      otamashelf.emit('log.debug', 'search-mode:read 1');
       const bookRepository =
         otamashelf.booksController.getBookRepository(bookPath);
       if (!bookRepository) {
@@ -750,7 +750,7 @@ const createWindow = async () => {
         throw new Error(`Invalid path: ${bookPath}`);
       }
       const { modes } = searchModes.returns;
-      otamashelf.emit('log.debug', 'book-controller:search-mode:read 2');
+      otamashelf.emit('log.debug', 'search-mode:read 2');
       return modes;
     },
   );

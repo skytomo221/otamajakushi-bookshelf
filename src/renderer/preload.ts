@@ -20,9 +20,9 @@ contextBridge.exposeInMainWorld('api', {
   save: (filePath: string): Promise<boolean> =>
     ipcRenderer.invoke('save', filePath),
   createPage: (bookPath: string, templateId: string): Promise<Mediator> =>
-    ipcRenderer.invoke('book-controller:page:create', bookPath, templateId),
+    ipcRenderer.invoke('page:create', bookPath, templateId),
   deletePage: (word: SummaryWord): Promise<boolean> =>
-    ipcRenderer.invoke('book-controller:page:delete', word),
+    ipcRenderer.invoke('page:delete', word),
   selectPage: (
     bookPath: string,
     pageExplorerId: string,
@@ -30,28 +30,28 @@ contextBridge.exposeInMainWorld('api', {
     searchWord: string,
   ): Promise<Mediator[]> =>
     ipcRenderer.invoke(
-      'book-controller:page:select',
+      'page:select',
       bookPath,
       pageExplorerId,
       searchModeId,
       searchWord,
     ),
   readPage: (word: SummaryWord): Promise<LayoutCard> =>
-    ipcRenderer.invoke('book-controller:page:read', word),
+    ipcRenderer.invoke('page:read', word),
   readPageExplorer: (): Promise<SearchProperties[]> =>
-    ipcRenderer.invoke('book-controller:page-explorer:read'),
+    ipcRenderer.invoke('page-explorer:read'),
   readSearchMode: (bookPath: string): Promise<string[]> =>
-    ipcRenderer.invoke('book-controller:search-mode:read', bookPath),
+    ipcRenderer.invoke('search-mode:read', bookPath),
   readTemplates: (word: SummaryWord): Promise<TemplateProperties[]> =>
-    ipcRenderer.invoke('book-controller:templates:read', word),
+    ipcRenderer.invoke('templates:read', word),
   updatePage: (summary: SummaryWord, word: PageCard): Promise<LayoutCard> =>
-    ipcRenderer.invoke('book-controller:page:update', summary, word),
+    ipcRenderer.invoke('page:update', summary, word),
   onClick: (summary: SummaryWord, onClick: {
     type: string;
     id: string;
     script: string;
   }): Promise<Mediator> =>
-    ipcRenderer.invoke('book-controller:page:on-click', summary, onClick),
+    ipcRenderer.invoke('page:on-click', summary, onClick),
   applyStyleTheme: (id: string): Promise<StyleThemeParameters> =>
     ipcRenderer.invoke('style-theme:apply', id),
   convertHtml: (id: string, props: ConvertProps): Promise<ConvertReturns> =>
