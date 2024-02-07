@@ -1,19 +1,15 @@
 import Divider from '@mui/material/Divider';
 import List from '@mui/material/List';
 import * as React from 'react';
-import { useSelector } from 'react-redux';
 
-import Book from '../states/Book';
-import { State } from '../states/State';
+import { useWorkbenchStore } from '../contexts/workbenchContext';
 
 import BookViewContainer from './BookViewContainer';
 
 export const activityBarWidth = 240;
 
 export default function ActivityBar(): JSX.Element {
-  const books = useSelector<State, Book[]>(
-    (state: State) => state.workbenches.map(w => w.book),
-  );
+  const books = useWorkbenchStore().map(w => w.book);
 
   return (
     <div className="flex flex-col w-16">

@@ -1,9 +1,7 @@
 import TabUnstyled from '@mui/base/TabUnstyled';
 import React from 'react';
-import { useSelector } from 'react-redux';
 
-import { State } from '../states/State';
-import ThemeParameter from '../states/ThemeParameter';
+import { useThemeStore } from '../contexts/themeContext';
 
 interface TabProps {
   // eslint-disable-next-line react/require-default-props
@@ -14,7 +12,7 @@ interface TabProps {
 }
 
 function Tab(props: TabProps): JSX.Element {
-  const theme = useSelector<State, ThemeParameter>(state => state.theme);
+  const theme = useThemeStore();
   const { children, onClick, value, index } = props;
   return (
     <TabUnstyled

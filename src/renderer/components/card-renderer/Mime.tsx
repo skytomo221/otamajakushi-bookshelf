@@ -1,9 +1,7 @@
-import { ExtensionProperties, TextConverterProperties } from 'otamashelf';
+import { TextConverterProperties } from 'otamashelf';
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 
-import { State } from '../../states/State';
-import ThemeParameter from '../../states/ThemeParameter';
+import { useExtensionsStore } from '../../contexts/extensionsContext';
 
 const { api } = window;
 
@@ -13,10 +11,7 @@ interface Props {
 }
 
 export default function Mime({ text, mime }: Props): JSX.Element {
-  const extensions = useSelector<State, ExtensionProperties[]>(
-    (state: State) => state.extensions,
-  );
-  const theme = useSelector<State, ThemeParameter>(state => state.theme);
+  const extensions = useExtensionsStore();
   const converterPropertiesList = extensions
     .filter(
       (ext): ext is TextConverterProperties => ext.type === 'text-converter',

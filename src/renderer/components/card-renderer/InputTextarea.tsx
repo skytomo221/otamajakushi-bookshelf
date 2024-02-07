@@ -1,10 +1,8 @@
 import {  Reference } from 'otamashelf';
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
 
 import { SummaryWord } from '../../SummaryWord';
-import { State } from '../../states/State';
-import ThemeParameter from '../../states/ThemeParameter';
+import { useThemeStore } from '../../contexts/themeContext';
 
 import styleJoin from './styleJoin';
 
@@ -35,7 +33,7 @@ export default function InputTextarea({
   flattenCard,
   setFlattenCard,
 }: Props): JSX.Element {
-  const theme = useSelector<State, ThemeParameter>(state => state.theme);
+  const theme = useThemeStore();
   const [text, setText] = useState(flattenCard[reference]);
   return (
     <textarea

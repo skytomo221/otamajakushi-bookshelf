@@ -2,11 +2,12 @@ import flatten, { unflatten } from 'flat';
 import { PageCard, LayoutCard } from 'otamashelf';
 import React, { ReactNode } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
-import { useDispatch } from 'react-redux';
 
 import { Mediator } from '../../Mediator';
 import { SummaryWord } from '../../SummaryWord';
-import { pushSelectedWordAction } from '../../actions/SelectedWordsActions';
+import { usePagesDispatch } from '../../contexts/pagesContext';
+
+const { api } = window;
 
 type Props = {
   summary: SummaryWord;
@@ -20,13 +21,12 @@ export default function DragDropRenderer({
   layout,
   children,
 }: Props): JSX.Element {
-  const dispatch = useDispatch();
-  const onSelectedWordPush = React.useCallback(
-    (mediator: Mediator) => {
-      dispatch(pushSelectedWordAction(mediator));
-    },
-    [summary, word, layout, children],
-  );
+  const dispatch = usePagesDispatch();
+  function onSelectedWordPush(mediator: Mediator) {
+    api
+      .updatePage(mediator.summary, mediator.word)
+      .then(m => dispatch({ type: 'UPDATE_PAGE', payload: m }));
+  }
   const flat = flatten(word) as { [name: string]: unknown };
   // eslint-disable-next-line @typescript-eslint/ban-types
   const keys = Object.keys(flat);

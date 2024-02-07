@@ -1,12 +1,10 @@
 import CloseIcon from '@mui/icons-material/Close';
 import Box from '@mui/material/Box';
 import * as React from 'react';
-import { useCallback, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useState } from 'react';
 
 import { Mediator } from '../Mediator';
-import { removeSelectedWordAction } from '../actions/SelectedWordsActions';
-import { State } from '../states/State';
+import { usePagesDispatch, usePagesStore } from '../contexts/pagesContext';
 
 import Tab from './Tab';
 import TabPanel from './TabPanel';
@@ -15,14 +13,12 @@ import TabsList from './TabsList';
 import CardRenderer from './card-renderer/CardRenderer';
 
 export default function WordTabs(): JSX.Element {
-  const dispatch = useDispatch();
+  const dispatch = usePagesDispatch();
   const [value, setValue] = useState(0);
-  const selectedWords = useSelector<State, null | Mediator[]>(
-    (state: State) => state.selectedWords,
-  );
-  const removeSelectedWord = useCallback((selectedWord: Mediator) => {
-    dispatch(removeSelectedWordAction(selectedWord.summary));
-  }, []);
+  const selectedWords = usePagesStore();
+  function removeSelectedWord(selectedWord: Mediator) {
+    dispatch({ type: 'REMOVE_PAGE', payload: selectedWord.summary });
+  };
 
   return (
     <Box

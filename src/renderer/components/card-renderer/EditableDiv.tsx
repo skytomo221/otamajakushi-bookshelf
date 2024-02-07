@@ -5,17 +5,14 @@ import {
   FormDivComponent,
 } from 'otamashelf';
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
 
 import { SummaryWord } from '../../SummaryWord';
-import { State } from '../../states/State';
-import ThemeParameter from '../../states/ThemeParameter';
+import { useThemeStore } from '../../contexts/themeContext';
 
+import FormDiv from './FormDiv';
 // eslint-disable-next-line import/no-cycle
 import Recursion from './Recursion';
-import RecursionInForm from './RecursionInForm';
 import styleJoin from './styleJoin';
-import FormDiv from './FormDiv';
 
 interface Props {
   baseReference: string;
@@ -38,7 +35,7 @@ export default function EditableDiv({
   layout,
   word,
 }: Props): JSX.Element {
-  const theme = useSelector<State, ThemeParameter>(state => state.theme);
+  const theme = useThemeStore();
   const [edit, setEdit] = useState(false);
   return edit ? (
     <FormDiv

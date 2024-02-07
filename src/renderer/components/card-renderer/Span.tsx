@@ -1,10 +1,8 @@
 import { PageCard, LayoutCard, LayoutComponent } from 'otamashelf';
 import React from 'react';
-import { useSelector } from 'react-redux';
 
 import { SummaryWord } from '../../SummaryWord';
-import { State } from '../../states/State';
-import ThemeParameter from '../../states/ThemeParameter';
+import { useThemeStore } from '../../contexts/themeContext';
 
 // eslint-disable-next-line import/no-cycle
 import Recursion from './Recursion';
@@ -31,7 +29,7 @@ export default function Span({
   layout,
   word,
 }: Props): JSX.Element {
-  const theme = useSelector<State, ThemeParameter>(state => state.theme);
+  const theme = useThemeStore();
   return (
     <span className={styleJoin(theme.style.span, className)}>
       <Recursion

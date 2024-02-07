@@ -1,15 +1,13 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 
 import Otamachan from '../../assets/otamachan.png';
-import { State } from '../states/State';
-import ThemeParameter from '../states/ThemeParameter';
+import { useThemeStore } from '../contexts/themeContext';
 
 import ControlBox from './ControlBox';
 import FileMenu from './FileMenu';
 
 export default function OtamaMenuBar(): JSX.Element {
-  const theme = useSelector<State, ThemeParameter>(state => state.theme);
+  const theme = useThemeStore();
 
   return (
     <header

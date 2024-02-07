@@ -5,11 +5,9 @@ import {
   FormSpanComponent,
 } from 'otamashelf';
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
 
 import { SummaryWord } from '../../SummaryWord';
-import { State } from '../../states/State';
-import ThemeParameter from '../../states/ThemeParameter';
+import { useThemeStore } from '../../contexts/themeContext';
 
 import FormSpan from './FormSpan';
 // eslint-disable-next-line import/no-cycle
@@ -37,7 +35,7 @@ export default function EditableSpan({
   layout,
   word,
 }: Props): JSX.Element {
-  const theme = useSelector<State, ThemeParameter>(state => state.theme);
+  const theme = useThemeStore();
   const [edit, setEdit] = useState(false);
   return edit ? (
     <FormSpan

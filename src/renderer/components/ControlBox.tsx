@@ -3,10 +3,8 @@ import Icon from '@mdi/react';
 import CloseIcon from '@mui/icons-material/Close';
 import MinimizeIcon from '@mui/icons-material/Minimize';
 import React from 'react';
-import { useSelector } from 'react-redux';
 
-import { State } from '../states/State';
-import ThemeParameter from '../states/ThemeParameter';
+import { useThemeStore } from '../contexts/themeContext';
 
 const { api } = window;
 
@@ -16,11 +14,11 @@ const defaultMinximizeStyle = `${defaultButtonStyle} hover:bg-slate-400/20`;
 const defaultCloseStyle = `${defaultButtonStyle} hover:bg-[#ff0000]`;
 
 function MinimizeButton(): JSX.Element {
-  const theme = useSelector<State, ThemeParameter>(state => state.theme);
+  const theme = useThemeStore();
   return (
     // eslint-disable-next-line jsx-a11y/click-events-have-key-events
     <div
-      aria-label='最小化'
+      aria-label="最小化"
       className={
         theme.style['ControlBox.MinimizeButton'] ?? defaultMinximizeStyle
       }
@@ -34,11 +32,11 @@ function MinimizeButton(): JSX.Element {
 }
 
 function MaximizeButton(): JSX.Element {
-  const theme = useSelector<State, ThemeParameter>(state => state.theme);
+  const theme = useThemeStore();
   return (
     // eslint-disable-next-line jsx-a11y/click-events-have-key-events
     <div
-      aria-label='最大化'
+      aria-label="最大化"
       className={
         theme.style['ControlBox.MaximizeButton'] ?? defaultMinximizeStyle
       }
@@ -52,11 +50,11 @@ function MaximizeButton(): JSX.Element {
 }
 
 function CloseButton(): JSX.Element {
-  const theme = useSelector<State, ThemeParameter>(state => state.theme);
+  const theme = useThemeStore();
   return (
     // eslint-disable-next-line jsx-a11y/click-events-have-key-events
     <div
-      aria-label='閉じる'
+      aria-label="閉じる"
       className={theme.style['ControlBox.CloseButton'] ?? defaultCloseStyle}
       id="close-button"
       onClick={api.windowClose}
@@ -68,7 +66,7 @@ function CloseButton(): JSX.Element {
 }
 
 export default function ControlBox(): JSX.Element {
-  const theme = useSelector<State, ThemeParameter>(state => state.theme);
+  const theme = useThemeStore();
   return (
     <div className={theme.style.ControlBox ?? defaultStyle}>
       <MinimizeButton />

@@ -1,11 +1,20 @@
 import { CssBaseline, useTheme } from '@mui/material';
 import { SnackbarProvider } from 'notistack';
 import React from 'react';
-import { useSelector } from 'react-redux';
 import Split from 'react-split';
 
-import { State } from '../states/State';
-import ThemeParameter from '../states/ThemeParameter';
+import { ExtensionsProvider } from '../contexts/extensionsContext';
+import { PagesProvider } from '../contexts/pagesContext';
+import {
+  PrimarySidebarProvider,
+  usePrimarySidebarStore,
+} from '../contexts/primarySidebarContext';
+import {
+  SecondarySidebarProvider,
+  useSecondarySidebarStore,
+} from '../contexts/secondarySidebarContext';
+import { ThemeProvider, useThemeStore } from '../contexts/themeContext';
+import { WorkbenchProvider } from '../contexts/workbenchContext';
 
 import ActivityBar from './ActivityBar';
 import Editor from './Editor';
@@ -16,39 +25,33 @@ import PrimarySidebar from './PrimarySidebar';
 import SecondarySidebar from './SecondarySidebar';
 import StatusBar from './StatusBar';
 
-export default function BookshelfForm(): JSX.Element {
+function BookshelfFormInProviders(): JSX.Element {
   const theme = useTheme();
-  const isDisplayPrimarySidebar = useSelector<State, boolean>(
-    (state: State) => state.primarySidebar.display,
-  );
-  const secondarySidebar = useSelector<State, null | string>(
-    (state: State) => state.secondarySidebar,
-  );
-  const parameter = useSelector<State, ThemeParameter>(state => state.theme);
+  const isDisplayPrimarySidebar = usePrimarySidebarStore().display;
+  const secondarySidebar = useSecondarySidebarStore();
+  const parameter = useThemeStore();
 
   return (
-    <OtamaThemeProvider>
-      <SnackbarProvider maxSnack={3}>
-        <div className={`${parameter.style.main} h-full`}>
-          <On />
-          <CssBaseline />
-          <main className="flex flex-col h-full max-h-full">
-            <OtamaMenuBar />
-            <div className="flex flex-row h-[calc(100%-56px)]">
-              <ActivityBar />
-              <Split
-                className="flex flex-row grow h-full"
-                elementStyle={(_dimension, size, gutterSize, index) => ({
-                  width: `calc(${size}% - ${
-                    (index === 1 && isDisplayPrimarySidebar) ||
-                    (index === 2 && secondarySidebar)
-                      ? gutterSize
-                      : 0
-                  }px)`,
-                })}
-                gutter={() => {
-                  const gutterElement = document.createElement('div');
-                  gutterElement.className = `w-[2px]
+    <div className={`${parameter.style.main} h-full`}>
+      <On />
+      <CssBaseline />
+      <main className="flex flex-col h-full max-h-full">
+        <OtamaMenuBar />
+        <div className="flex flex-row h-[calc(100%-56px)]">
+          <ActivityBar />
+          <Split
+            className="flex flex-row grow h-full"
+            elementStyle={(_dimension, size, gutterSize, index) => ({
+              width: `calc(${size}% - ${
+                (index === 1 && isDisplayPrimarySidebar) ||
+                (index === 2 && secondarySidebar)
+                  ? gutterSize
+                  : 0
+              }px)`,
+            })}
+            gutter={() => {
+              const gutterElement = document.createElement('div');
+              gutterElement.className = `w-[2px]
                                          mx-[2px]
                                          bg-indigo-500
                                          hover:cursor-col-resize
@@ -59,42 +62,62 @@ export default function BookshelfForm(): JSX.Element {
                                          delay-75
                                          duration-300
                                          ease-in-out`;
-                  return gutterElement;
-                }}
-                gutterStyle={(_dimention, _gutterSize, index: number) => ({
-                  backgroundColor: theme.palette.divider,
-                  cursor: 'col-resize',
-                  display:
-                    (index === 1 && isDisplayPrimarySidebar) ||
-                    (index === 2 && secondarySidebar)
-                      ? 'inherit'
-                      : 'none',
-                })}
-                minSize={[
-                  isDisplayPrimarySidebar ? 100 : 0,
-                  100,
-                  secondarySidebar ? 100 : 0,
-                ]}
-                sizes={[
-                  isDisplayPrimarySidebar ? 25 : 0,
-                  100,
-                  secondarySidebar ? 25 : 0,
-                ]}>
-                <div>
-                  <PrimarySidebar />
-                </div>
-                <div>
-                  <Editor />
-                </div>
-                <div>
-                  <SecondarySidebar />
-                </div>
-              </Split>
+              return gutterElement;
+            }}
+            gutterStyle={(_dimention, _gutterSize, index: number) => ({
+              backgroundColor: theme.palette.divider,
+              cursor: 'col-resize',
+              display:
+                (index === 1 && isDisplayPrimarySidebar) ||
+                (index === 2 && secondarySidebar)
+                  ? 'inherit'
+                  : 'none',
+            })}
+            minSize={[
+              isDisplayPrimarySidebar ? 100 : 0,
+              100,
+              secondarySidebar ? 100 : 0,
+            ]}
+            sizes={[
+              isDisplayPrimarySidebar ? 25 : 0,
+              100,
+              secondarySidebar ? 25 : 0,
+            ]}>
+            <div>
+              <PrimarySidebar />
             </div>
-            <StatusBar />
-          </main>
+            <div>
+              <Editor />
+            </div>
+            <div>
+              <SecondarySidebar />
+            </div>
+          </Split>
         </div>
-      </SnackbarProvider>
-    </OtamaThemeProvider>
+        <StatusBar />
+      </main>
+    </div>
+  );
+}
+
+export default function BookshelfForm(): JSX.Element {
+  return (
+    <ThemeProvider>
+      <OtamaThemeProvider>
+        <SnackbarProvider maxSnack={3}>
+          <ExtensionsProvider>
+            <PagesProvider>
+              <WorkbenchProvider>
+                <PrimarySidebarProvider>
+                  <SecondarySidebarProvider>
+                    <BookshelfFormInProviders />
+                  </SecondarySidebarProvider>
+                </PrimarySidebarProvider>
+              </WorkbenchProvider>
+            </PagesProvider>
+          </ExtensionsProvider>
+        </SnackbarProvider>
+      </OtamaThemeProvider>
+    </ThemeProvider>
   );
 }
