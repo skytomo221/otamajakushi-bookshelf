@@ -6,10 +6,8 @@ import PopperUnstyled, { PopperUnstyledProps } from '@mui/base/PopperUnstyled';
 import ArrowRight from '@mui/icons-material/ArrowRight';
 import { MenuItem, MenuItemProps } from '@mui/material';
 import React, { useState, useRef, useImperativeHandle } from 'react';
-import { useSelector } from 'react-redux';
 
-import { State } from '../states/State';
-import ThemeParameter from '../states/ThemeParameter';
+import { useThemeStore } from '../contexts/themeContext';
 
 const defaultListbox = '';
 const defaultRoot = 'bg-slate-50 drop-shadow-xl rounded px-2 py-1';
@@ -73,7 +71,7 @@ const NestedMenuItem = React.forwardRef<
     ...MenuItemProps
   } = props;
 
-  const theme = useSelector<State, ThemeParameter>(state => state.theme);
+  const theme = useThemeStore();
 
   const { ref: containerRefProp, ...ContainerProps } = ContainerPropsProp;
 

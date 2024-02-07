@@ -1,26 +1,19 @@
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import * as React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { VList } from 'virtua';
 
 import SearchProperties from '../../common/SearchProperties';
-import { Mediator } from '../Mediator';
 import { SummaryWord } from '../SummaryWord';
-import {
-  deleteSelectedWordAction,
-  fetchSelectedWordAction,
-} from '../actions/SelectedWordsActions';
-import {
-  updatePageExplorerAction,
-  updateSearchModeAction,
-  updateSearchWordAction,
-} from '../actions/WorkbenchesActions';
-import PrimarySidebarState from '../states/PrimarySidebarState';
-import { State } from '../states/State';
+
 import '../renderer';
-import ThemeParameter from '../states/ThemeParameter';
-import Workbench from '../states/Workbench';
+import { usePagesDispatch, usePagesStore } from '../contexts/pagesContext';
+import { usePrimarySidebarStore } from '../contexts/primarySidebarContext';
+import { useThemeStore } from '../contexts/themeContext';
+import {
+  useWorkbenchDispatch,
+  useWorkbenchStore,
+} from '../contexts/workbenchContext';
 
 import CardRenderer from './card-renderer/CardRenderer';
 
@@ -29,25 +22,47 @@ const { api } = window;
 export const primarySidebarWidth = 240;
 
 function Index(): JSX.Element {
-  const dispatch = useDispatch();
-  const primarySidebar = useSelector<State, PrimarySidebarState>(
-    (state: State) => state.primarySidebar,
-  );
-  const workbenches = useSelector<State, Workbench[]>(
-    (state: State) => state.workbenches,
-  );
-  const theme = useSelector<State, ThemeParameter>(state => state.theme);
-  const onSelectedWordFetch = React.useCallback((selectedWord: SummaryWord) => {
-    dispatch(fetchSelectedWordAction(selectedWord));
-  }, []);
-  const onMediatorsUpdate = React.useCallback(() => {
-    dispatch(updateSearchWordAction(searchWord));
-  }, []);
-  const selectedWords = useSelector<State, null | Mediator[]>(
-    (state: State) => state.selectedWords,
-  );
+  const primarySidebar = usePrimarySidebarStore();
+  const workbenches = useWorkbenchStore();
+  const theme = useThemeStore();
+  const pageDispatch = usePagesDispatch();
+  const workbenchDispatch = useWorkbenchDispatch();
+  function onSelectedWordFetch(summary: SummaryWord) {
+    api.readPage(summary).then(mediator => {
+      pageDispatch({ type: 'ADD_PAGE', payload: mediator });
+    });
+  }
+  function onMediatorsUpdate() {
+    const { bookPath } = primarySidebar;
+    if (bookPath === null) {
+      return;
+    }
+    workbenchDispatch({
+      type: 'UPDATE_WORKBENCH',
+      payload: { path: bookPath, partial: { searchWord } },
+    });
+    const workbench = workbenches.find(w => w.book.path === bookPath);
+    if (workbench === undefined) {
+      throw new Error('workbench is null');
+    }
+    api
+      .selectPage(
+        workbench.book.path,
+        workbench.pageExplorer.id,
+        workbench.searchMode,
+        workbench.searchWord,
+      )
+      .then(mediators => {
+        workbenchDispatch({
+          type: 'UPDATE_WORKBENCH',
+          payload: { path: bookPath, partial: { mediators } },
+        });
+      });
+  }
+  const selectedWords = usePagesStore();
   const onDelete = React.useCallback((summary: SummaryWord) => {
-    dispatch(deleteSelectedWordAction(summary));
+    api.deletePage(summary);
+    pageDispatch({ type: 'REMOVE_PAGE', payload: summary });
   }, []);
   const workbench = workbenches.find(
     w => w.book.path === primarySidebar.bookPath,
@@ -121,25 +136,9 @@ function Index(): JSX.Element {
 }
 
 export default function PrimarySidebar(): JSX.Element {
-  const dispatch = useDispatch();
-  const primarySidebar = useSelector<State, PrimarySidebarState>(
-    (state: State) => state.primarySidebar,
-  );
-  const workbenches = useSelector<State, Workbench[]>(
-    (state: State) => state.workbenches,
-  );
-  const onPageExplorerUpdate = React.useCallback(
-    (pageExplorer: SearchProperties) => {
-      dispatch(updatePageExplorerAction(pageExplorer));
-    },
-    [],
-  );
-  const onSearchModeUpdate = React.useCallback((searchMode: string) => {
-    dispatch(updateSearchModeAction(searchMode));
-  }, []);
-  const onSearchWordUpdate = React.useCallback((sw: string) => {
-    dispatch(updateSearchWordAction(sw));
-  }, []);
+  const primarySidebar = usePrimarySidebarStore();
+  const workbenches = useWorkbenchStore();
+  const workbenchDispatch = useWorkbenchDispatch();
   const workbench = workbenches.find(
     w => w.book.path === primarySidebar.bookPath,
   );
@@ -150,6 +149,26 @@ export default function PrimarySidebar(): JSX.Element {
   ) {
     return <></>;
   }
+  const bookPath = workbench.book.path;
+  function onPageExplorerUpdate(pageExplorer: SearchProperties) {
+    workbenchDispatch({
+      type: 'UPDATE_WORKBENCH',
+      payload: { path: bookPath, partial: { pageExplorer } },
+    });
+  }
+  function onSearchModeUpdate(searchMode: string) {
+    workbenchDispatch({
+      type: 'UPDATE_WORKBENCH',
+      payload: { path: bookPath, partial: { searchMode } },
+    });
+  }
+  function onSearchWordUpdate(sw: string) {
+    workbenchDispatch({
+      type: 'UPDATE_WORKBENCH',
+      payload: { path: bookPath, partial: { searchWord: sw } },
+    });
+  }
+
   const { pageExplorers, searchModes, searchWord } = workbench;
 
   return (

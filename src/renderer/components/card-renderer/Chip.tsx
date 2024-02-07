@@ -1,8 +1,6 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 
-import { State } from '../../states/State';
-import ThemeParameter from '../../states/ThemeParameter';
+import { useThemeStore } from '../../contexts/themeContext';
 
 import styleJoin from './styleJoin';
 
@@ -17,7 +15,7 @@ export default function Chip({
   keyword,
   value,
 }: Props): JSX.Element {
-  const theme = useSelector<State, ThemeParameter>(state => state.theme);
+  const theme = useThemeStore();
   return (
     <span className={styleJoin(theme.style.Chip, className)}>
       <span className={theme.style['Chip.Key']}>{keyword}</span>

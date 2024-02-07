@@ -17,11 +17,11 @@ import H3 from './H3';
 import H4 from './H4';
 import H5 from './H5';
 import H6 from './H6';
+import Mime from './Mime';
 import P from './P';
 import Span from './Span';
 import Text from './Text';
 import createKey from './createKey';
-import Mime from './Mime';
 
 interface Props {
   baseReference: string;

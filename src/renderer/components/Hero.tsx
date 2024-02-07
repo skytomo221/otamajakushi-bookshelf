@@ -9,28 +9,47 @@ import {
   BookLoaderProperties,
   ExtensionProperties,
 } from 'otamashelf';
-import BookCreator from 'otamashelf/BookCreator';
-import BookLoader from 'otamashelf/BookLoader';
 import React, { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 
-import { initializeWorkbench } from '../actions/WorkbenchesActions';
+import { useExtensionsStore } from '../contexts/extensionsContext';
+import { useThemeStore } from '../contexts/themeContext';
+import { useWorkbenchDispatch } from '../contexts/workbenchContext';
 import Book from '../states/Book';
-import { State } from '../states/State';
-import ThemeParameter from '../states/ThemeParameter';
 
 const { api } = window;
 
 export default function Hero(): JSX.Element {
-  const theme = useSelector<State, ThemeParameter>(state => state.theme);
-  const dispatch = useDispatch();
+  const theme = useThemeStore();
   const { enqueueSnackbar } = useSnackbar();
-  const extensions = useSelector<State, ExtensionProperties[]>(
-    (state: State) => state.extensions,
-  );
-  const onWorkbenchInitialize = useCallback((book: Book) => {
-    dispatch(initializeWorkbench(book));
-  }, []);
+  const extensions = useExtensionsStore();
+  const workbenchDispatch = useWorkbenchDispatch();
+  async function onWorkbenchInitialize(book: Book) {
+    const pageExplorers = await api.readPageExplorer();
+    const pageExplorer = pageExplorers[0];
+    const searchModes = await api.readSearchMode(book.path);
+    const searchMode = searchModes[0];
+    const templates = await api.readTemplates(book.path);
+    const searchWord = '';
+    const mediators = await api.selectPage(
+      book.path,
+      pageExplorer.id,
+      searchMode,
+      searchWord,
+    );
+    workbenchDispatch({
+      type: 'ADD_WORKBENCH',
+      payload: {
+        book,
+        pageExplorer,
+        pageExplorers,
+        searchMode,
+        searchModes,
+        searchWord,
+        templates,
+        mediators,
+      },
+    });
+  }
 
   const openBook =
     (extension: ExtensionProperties, editable: boolean) => () => {

@@ -1,9 +1,8 @@
 import { Theme } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import React, { ReactNode } from 'react';
-import { useSelector } from 'react-redux';
 
-import { State } from '../states/State';
+import { useThemeStore } from '../contexts/themeContext';
 import ThemeParameter from '../states/ThemeParameter';
 
 const plainTheme = createTheme();
@@ -122,7 +121,7 @@ export interface Props {
 }
 
 export default function OtamaThemeProvider({ children }: Props): JSX.Element {
-  const theme = useSelector<State, ThemeParameter>(state => state.theme);
+  const theme = useThemeStore();
   return (
     <ThemeProvider theme={createOtamaTheme(theme)}>{children}</ThemeProvider>
   );

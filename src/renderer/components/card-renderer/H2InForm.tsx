@@ -1,10 +1,8 @@
 import { LayoutCard, FormDivComponent } from 'otamashelf';
 import React from 'react';
-import { useSelector } from 'react-redux';
 
 import { SummaryWord } from '../../SummaryWord';
-import { State } from '../../states/State';
-import ThemeParameter from '../../states/ThemeParameter';
+import { useThemeStore } from '../../contexts/themeContext';
 
 // eslint-disable-next-line import/no-cycle
 import RecursionInForm from './RecursionInForm';
@@ -33,7 +31,7 @@ export default function H2InForm({
   flattenCard,
   setFlattenCard,
 }: Props): JSX.Element {
-  const theme = useSelector<State, ThemeParameter>(state => state.theme);
+  const theme = useThemeStore();
   return (
     <h2 className={styleJoin(theme.style.h2, className)}>
       <RecursionInForm

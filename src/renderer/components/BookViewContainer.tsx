@@ -1,30 +1,27 @@
 import BookIcon from '@mui/icons-material/Book';
 import { ListItem, Menu, MenuItem } from '@mui/material';
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 
-import updatePrimarySidebarAction from '../actions/PrimarySidebarActions';
 import {
-  editBookAction,
-  removeWorkbenchAction,
-} from '../actions/WorkbenchesActions';
+  usePrimarySidebarDispatch,
+  usePrimarySidebarStore,
+} from '../contexts/primarySidebarContext';
+import { useWorkbenchDispatch } from '../contexts/workbenchContext';
 import Book from '../states/Book';
-import PrimarySidebarStates from '../states/PrimarySidebarState';
-import { State } from '../states/State';
 
 interface Props {
   book: Book;
 }
 
 export default function BookViewContainer({ book }: Props): JSX.Element {
-  const dispatch = useDispatch();
-  const primarySidebar = useSelector<State, PrimarySidebarStates>(
-    (state: State) => state.primarySidebar,
-  );
+  const primarySidebar = usePrimarySidebarStore();
+  const primarySidebarDispatch = usePrimarySidebarDispatch();
+  const workbenchDispatch = useWorkbenchDispatch();
   const onPrimarySidebarChange = React.useCallback((newBook: Book | null) => {
-    dispatch(
-      updatePrimarySidebarAction(newBook === null ? null : newBook.path),
-    );
+    primarySidebarDispatch({
+      type: 'UPDATE_BOOK_PATH',
+      payload: newBook === null ? null : newBook.path,
+    });
   }, []);
   const [contextMenu, setContextMenu] = React.useState<{
     mouseX: number;
@@ -72,14 +69,17 @@ export default function BookViewContainer({ book }: Props): JSX.Element {
         }>
         <MenuItem
           onClick={() => {
-            dispatch(editBookAction({ ...book, editable: true }));
+            workbenchDispatch({
+              type: 'EDIT_BOOK',
+              payload: { ...book, editable: true },
+            });
             handleClose();
           }}>
           編集する
         </MenuItem>
         <MenuItem
           onClick={() => {
-            dispatch(removeWorkbenchAction(book.path));
+            workbenchDispatch({ type: 'REMOVE_WORKBENCH', payload: book.path });
             handleClose();
           }}>
           閉じる

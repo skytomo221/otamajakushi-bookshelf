@@ -5,13 +5,11 @@ import {
   FormDivComponent,
 } from 'otamashelf';
 import React, { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 
 import { Mediator } from '../../Mediator';
 import { SummaryWord } from '../../SummaryWord';
-import { pushSelectedWordAction } from '../../actions/SelectedWordsActions';
-import { State } from '../../states/State';
-import ThemeParameter from '../../states/ThemeParameter';
+import { usePagesDispatch } from '../../contexts/pagesContext';
+import { useThemeStore } from '../../contexts/themeContext';
 
 import Error from './Error';
 // eslint-disable-next-line import/no-cycle
@@ -41,13 +39,15 @@ export default function FormDiv({
   layout,
   word,
 }: Props): JSX.Element {
-  const theme = useSelector<State, ThemeParameter>(state => state.theme);
-  const dispatch = useDispatch();
+  const theme = useThemeStore();
   const defaultFlattenCard = flatten(word) as { [key: string]: string };
   const [flattenCard, setFlattenCard] = useState(defaultFlattenCard);
-  const onSelectedWordPush = React.useCallback((mediator: Mediator) => {
-    dispatch(pushSelectedWordAction(mediator));
-  }, []);
+  const dispatch = usePagesDispatch();
+  function onSelectedWordPush(mediator: Mediator) {
+    api
+      .updatePage(mediator.summary, mediator.word)
+      .then(m => dispatch({ type: 'UPDATE_PAGE', payload: m }));
+  }
   if (typeof flattenCard !== 'object') {
     api.log.error('Layout is invalid.', layout, flattenCard);
     return <Error>レイアウトが無効です。</Error>;

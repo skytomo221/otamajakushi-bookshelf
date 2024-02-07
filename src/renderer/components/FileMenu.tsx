@@ -2,20 +2,24 @@ import { MenuUnstyledActions } from '@mui/base/MenuUnstyled';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { MenuItem, Typography, useTheme, Divider } from '@mui/material';
 import { useSnackbar } from 'notistack';
-import { BookCreatorProperties, BookLoaderProperties, ExtensionProperties } from 'otamashelf';
-import React, { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-
 import {
-  StyleThemeProperties,
-} from '../../common/O20fExtensionProperties';
-import StyleThemeParameters from '../../common/StyleThemeParameters';
-import { applyStyleThemeAction } from '../actions/ThemeActions';
-import { initializeWorkbench } from '../actions/WorkbenchesActions';
-import Book from '../states/Book';
-import { State } from '../states/State';
+  BookCreatorProperties,
+  BookLoaderProperties,
+  ExtensionProperties,
+} from 'otamashelf';
+import React from 'react';
 
 import '../renderer';
+import { StyleThemeProperties } from '../../common/O20fExtensionProperties';
+import StyleThemeParameters from '../../common/StyleThemeParameters';
+import { useExtensionsStore } from '../contexts/extensionsContext';
+import { useThemeDispatch, useThemeStore } from '../contexts/themeContext';
+import {
+  useWorkbenchDispatch,
+  useWorkbenchStore,
+} from '../contexts/workbenchContext';
+import Book from '../states/Book';
+
 import Menu from './Menu';
 import MenuButton from './MenuButton';
 import NestedMenuItem from './NestedMenuItem';
@@ -63,21 +67,48 @@ export default function FileMenu(): JSX.Element {
     setAnchorEl(null);
     buttonRef.current?.focus();
   };
-  const theme = useTheme();
-  const dispatch = useDispatch();
+  const theme = useThemeStore();
+  const dispatch = useThemeDispatch();
+  const workbenchDispatch = useWorkbenchDispatch();
   const { enqueueSnackbar } = useSnackbar();
-  const books = useSelector<State, Book[]>((state: State) =>
-    state.workbenches.map(workbench => workbench.book),
-  );
-  const extensions = useSelector<State, ExtensionProperties[]>(
-    (state: State) => state.extensions,
-  );
-  const onWorkbenchInitialize = useCallback((book: Book) => {
-    dispatch(initializeWorkbench(book));
-  }, []);
-  const onStyleThemeApply = useCallback((styleTheme: StyleThemeParameters) => {
-    dispatch(applyStyleThemeAction(styleTheme));
-  }, []);
+  const books = useWorkbenchStore().map(w => w.book);
+  const extensions = useExtensionsStore();
+  async function onWorkbenchInitialize(book: Book) {
+    const pageExplorers = await api.readPageExplorer();
+    const pageExplorer = pageExplorers[0];
+    const searchModes = await api.readSearchMode(book.path);
+    const searchMode = searchModes[0];
+    const templates = await api.readTemplates(book.path);
+    const searchWord = '';
+    const mediators = await api.selectPage(
+      book.path,
+      pageExplorer.id,
+      searchMode,
+      searchWord,
+    );
+    workbenchDispatch({
+      type: 'ADD_WORKBENCH',
+      payload: {
+        book,
+        pageExplorer,
+        pageExplorers,
+        searchMode,
+        searchModes,
+        searchWord,
+        templates,
+        mediators,
+      },
+    });
+  }
+
+  function onStyleThemeApply(styleTheme: StyleThemeParameters) {
+    dispatch({
+      type: 'APPLY_STYLE_THEME',
+      payload: {
+        style: { ...theme, style: { ...theme.style, ...styleTheme } },
+      },
+    });
+  }
 
   const openBook =
     (extension: ExtensionProperties, editable: boolean) => () => {
@@ -163,8 +194,7 @@ export default function FileMenu(): JSX.Element {
           parentMenuOpen={open}>
           {extensions
             .filter(
-              (ext): ext is BookLoaderProperties =>
-                ext.type === 'book-loader',
+              (ext): ext is BookLoaderProperties => ext.type === 'book-loader',
             )
             .map(ext => (
               <MenuItem key={ext.id} onClick={openBook(ext, false)}>
@@ -182,8 +212,7 @@ export default function FileMenu(): JSX.Element {
           parentMenuOpen={open}>
           {extensions
             .filter(
-              (ext): ext is BookLoaderProperties =>
-                ext.type === 'book-loader',
+              (ext): ext is BookLoaderProperties => ext.type === 'book-loader',
             )
             .map(ext => (
               <MenuItem key={ext.id} onClick={openBook(ext, true)}>

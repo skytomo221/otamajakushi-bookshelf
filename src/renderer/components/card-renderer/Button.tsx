@@ -1,15 +1,16 @@
 import { PageCard, LayoutCard, LayoutComponent } from 'otamashelf';
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 
 import { SummaryWord } from '../../SummaryWord';
-import { onClickAction } from '../../actions/SelectedWordsActions';
-import { State } from '../../states/State';
-import ThemeParameter from '../../states/ThemeParameter';
+import { usePagesDispatch } from '../../contexts/pagesContext';
+import { useThemeStore } from '../../contexts/themeContext';
+import '../../renderer';
 
 // eslint-disable-next-line import/no-cycle
 import Recursion from './Recursion';
 import styleJoin from './styleJoin';
+
+const { api } = window;
 
 interface Props {
   baseReference: string;
@@ -38,15 +39,23 @@ export default function Button({
   layout,
   word,
 }: Props): JSX.Element {
-  const theme = useSelector<State, ThemeParameter>(state => state.theme);
-  const dispatch = useDispatch();
-  const onClick = React.useCallback((s: SummaryWord, c: {
-    type: string;
-    id: string;
-    script: string;
-  }) => {
-    dispatch(onClickAction({ summary: s, onClick: c }));
-  }, []);
+  const theme = useThemeStore();
+  const dispatch = usePagesDispatch();
+  const onClick = React.useCallback(
+    (
+      s: SummaryWord,
+      c: {
+        type: string;
+        id: string;
+        script: string;
+      },
+    ) => {
+      api
+        .onClick(s, c)
+        .then(mediator => dispatch({ type: 'UPDATE_PAGE', payload: mediator }));
+    },
+    [],
+  );
   return editable ? (
     <button
       aria-label="Save"

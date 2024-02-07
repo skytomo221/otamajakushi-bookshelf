@@ -17,11 +17,11 @@ import InputSubmit from './InputSubmit';
 import InputText from './InputText';
 import InputTextarea from './InputTextarea';
 import Label from './Label';
+import Mime from './Mime';
 import PInForm from './PInForm';
 import SpanInForm from './SpanInForm';
 import Text from './Text';
 import createKeyInForm from './createKeyInForm';
-import Mime from './Mime';
 
 interface Props {
   baseReference: string;

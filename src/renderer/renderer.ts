@@ -1,3 +1,5 @@
+import { IpcRendererEvent } from 'electron';
+
 import log from 'electron-log';
 import { ExtensionProperties, PageCard } from 'otamashelf';
 import TemplateProperties from 'otamashelf/TemplateProperties';
@@ -15,7 +17,7 @@ declare global {
   }
 }
 
-export interface Api {
+export type Api = {
   newBook: (id: string) => Promise<string[]>;
   open: (id: string) => Promise<string[]>;
   save: (filePath: string) => Promise<boolean>;

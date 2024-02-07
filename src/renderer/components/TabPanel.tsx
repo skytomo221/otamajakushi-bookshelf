@@ -1,8 +1,6 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 
-import { State } from '../states/State';
-import ThemeParameter from '../states/ThemeParameter';
+import { useThemeStore } from '../contexts/themeContext';
 
 interface TabPanelProps {
   // eslint-disable-next-line react/require-default-props
@@ -12,7 +10,7 @@ interface TabPanelProps {
 }
 
 function TabPanel(props: TabPanelProps): JSX.Element {
-  const theme = useSelector<State, ThemeParameter>(state => state.theme);
+  const theme = useThemeStore();
   const { children, value, index, ...other } = props;
 
   return (
