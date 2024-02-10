@@ -20,19 +20,17 @@ import ActivityBar from './ActivityBar';
 import Editor from './Editor';
 import On from './On';
 import OtamaMenuBar from './OtamaMenuBar';
-import OtamaThemeProvider from './OtamaThemeProvider';
 import PrimarySidebar from './PrimarySidebar';
 import SecondarySidebar from './SecondarySidebar';
 import StatusBar from './StatusBar';
 
 function BookshelfFormInProviders(): JSX.Element {
-  const theme = useTheme();
   const isDisplayPrimarySidebar = usePrimarySidebarStore().display;
   const secondarySidebar = useSecondarySidebarStore();
-  const parameter = useThemeStore();
+  const theme = useThemeStore();
 
   return (
-    <div className={`${parameter.style.main} h-full`}>
+    <div className={`${theme.main} h-full`}>
       <On />
       <CssBaseline />
       <main className="flex flex-col h-full max-h-full">
@@ -65,7 +63,7 @@ function BookshelfFormInProviders(): JSX.Element {
               return gutterElement;
             }}
             gutterStyle={(_dimention, _gutterSize, index: number) => ({
-              backgroundColor: theme.palette.divider,
+              backgroundColor: '#EEEEEE', // TODO: add theme.divider
               cursor: 'col-resize',
               display:
                 (index === 1 && isDisplayPrimarySidebar) ||
@@ -103,21 +101,19 @@ function BookshelfFormInProviders(): JSX.Element {
 export default function BookshelfForm(): JSX.Element {
   return (
     <ThemeProvider>
-      <OtamaThemeProvider>
-        <SnackbarProvider maxSnack={3}>
-          <ExtensionsProvider>
-            <PagesProvider>
-              <WorkbenchProvider>
-                <PrimarySidebarProvider>
-                  <SecondarySidebarProvider>
-                    <BookshelfFormInProviders />
-                  </SecondarySidebarProvider>
-                </PrimarySidebarProvider>
-              </WorkbenchProvider>
-            </PagesProvider>
-          </ExtensionsProvider>
-        </SnackbarProvider>
-      </OtamaThemeProvider>
+      <SnackbarProvider maxSnack={3}>
+        <ExtensionsProvider>
+          <PagesProvider>
+            <WorkbenchProvider>
+              <PrimarySidebarProvider>
+                <SecondarySidebarProvider>
+                  <BookshelfFormInProviders />
+                </SecondarySidebarProvider>
+              </PrimarySidebarProvider>
+            </WorkbenchProvider>
+          </PagesProvider>
+        </ExtensionsProvider>
+      </SnackbarProvider>
     </ThemeProvider>
   );
 }

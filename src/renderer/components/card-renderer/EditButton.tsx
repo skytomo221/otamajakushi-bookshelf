@@ -19,7 +19,7 @@ export default function EditButton({
   return editable ? (
     <button
       aria-label="Save"
-      className={styleJoin(theme.style.EditButton, className)}
+      className={styleJoin(theme.EditButton, className)}
       onClick={edit}
       type="submit">
       編集する

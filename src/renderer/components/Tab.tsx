@@ -22,7 +22,7 @@ function Tab(props: TabProps): JSX.Element {
       slotProps={{
         root: {
           className:
-            value === index ? theme.style['Tab.selected'] : theme.style.Tab,
+            value === index ? theme['Tab.selected'] : theme.Tab,
         },
       }}>
       {children}

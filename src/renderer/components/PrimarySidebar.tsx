@@ -81,9 +81,9 @@ function Index(): JSX.Element {
     <VList>
       {editable &&
         (templates ?? []).map(template => (
-          <div key={template.id} className={theme.style['Index.li']}>
+          <div key={template.id} className={theme['Index.li']}>
             <button
-              className={theme.style['Index.button']}
+              className={theme['Index.button']}
               onClick={async () => {
                 const newPage = await api.createPage(book.path, template.id);
                 onSelectedWordFetch(newPage.summary);
@@ -95,10 +95,10 @@ function Index(): JSX.Element {
           </div>
         ))}
       {(mediators ?? []).map(mediator => (
-        <div key={mediator.summary.id} className={theme.style['Index.li']}>
+        <div key={mediator.summary.id} className={theme['Index.li']}>
           <button
             aria-label={mediator.word.title}
-            className={theme.style['Index.button']}
+            className={theme['Index.button']}
             onClick={() => {
               if (
                 (selectedWords ?? []).every(

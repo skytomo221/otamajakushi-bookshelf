@@ -13,7 +13,7 @@ const Tabs = React.forwardRef(
         {...props}
         slotProps={{
           root: {
-            className: theme.style.Tabs,
+            className: theme.Tabs,
           },
         }}
         ref={ref}

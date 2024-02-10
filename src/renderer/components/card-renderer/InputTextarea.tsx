@@ -37,7 +37,7 @@ export default function InputTextarea({
   const [text, setText] = useState(flattenCard[reference]);
   return (
     <textarea
-      className={styleJoin(theme.style.textarea, className)}
+      className={styleJoin(theme.textarea, className)}
       id={`${summary.bookPath} ${summary.id} ${inputId}`}
       name={name}
       value={text}

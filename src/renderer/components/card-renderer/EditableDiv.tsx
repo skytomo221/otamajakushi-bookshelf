@@ -48,7 +48,7 @@ export default function EditableDiv({
       word={word}
     />
   ) : (
-    <div className={styleJoin(theme.style.EditableDiv, className)}>
+    <div className={styleJoin(theme.EditableDiv, className)}>
       <Recursion
         baseReference={baseReference}
         contents={outputs}

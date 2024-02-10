@@ -33,7 +33,7 @@ export default function PInForm({
 }: Props): JSX.Element {
   const theme = useThemeStore();
   return (
-    <p className={styleJoin(theme.style.p, className)}>
+    <p className={styleJoin(theme.p, className)}>
       <RecursionInForm
         baseReference={baseReference}
         contents={contents}

@@ -6,7 +6,7 @@ export default function StatusBar(): JSX.Element {
   const theme = useThemeStore();
   return (
     <footer
-      className={`${theme.style.statuBar} flex h-6`}
+      className={`${theme.statuBar} flex h-6`}
     />
   );
 }

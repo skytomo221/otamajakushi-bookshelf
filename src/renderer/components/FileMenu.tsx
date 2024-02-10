@@ -103,10 +103,8 @@ export default function FileMenu(): JSX.Element {
 
   function onStyleThemeApply(styleTheme: StyleThemeParameters) {
     dispatch({
-      type: 'APPLY_STYLE_THEME',
-      payload: {
-        style: { ...theme, style: { ...theme.style, ...styleTheme } },
-      },
+      type: 'CHANGE_THEME',
+      payload: { ...theme, ...styleTheme },
     });
   }
 

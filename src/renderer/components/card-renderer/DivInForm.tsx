@@ -33,7 +33,7 @@ export default function DivInForm({
 }: Props): JSX.Element {
   const theme = useThemeStore();
   return (
-    <div className={styleJoin(theme.style.div, className)}>
+    <div className={styleJoin(theme.div, className)}>
       <RecursionInForm
         baseReference={baseReference}
         contents={contents}

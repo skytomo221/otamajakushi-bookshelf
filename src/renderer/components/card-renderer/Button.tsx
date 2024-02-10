@@ -59,7 +59,7 @@ export default function Button({
   return editable ? (
     <button
       aria-label="Save"
-      className={styleJoin(theme.style.button, className)}
+      className={styleJoin(theme.button, className)}
       onClick={() => {
         onClick(summary, onClickButton);
       }}

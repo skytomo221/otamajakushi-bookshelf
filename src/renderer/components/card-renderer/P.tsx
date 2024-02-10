@@ -31,7 +31,7 @@ export default function P({
 }: Props): JSX.Element {
   const theme = useThemeStore();
   return (
-    <p className={styleJoin(theme.style.p, className)}>
+    <p className={styleJoin(theme.p, className)}>
       <Recursion
         baseReference={baseReference}
         contents={contents}

@@ -31,7 +31,7 @@ export default function H5({
 }: Props): JSX.Element {
   const theme = useThemeStore();
   return (
-    <h5 className={styleJoin(theme.style.h5, className)}>
+    <h5 className={styleJoin(theme.h5, className)}>
       <Recursion
         baseReference={baseReference}
         contents={contents}

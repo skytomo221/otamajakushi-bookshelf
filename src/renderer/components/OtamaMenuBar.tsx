@@ -11,7 +11,7 @@ export default function OtamaMenuBar(): JSX.Element {
 
   return (
     <header
-      className={`${theme.style.menuBar} flex h-8 [-webkit-app-region:drag]`}>
+      className={`${theme.menuBar} flex h-8 [-webkit-app-region:drag]`}>
       <img src={Otamachan} className="m-1.5 h-5 w-5" alt="Otamachan" />
       <FileMenu />
       <div className="grow" />
