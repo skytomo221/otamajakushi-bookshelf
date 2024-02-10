@@ -24,7 +24,7 @@ export default function InputSubmit({
   return (
     <input
       type="button"
-      className={styleJoin(theme.style.InputSubmit, className)}
+      className={styleJoin(theme.InputSubmit, className)}
       id={`${summary.bookPath} ${summary.id} ${inputId}`}
       value={value}
       onClick={submit}

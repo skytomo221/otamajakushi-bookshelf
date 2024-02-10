@@ -32,7 +32,7 @@ export default function InputText({
   return (
     <input
       type="text"
-      className={styleJoin(theme.style.InputText, className)}
+      className={styleJoin(theme.InputText, className)}
       id={`${summary.bookPath} ${summary.id} ${inputId}`}
       name={name}
       value={text}

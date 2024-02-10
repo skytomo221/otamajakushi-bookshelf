@@ -17,9 +17,9 @@ export default function Chip({
 }: Props): JSX.Element {
   const theme = useThemeStore();
   return (
-    <span className={styleJoin(theme.style.Chip, className)}>
-      <span className={theme.style['Chip.Key']}>{keyword}</span>
-      {value && <span className={theme.style['Chip.Value']}>{value}</span>}
+    <span className={styleJoin(theme.Chip, className)}>
+      <span className={theme['Chip.Key']}>{keyword}</span>
+      {value && <span className={theme['Chip.Value']}>{value}</span>}
     </span>
   );
 }

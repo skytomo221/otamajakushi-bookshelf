@@ -24,7 +24,7 @@ export default function InputReset({
   return (
     <input
       type="button"
-      className={styleJoin(theme.style.InputReset, className)}
+      className={styleJoin(theme.InputReset, className)}
       id={`${summary.bookPath} ${summary.id} ${inputId}`}
       value={value}
       onClick={reset}

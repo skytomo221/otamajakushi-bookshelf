@@ -38,7 +38,7 @@ export default function H5InForm({
     // eslint-disable-next-line jsx-a11y/label-has-associated-control
     <label
       htmlFor={`${summary.bookPath} ${summary.id} ${htmlFor}`}
-      className={styleJoin(theme.style.label, className)}>
+      className={styleJoin(theme.label, className)}>
       <RecursionInForm
         baseReference={baseReference}
         contents={contents ?? []}

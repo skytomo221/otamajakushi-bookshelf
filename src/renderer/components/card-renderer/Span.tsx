@@ -31,7 +31,7 @@ export default function Span({
 }: Props): JSX.Element {
   const theme = useThemeStore();
   return (
-    <span className={styleJoin(theme.style.span, className)}>
+    <span className={styleJoin(theme.span, className)}>
       <Recursion
         baseReference={baseReference}
         contents={contents}

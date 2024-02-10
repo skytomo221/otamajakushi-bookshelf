@@ -179,8 +179,8 @@ const NestedMenuItem = React.forwardRef<
         open={open}
         slots={{ root: Popper, listbox: 'ul' }}
         slotProps={{
-          listbox: { className: theme.style['Menu.listbox'] ?? defaultListbox },
-          root: { className: theme.style['Menu.root'] ?? defaultRoot },
+          listbox: { className: theme['Menu.listbox'] ?? defaultListbox },
+          root: { className: theme['Menu.root'] ?? defaultRoot },
         }}
         onClose={() => {
           setIsSubMenuOpen(false);

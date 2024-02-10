@@ -97,10 +97,10 @@ export default function Hero(): JSX.Element {
   };
 
   return (
-    <div className={theme.style.Hero}>
-      <h2 className={theme.style['Hero.h2']}>Otamajakushi Bookshelf</h2>
-      <h3 className={theme.style['Hero.h3']}>手軽に開発、便利な検索</h3>
-      <h4 className={theme.style['Hero.h4']}>はじめよう</h4>
+    <div className={theme.Hero}>
+      <h2 className={theme['Hero.h2']}>Otamajakushi Bookshelf</h2>
+      <h3 className={theme['Hero.h3']}>手軽に開発、便利な検索</h3>
+      <h4 className={theme['Hero.h4']}>はじめよう</h4>
       {Array.from(
         new Set(
           extensions
@@ -112,11 +112,11 @@ export default function Hero(): JSX.Element {
             .flat(),
         ),
       ).map(bookFormat => (
-        <div className={theme.style['Hero.BookControllerDiv']} key={bookFormat}>
+        <div className={theme['Hero.BookControllerDiv']} key={bookFormat}>
           {bookFormat}形式で
-          <div className={theme.style['Hero.ButtonGroup']}>
+          <div className={theme['Hero.ButtonGroup']}>
             <button
-              className={theme.style['Hero.button']}
+              className={theme['Hero.button']}
               onClick={newBook(
                 extensions
                   .filter(
@@ -142,7 +142,7 @@ export default function Hero(): JSX.Element {
               <div>新しいブックを作成する</div>
             </button>
             <button
-              className={theme.style['Hero.button']}
+              className={theme['Hero.button']}
               onClick={openBook(
                 extensions
                   .filter(
@@ -169,7 +169,7 @@ export default function Hero(): JSX.Element {
               <div>ブックを開く</div>
             </button>
             <button
-              className={theme.style['Hero.button']}
+              className={theme['Hero.button']}
               onClick={openBook(
                 extensions
                   .filter(

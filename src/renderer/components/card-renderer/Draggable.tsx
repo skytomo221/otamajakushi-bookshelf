@@ -41,8 +41,8 @@ export default function Draggable({
           ref={draggableProvided.innerRef}
           className={
             draggableSnapshot.isDragging
-              ? theme.style['DraggableArray.Draggable.Dragging']
-              : theme.style['DraggableArray.Draggable']
+              ? theme['DraggableArray.Draggable.Dragging']
+              : theme['DraggableArray.Draggable']
           }
           // eslint-disable-next-line react/jsx-props-no-spreading
           {...draggableProvided.draggableProps}

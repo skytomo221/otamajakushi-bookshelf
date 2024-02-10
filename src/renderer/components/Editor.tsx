@@ -12,7 +12,7 @@ export default function Editor(): JSX.Element {
   const theme = useThemeStore();
 
   return (
-    <div className={theme.style.editor} style={{ height: '100%' }}>
+    <div className={theme.editor} style={{ height: '100%' }}>
       {selectedWords?.length ? <WordTabs /> : <Hero />}
     </div>
   );

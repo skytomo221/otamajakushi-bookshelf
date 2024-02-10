@@ -57,7 +57,7 @@ export default function FormDiv({
     return <Error>レイアウトがnullです。</Error>;
   }
   return (
-    <span className={styleJoin(theme.style.FormSpan, className)}>
+    <span className={styleJoin(theme.FormSpan, className)}>
       <RecursionInForm
         baseReference={baseReference}
         contents={inputs}

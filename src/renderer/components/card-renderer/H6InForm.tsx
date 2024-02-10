@@ -33,7 +33,7 @@ export default function H6InForm({
 }: Props): JSX.Element {
   const theme = useThemeStore();
   return (
-    <h6 className={styleJoin(theme.style.h6, className)}>
+    <h6 className={styleJoin(theme.h6, className)}>
       <RecursionInForm
         baseReference={baseReference}
         contents={contents}

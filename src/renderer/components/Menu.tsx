@@ -18,10 +18,10 @@ const Menu = React.forwardRef(
         slots={{ root: PopperUnstyled, listbox: 'ul' }}
         slotProps={{
           listbox: {
-            className: theme.style['Menu.listbox'] ?? defaultListbox,
+            className: theme['Menu.listbox'] ?? defaultListbox,
           },
           root: {
-            className: theme.style['Menu.root'] ?? defaultRoot,
+            className: theme['Menu.root'] ?? defaultRoot,
           },
         }}
         ref={ref}

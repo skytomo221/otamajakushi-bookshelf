@@ -19,7 +19,7 @@ function TabPanel(props: TabPanelProps): JSX.Element {
       hidden={value !== index}
       id={`simple-tabpanel-${index}`}
       aria-labelledby={`simple-tab-${index}`}
-      className={theme.style.TabPanel}
+      className={theme.TabPanel}
       // eslint-disable-next-line react/jsx-props-no-spreading
       {...other}>
       {value === index && children}

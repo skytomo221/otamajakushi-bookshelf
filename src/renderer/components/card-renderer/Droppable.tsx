@@ -44,8 +44,8 @@ export default function Droppable({
           ref={droppableProvided.innerRef}
           className={
             droppableSnapshot.isDraggingOver
-              ? theme.style['DraggableArray.Droppable.DraggingOver']
-              : theme.style['DraggableArray.Droppable']
+              ? theme['DraggableArray.Droppable.DraggingOver']
+              : theme['DraggableArray.Droppable']
           }
           // eslint-disable-next-line react/jsx-props-no-spreading
           {...droppableProvided.droppableProps}>

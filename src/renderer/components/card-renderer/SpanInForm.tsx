@@ -33,7 +33,7 @@ export default function SpanInForm({
 }: Props): JSX.Element {
   const theme = useThemeStore();
   return (
-    <span className={styleJoin(theme.style.span, className)}>
+    <span className={styleJoin(theme.span, className)}>
       <RecursionInForm
         baseReference={baseReference}
         contents={contents}

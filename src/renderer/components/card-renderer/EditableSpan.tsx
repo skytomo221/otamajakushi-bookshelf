@@ -48,7 +48,7 @@ export default function EditableSpan({
       word={word}
     />
   ) : (
-    <span className={styleJoin(theme.style.EditableSpan, className)}>
+    <span className={styleJoin(theme.EditableSpan, className)}>
       <Recursion
         baseReference={baseReference}
         contents={outputs}
