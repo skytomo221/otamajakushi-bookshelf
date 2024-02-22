@@ -9,35 +9,30 @@ import path from 'node:path';
 import log from 'electron-log';
 import getPort from 'get-port';
 import MarkdownIt from 'markdown-it';
-import { ExtensionProperties } from 'otamashelf';
-import { BookWithPath } from 'otamashelf/Book';
 import BookTimeMachine from 'otamashelf/BookTimeMachine';
-import { PageCard } from 'otamashelf/PageCard';
+import Otamashelf from 'otamashelf/Otamashelf';
 import TemplateProperties from 'otamashelf/TemplateProperties';
 import { ConvertProps, ConvertReturns } from 'otamashelf/TextConverter';
-import EndsWithPageExplorer from 'otamashelf/extensions/EndsWithPageExplorer';
-import IncludesPageExplorer from 'otamashelf/extensions/IncludesPageExplorer';
-import OtmCreator from 'otamashelf/extensions/OtmCreator';
-import OtmIndexer from 'otamashelf/extensions/OtmIndexer';
-import OtmLayoutBuilder from 'otamashelf/extensions/OtmLayoutBuilder';
-import OtmLoader from 'otamashelf/extensions/OtmLoader';
-import OtmPageCreator from 'otamashelf/extensions/OtmPageCreator';
-import OtmPageUpdater from 'otamashelf/extensions/OtmPageUpdater';
-import OtmSaver from 'otamashelf/extensions/OtmSaver';
-import OtmUpdater from 'otamashelf/extensions/OtmUpdater';
-import StartsWithPageExplorer from 'otamashelf/extensions/StartsWithPageExplorer';
+import { endsWithPageExplorer } from 'otamashelf/extensions/endsWithPageExplorer';
+import { includesPageExplorer } from 'otamashelf/extensions/includesPageExplorer';
+import { otmAddContentPageModifier } from 'otamashelf/extensions/otmAddContentPageModifier';
+import { otmCreator } from 'otamashelf/extensions/otmCreator';
+import { otmIndexGenerator } from 'otamashelf/extensions/otmIndexGenerator';
+import { otmLayoutBuilder } from 'otamashelf/extensions/otmLayoutBuilder';
+import { otmLoader } from 'otamashelf/extensions/otmLoader';
+import { otmPageCreator } from 'otamashelf/extensions/otmPageCreator';
+import { otmRemoveContentPageModifier } from 'otamashelf/extensions/otmRemoveContentPageModifier';
+import { otmRenumberModifier } from 'otamashelf/extensions/otmRenumberModifier';
+import { otmSaver } from 'otamashelf/extensions/otmSaver';
+import { startsWithPageExplorer } from 'otamashelf/extensions/startsWithPageExplorer';
+import OtamashelfServer from 'otamashelf-extension/OtamashelfServer';
 
 import SearchProperites from '../common/SearchProperties';
 import StyleThemeParameters from '../common/StyleThemeParameters';
 import { Mediator } from '../renderer/Mediator';
 import { SummaryWord } from '../renderer/SummaryWord';
 
-import MarkdownTextConverter from './MarkdownTextConverter';
-import OtamaDarkTheme from './OtamaDarkTheme';
-import OtamaDefaultTheme from './OtamaDefaultTheme';
-import OtamaLightTheme from './OtamaLightTheme';
-import OtamashelfGui from './OtamashelfGui';
-import RegexPageExplorer from './RegexPageExplorer';
+import regexPageExplorer from './RegexPageExplorer';
 import SocketBookCreator from './SocketBookCreator';
 import SocketBookIndexer from './SocketBookIndexer';
 import SocketBookLoader from './SocketBookLoader';
@@ -48,6 +43,10 @@ import SocketPageCreator from './SocketPageCreator';
 import SocketPageExplorer from './SocketPageExplorer';
 import SocketPageProcessor from './SocketPageProcessor';
 import SocketTextConverter from './SocketTextConverter';
+import markdownTextConverter from './markdownTextConverter';
+import otamaDarkTheme from './otamaDarkTheme';
+import otamaDefaultTheme  from './otamaDefaultTheme';
+import otamaLightTheme  from './otamaLightTheme';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
@@ -69,31 +68,24 @@ const createWindow = async () => {
       path.join(getResourceDirectory(), 'assets/otamachan.png'),
     ),
   });
-  const otamashelf = new OtamashelfGui();
-  // otamashelf.executeCommand(
-  //   'otamashelf.booksController.register',
-  //   new OtmController(),
-  // );
-  otamashelf.themeRegistry.register(new OtamaDarkTheme());
-  otamashelf.layoutBuilderRegistry.register(new OtmLayoutBuilder());
-  otamashelf.themeRegistry.register(new OtamaDefaultTheme());
-  otamashelf.themeRegistry.register(new OtamaLightTheme());
-  otamashelf.themeRegistry.register(new OtamaDarkTheme());
-  otamashelf.bookCreatorsRegistry.register(new OtmCreator());
-  otamashelf.bookIndexersRegistry.register(new OtmIndexer());
-  otamashelf.bookLoadersRegistry.register(new OtmLoader());
-  otamashelf.bookSaversRegistry.register(new OtmSaver());
-  otamashelf.bookUpdatersRegistry.register(new OtmUpdater());
-  otamashelf.pageCreatorsRegistry.register(new OtmPageCreator());
-  otamashelf.pageExplorersRegistry.register(new StartsWithPageExplorer());
-  otamashelf.pageExplorersRegistry.register(new EndsWithPageExplorer());
-  otamashelf.pageExplorersRegistry.register(new IncludesPageExplorer());
-  otamashelf.pageUpdatersRegistry.register(new OtmPageUpdater());
-  otamashelf.textConvertersRegistry.register(new MarkdownTextConverter());
-  otamashelf.executeCommand(
-    'otamashelf.pageExploeresRegistry.register',
-    new RegexPageExplorer(),
-  );
+  const otamashelf = new Otamashelf();
+  otamashelf.registerExtension(endsWithPageExplorer);
+  otamashelf.registerExtension(includesPageExplorer);
+  otamashelf.registerExtension(markdownTextConverter)
+  otamashelf.registerExtension(otamaDarkTheme);
+  otamashelf.registerExtension(otamaDefaultTheme);
+  otamashelf.registerExtension(otamaLightTheme);
+  otamashelf.registerExtension(otmAddContentPageModifier);
+  otamashelf.registerExtension(otmCreator);
+  otamashelf.registerExtension(otmIndexGenerator);
+  otamashelf.registerExtension(otmLayoutBuilder);
+  otamashelf.registerExtension(otmLoader);
+  otamashelf.registerExtension(otmPageCreator);
+  otamashelf.registerExtension(otmRemoveContentPageModifier);
+  otamashelf.registerExtension(otmRenumberModifier);
+  otamashelf.registerExtension(otmSaver);
+  otamashelf.registerExtension(regexPageExplorer);
+  otamashelf.registerExtension(startsWithPageExplorer);
   otamashelf.on('log.error', (...message) => {
     log.error(...message);
     mainWindow.webContents.send('log:error', message.toString());
@@ -186,100 +178,25 @@ const createWindow = async () => {
             )
             // eslint-disable-next-line no-template-curly-in-string
             .replace('${portNumber}', portNumber.toString());
-          net
-            .createServer(socket => {
-              socket.once(
-                'data',
-                async (buffer: { toString: () => string }) => {
-                  const { action, data } = JSON.parse(buffer.toString());
-                  log.info(buffer.toString());
-                  if (action === 'properties') {
-                    const properties = data as ExtensionProperties;
-                    switch (properties.type) {
-                      case 'book-creator':
-                        if (!otamashelf.bookCreatorsRegistry.has(properties.id))
-                          otamashelf.bookCreatorsRegistry.register(
-                            new SocketBookCreator(properties, socket),
-                          );
-                        break;
-                      case 'book-indexer':
-                        if (!otamashelf.bookIndexersRegistry.has(properties.id))
-                          otamashelf.bookIndexersRegistry.register(
-                            new SocketBookIndexer(properties, socket),
-                          );
-                        break;
-                      case 'book-loader':
-                        if (!otamashelf.bookLoadersRegistry.has(properties.id))
-                          otamashelf.bookLoadersRegistry.register(
-                            new SocketBookLoader(properties, socket),
-                          );
-                        break;
-                      case 'book-saver':
-                        if (!otamashelf.bookSaversRegistry.has(properties.id))
-                          otamashelf.bookSaversRegistry.register(
-                            new SocketBookSaver(properties, socket),
-                          );
-                        break;
-                      case 'book-updater':
-                        if (!otamashelf.bookUpdatersRegistry.has(properties.id))
-                          otamashelf.bookUpdatersRegistry.register(
-                            new SocketBookUpdater(properties, socket),
-                          );
-                        break;
-                      case 'layout-builder':
-                        if (
-                          !otamashelf.layoutBuilderRegistry.has(properties.id)
-                        )
-                          otamashelf.layoutBuilderRegistry.register(
-                            new SocketLayoutBuilder(properties, socket),
-                          );
-                        break;
-                      case 'page-creator':
-                        if (!otamashelf.pageCreatorsRegistry.has(properties.id))
-                          otamashelf.pageCreatorsRegistry.register(
-                            new SocketPageCreator(properties, socket),
-                          );
-                        break;
-                      case 'page-explorer':
-                        if (
-                          !otamashelf.pageExplorersRegistry.has(properties.id)
-                        )
-                          otamashelf.pageExplorersRegistry.register(
-                            new SocketPageExplorer(properties, socket),
-                          );
-                        break;
-                      case 'page-processor':
-                        if (
-                          !otamashelf.pageProcessorsRegistry.has(properties.id)
-                        )
-                          otamashelf.pageProcessorsRegistry.register(
-                            new SocketPageProcessor(properties, socket),
-                          );
-                        break;
-                      case 'text-converter':
-                        if (
-                          !otamashelf.textConvertersRegistry.has(properties.id)
-                        )
-                          otamashelf.textConvertersRegistry.register(
-                            new SocketTextConverter(properties, socket),
-                          );
-                        break;
-                      default:
-                        break;
-                    }
-                    mainWindow.webContents.send(
-                      'extensions:send',
-                      otamashelf.extensionProperties(),
-                    );
-                    log.info(
-                      `Extension loaded successfully. Extension id: ${properties.id}`,
-                    );
-                  }
-                },
+          const server = new OtamashelfServer({ port: portNumber });
+          server.on('error', error => otamashelf.emit('log.error', error));
+          server.on('connection', (ws) => {
+            otamashelf.emit('log.verbose', 'Extension client connected.');
+              ws.on('message', message =>
+                otamashelf.emit('log.verbose', message.toString()),
               );
-              socket.write(JSON.stringify({ action: 'properties' }));
-            })
-            .listen(portNumber);
+              ws.onRegisteringExtension(
+                extension => {
+                  otamashelf.emit('log.verbose', 'extension →', extension);
+                  otamashelf.emit(
+                    'log.verbose',
+                    'extension.configuration() →',
+                    extension.configuration(),
+                  );
+                },
+                message => otamashelf.emit('log.verbose', message.toString()),
+              );
+          });
           exec(command);
           log.info({ activateFile, command, portNumber });
         }
