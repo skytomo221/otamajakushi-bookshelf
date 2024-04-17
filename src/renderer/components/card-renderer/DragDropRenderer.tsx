@@ -1,22 +1,23 @@
 import flatten, { unflatten } from 'flat';
-import { PageCard, LayoutCard } from 'otamashelf';
+import { Layout } from 'otamashelf/LayoutCard';
+import { Page } from 'otamashelf/Page';
+import { PageProperties } from 'otamashelf/PageProperties';
 import React, { ReactNode } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
 
 import { Mediator } from '../../Mediator';
-import { SummaryWord } from '../../SummaryWord';
 import { usePagesDispatch } from '../../contexts/pagesContext';
 
 const { api } = window;
 
 type Props = {
-  summary: SummaryWord;
-  word: PageCard;
-  layout: LayoutCard;
+  pageProperties: PageProperties;
+  word: Page;
+  layout: Layout;
   children: ReactNode;
 };
 export default function DragDropRenderer({
-  summary,
+  pageProperties,
   word,
   layout,
   children,
@@ -24,8 +25,8 @@ export default function DragDropRenderer({
   const dispatch = usePagesDispatch();
   function onSelectedWordPush(mediator: Mediator) {
     api
-      .updatePage(mediator.summary, mediator.word)
-      .then(m => dispatch({ type: 'UPDATE_PAGE', payload: m }));
+      .updatePage(mediator.pageProperties.path, mediator.word)
+      .then(() => dispatch({ type: 'UPDATE_PAGE', payload: mediator }));
   }
   const flat = flatten(word) as { [name: string]: unknown };
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -111,7 +112,7 @@ export default function DragDropRenderer({
           }
         });
         onSelectedWordPush({
-          summary,
+          pageProperties,
           layout,
           word: unflatten(newFlat),
         });

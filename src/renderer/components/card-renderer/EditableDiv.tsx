@@ -1,12 +1,12 @@
 import {
-  PageCard,
-  LayoutCard,
-  LayoutComponent,
   FormDivComponent,
-} from 'otamashelf';
+  Layout,
+  LayoutComponent,
+} from 'otamashelf/LayoutCard';
+import { Page } from 'otamashelf/Page';
+import { PageProperties } from 'otamashelf/PageProperties';
 import React, { useState } from 'react';
 
-import { SummaryWord } from '../../SummaryWord';
 import { useThemeStore } from '../../contexts/themeContext';
 
 import FormDiv from './FormDiv';
@@ -20,9 +20,9 @@ interface Props {
   inputs: FormDivComponent[];
   outputs: LayoutComponent[];
   editable: boolean;
-  summary: SummaryWord;
-  layout: LayoutCard;
-  word: PageCard;
+  pageProperties: PageProperties;
+  layout: Layout;
+  word: Page;
 }
 
 export default function EditableDiv({
@@ -31,7 +31,7 @@ export default function EditableDiv({
   inputs,
   outputs,
   editable,
-  summary,
+  pageProperties,
   layout,
   word,
 }: Props): JSX.Element {
@@ -43,7 +43,7 @@ export default function EditableDiv({
       inputs={inputs}
       submit={() => setEdit(false)}
       reset={() => setEdit(false)}
-      summary={summary}
+      pageProperties={pageProperties}
       layout={layout}
       word={word}
     />
@@ -54,7 +54,7 @@ export default function EditableDiv({
         contents={outputs}
         edit={() => setEdit(true)}
         editable={editable}
-        summary={summary}
+        pageProperties={pageProperties}
         layout={layout}
         word={word}
       />

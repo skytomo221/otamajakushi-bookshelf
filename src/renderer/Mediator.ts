@@ -1,11 +1,10 @@
 
-import { PageCard, LayoutCard } from 'otamashelf';
-
-import { SummaryWord } from './SummaryWord';
-
+import { Layout } from 'otamashelf/LayoutCard';
+import { NormalPage } from 'otamashelf/Page';
+import { PageProperties } from 'otamashelf/PageProperties';
 
 export interface Mediator {
-  summary: SummaryWord;
-  layout: LayoutCard;
-  word: PageCard;
+  pageProperties: PageProperties;
+  layout: Layout;
+  word: NormalPage;
 }

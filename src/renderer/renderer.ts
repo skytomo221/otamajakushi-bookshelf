@@ -1,15 +1,16 @@
-import { IpcRendererEvent } from 'electron';
-
 import log from 'electron-log';
-import { ExtensionProperties, PageCard } from 'otamashelf';
-import TemplateProperties from 'otamashelf/TemplateProperties';
+import { ExtensionBaseProperties } from 'otamashelf/ExtensionProperties';
+import { Json } from 'otamashelf/Json';
+import { LayoutComponent } from 'otamashelf/LayoutCard';
+import { TemplatePage, Page, ConfigurationPage } from 'otamashelf/Page';
+import { SearchResult } from 'otamashelf/PageExplorer';
+import { PageProperties } from 'otamashelf/PageProperties';
+import { SearchCard } from 'otamashelf/SearchCard';
 import { ConvertProps, ConvertReturns } from 'otamashelf/TextConverter';
 
-import SearchProperties from '../common/SearchProperties';
 import StyleThemeParameters from '../common/StyleThemeParameters';
 
 import { Mediator } from './Mediator';
-import { SummaryWord } from './SummaryWord';
 
 declare global {
   interface Window {
@@ -24,33 +25,71 @@ export type Api = {
   windowMinimize: () => void;
   windowMaximize: () => void;
   windowClose: () => void;
-  createPage: (bookPath: string, templateId: string) => Promise<Mediator>;
-  deletePage: (word: SummaryWord) => Promise<boolean>;
-  selectPage: (
+  requestBook: (bookCreatorId: string) => Promise<TemplatePage>;
+  createBook: (
+    bookCreatorId: string,
+    book: TemplatePage,
+  ) => Promise<TemplatePage>;
+  openBook: (type: 'directory' | 'file') => Promise<string[]>;
+  saveBook: (bookPath: string) => Promise<boolean>;
+  requestPage: (bookPath: string) => Promise<TemplatePage>;
+  createPage: (bookPath: string, template: TemplatePage) => Promise<Page>;
+  readPage: (index: PageProperties) => Promise<Mediator>;
+  readConfiguration: (
     bookPath: string,
+  ) => Promise<{ page: ConfigurationPage; layout: LayoutComponent }>;
+  readDescription: (bookPath: string) => Promise<string>;
+  updatePage: (bookPath: string, page: Page) => Promise<number>;
+  updateDescription: (bookPath: string, description: string) => Promise<number>;
+  updateExtensionConfiguration: (
+    extensionId: string,
+    configuration: ConfigurationPage,
+  ) => Promise<number>;
+  modifyPage: (
+    bookPath: string,
+    pageId: string,
+    script: Json,
+  ) => Promise<Mediator>;
+  mofidyDescription: (
+    bookPath: string,
+    description: string,
+    script: Json,
+  ) => Promise<string>;
+  generateIndex: (
+    bookPath: string,
+    pageFormat: string,
+  ) => Promise<PageProperties[]>;
+  generateSearchIndex: (
+    bookPath: string,
+    pageFormat: string,
+    searchIndexGeneratorId: string,
+  ) => Promise<SearchCard[]>;
+  readSearchCriteria: () => Promise<{ id: string; name: string }[]>;
+  readSearchScopes: (
+    pageFormat: string,
+  ) => Promise<{ id: string; name: string }[]>;
+  searchPage: (
+    bookPath: string,
+    pageFormat: string,
+    searchIndexGeneratorId: string,
     pageExplorerId: string,
-    searchModeId: string,
     searchWord: string,
-  ) => Promise<Mediator[]>;
-  readPage: (word: SummaryWord) => Promise<Mediator>;
-  readPageExplorer: () => Promise<SearchProperties[]>;
-  readSearchMode: (bookPath: string) => Promise<string[]>;
-  readTemplates: (path: string) => Promise<TemplateProperties[]>;
-  updatePage: (summary: SummaryWord, word: PageCard) => Promise<Mediator>;
-  onClick: (summary: SummaryWord, onClick: {
-    type: string;
-    id: string;
-    script: string;
-  }) => Promise<Mediator>;
+  ) => Promise<SearchResult[]>;
+  deletePage: (bookPath: string, index: PageProperties) => Promise<boolean>;
+  readAllPageFormats: (bookPath: string) => Promise<string[]>;
+  readAllStyleThemes: () => Promise<
+    (ExtensionBaseProperties & { type: 'style-theme' })[]
+  >;
   applyStyleTheme: (id: string) => Promise<StyleThemeParameters>;
-  convertHtml: (id: string, props: ConvertProps) => Promise<ConvertReturns>;
-  onExtensions: (
-    channel: 'extensions:send',
-    callback: (
-      event: Electron.IpcRendererEvent,
-      extensions: ExtensionProperties[],
-    ) => void,
-  ) => Electron.IpcRenderer;
+  convertTextConverter: (
+    id: string,
+    props: ConvertProps,
+  ) => Promise<ConvertReturns>;
+  readAllBookCreators: () => Promise<
+    (ExtensionBaseProperties & { bookFormatPattern: string } & {
+      type: 'book-creator';
+    })[]
+  >;
   onDefaultLog: (
     channel: 'log:default',
     callback: (event: Electron.IpcRendererEvent, log: string) => void,
@@ -78,7 +117,7 @@ export type Api = {
     channel: string,
     callback: (event: Electron.IpcRendererEvent, ...argv: unknown[]) => void,
   ) => Electron.IpcRenderer;
-}
+};
 
 export type FileOpenReturn =
   | { status: 'cancel' }

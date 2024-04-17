@@ -1,22 +1,10 @@
 import { useSnackbar } from 'notistack';
-import { ExtensionProperties } from 'otamashelf';
 import React from 'react';
-
-import { useExtensionsDispatch } from '../contexts/extensionsContext';
 
 const { api } = window;
 
 export default function On(): JSX.Element {
   const { enqueueSnackbar } = useSnackbar();
-  const dispatch = useExtensionsDispatch();
-  function onExtensionsUpdate(exts: ExtensionProperties[]) {
-    dispatch({ type: 'UPDATE_EXTENSIONS', payload: exts });
-  }
-
-  api.onExtensions('extensions:send', (_, exts) => {
-    api.log.info('extensions:send', exts);
-    onExtensionsUpdate(exts);
-  });
 
   api.onDefaultLog('log:default', (_, log) => {
     api.log.error('[main]', log);

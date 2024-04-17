@@ -7,27 +7,25 @@ import DragDropRenderer from './DragDropRenderer';
 import Recursion from './Recursion';
 
 export default function CardRenderer({
-  summary,
+  pageProperties,
   word,
   layout,
 }: Mediator): JSX.Element {
   const state = useWorkbenchStore();
   const editable =
-    state?.find(workbench => workbench.book.path === summary.bookPath)?.book
-      .editable ?? false;
+    state?.find(workbench => workbench.path === pageProperties.path)
+      ?.editable ?? false;
   return (
-    <DragDropRenderer summary={summary} word={word} layout={layout}>
+    <DragDropRenderer
+      pageProperties={pageProperties}
+      word={word}
+      layout={layout}>
       <Recursion
         baseReference=""
         layout={layout}
-        summary={summary}
+        pageProperties={pageProperties}
         word={word}
-        contents={
-          typeof layout.layout !== 'string' &&
-          layout.layout.component === 'recursion'
-            ? layout.layout.contents
-            : [layout.layout]
-        }
+        contents={[layout]}
         edit={() => {
           // do nothing.
         }}

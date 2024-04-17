@@ -1,6 +1,6 @@
+import { PageProperties } from 'otamashelf/PageProperties';
 import React from 'react';
 
-import { SummaryWord } from '../../SummaryWord';
 import { useThemeStore } from '../../contexts/themeContext';
 
 import styleJoin from './styleJoin';
@@ -10,7 +10,7 @@ interface Props {
   inputId: string;
   value: string;
   submit: () => void;
-  summary: SummaryWord;
+  pageProperties: PageProperties;
 }
 
 export default function InputSubmit({
@@ -18,14 +18,14 @@ export default function InputSubmit({
   inputId,
   value,
   submit,
-  summary,
+  pageProperties,
 }: Props): JSX.Element {
   const theme = useThemeStore();
   return (
     <input
       type="button"
       className={styleJoin(theme.InputSubmit, className)}
-      id={`${summary.bookPath} ${summary.id} ${inputId}`}
+      id={`${pageProperties.path} ${pageProperties.id} ${inputId}`}
       value={value}
       onClick={submit}
     />

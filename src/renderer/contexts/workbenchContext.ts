@@ -1,20 +1,20 @@
-import SearchProperties from 'otamashelf/SearchProperties';
-import TemplateProperties from 'otamashelf/TemplateProperties';
-
-import { Mediator } from '../Mediator';
-import Book from '../states/Book';
+import { SearchResult } from 'otamashelf/PageExplorer';
+import { PageProperties } from 'otamashelf/PageProperties';
 
 import makeStore from './makeStore';
 
 type Workbench = {
-  book: Book;
-  pageExplorer: SearchProperties;
-  pageExplorers: SearchProperties[];
-  searchMode: string;
-  searchModes: string[];
+  path: string;
+  editable: boolean;
+  indexes: PageProperties[];
+  searchResults: SearchResult[];
+  pageFormats: string[];
+  selectedPageFormatIndex: number;
+  searchCriteria: { id: string; name: string }[];
+  selectedSearchCriterionIndex: number;
+  searchScopes: { id: string; name: string }[];
+  selectedSearchScopeIndex: number;
   searchWord: string;
-  templates: TemplateProperties[];
-  mediators: Mediator[];
 };
 
 type State = Workbench[];
@@ -36,10 +36,73 @@ type Action =
       payload: string;
     }
   | {
-      type: 'UPDATE_WORKBENCH';
+      type: 'REMOVE_INDEX';
       payload: {
         path: string;
-        partial: Partial<Workbench>;
+        pageProperties: PageProperties;
+      };
+    }
+  | {
+      type: 'UPDATE_INDEXES';
+      payload: {
+        path: string;
+        indexes: PageProperties[];
+      };
+    }
+  | {
+      type: 'UPDATE_SEARCH_RESULTS';
+      payload: {
+        path: string;
+        searchResults: SearchResult[];
+      };
+    }
+  | {
+      type: 'UPDATE_PAGE_FORMATS';
+      payload: {
+        path: string;
+        pageFormats: string[];
+      };
+    }
+  | {
+      type: 'UPDATE_SELECTED_PAGE_FORMAT_INDEX';
+      payload: {
+        path: string;
+        selectedPageFormatIndex: number;
+      };
+    }
+  | {
+      type: 'UPDATE_SEARCH_CRITERIA';
+      payload: {
+        path: string;
+        searchCriteria: { id: string; name: string }[];
+      };
+    }
+  | {
+      type: 'UPDATE_SELECTED_SEARCH_CRITERION_INDEX';
+      payload: {
+        path: string;
+        selectedSearchCriterionIndex: number;
+      };
+    }
+  | {
+      type: 'UPDATE_SEARCH_SCOPES';
+      payload: {
+        path: string;
+        searchScopes: { id: string; name: string }[];
+      };
+    }
+  | {
+      type: 'UPDATE_SELECTED_SEARCH_SCOPE_INDEX';
+      payload: {
+        path: string;
+        selectedSearchScopeIndex: number;
+      };
+    }
+  | {
+      type: 'UPDATE_SEARCH_WORD';
+      payload: {
+        path: string;
+        searchWord: string;
       };
     };
 
@@ -52,19 +115,88 @@ const reducer = (state: State, action: Action) => {
       return [...state, payload];
     case 'EDIT_BOOK':
       return state.map(workbench =>
-        workbench.book.path === payload.path
+        workbench.path === payload.path
           ? {
               ...workbench,
-              book: { ...workbench.book, editable: payload.editable },
+              book: { ...workbench, editable: payload.editable },
             }
           : workbench,
       );
     case 'REMOVE_WORKBENCH':
-      return state.filter(workbench => workbench.book.path !== payload);
-    case 'UPDATE_WORKBENCH':
+      return state.filter(workbench => workbench.path !== payload);
+    case 'REMOVE_INDEX':
       return state.map(workbench =>
-        workbench.book.path === payload.path
-          ? { ...workbench, ...payload.partial }
+        workbench.path === payload.path
+          ? {
+              ...workbench,
+              indexes: workbench.indexes.filter(
+                index => index !== payload.pageProperties,
+              ),
+            }
+          : workbench,
+      );
+    case 'UPDATE_INDEXES':
+      return state.map(workbench =>
+        workbench.path === payload.path
+          ? { ...workbench, indexes: payload.indexes }
+          : workbench,
+      );
+    case 'UPDATE_SEARCH_RESULTS':
+      return state.map(workbench =>
+        workbench.path === payload.path
+          ? { ...workbench, searchResults: payload.searchResults }
+          : workbench,
+      );
+    case 'UPDATE_PAGE_FORMATS':
+      return state.map(workbench =>
+        workbench.path === payload.path
+          ? { ...workbench, pageFormats: payload.pageFormats }
+          : workbench,
+      );
+    case 'UPDATE_SELECTED_PAGE_FORMAT_INDEX':
+      return state.map(workbench =>
+        workbench.path === payload.path
+          ? {
+              ...workbench,
+              selectedPageFormatIndex: payload.selectedPageFormatIndex,
+            }
+          : workbench,
+      );
+    case 'UPDATE_SEARCH_CRITERIA':
+      return state.map(workbench =>
+        workbench.path === payload.path
+          ? { ...workbench, searchCriteria: payload.searchCriteria }
+          : workbench,
+      );
+    case 'UPDATE_SELECTED_SEARCH_CRITERION_INDEX':
+      return state.map(workbench =>
+        workbench.path === payload.path
+          ? {
+              ...workbench,
+              selectedSearchCriterionIndex:
+                payload.selectedSearchCriterionIndex,
+            }
+          : workbench,
+      );
+    case 'UPDATE_SEARCH_SCOPES':
+      return state.map(workbench =>
+        workbench.path === payload.path
+          ? { ...workbench, searchScopes: payload.searchScopes }
+          : workbench,
+      );
+    case 'UPDATE_SELECTED_SEARCH_SCOPE_INDEX':
+      return state.map(workbench =>
+        workbench.path === payload.path
+          ? {
+              ...workbench,
+              selectedSearchScopeIndex: payload.selectedSearchScopeIndex,
+            }
+          : workbench,
+      );
+    case 'UPDATE_SEARCH_WORD':
+      return state.map(workbench =>
+        workbench.path === payload.path
+          ? { ...workbench, searchWord: payload.searchWord }
           : workbench,
       );
     default:

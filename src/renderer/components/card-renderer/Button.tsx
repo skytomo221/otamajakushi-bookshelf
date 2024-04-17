@@ -1,14 +1,18 @@
-import { PageCard, LayoutCard, LayoutComponent } from 'otamashelf';
+import { Layout, LayoutComponent } from 'otamashelf/LayoutCard';
+import { Page } from 'otamashelf/Page';
+import { PageProperties } from 'otamashelf/PageProperties';
 import React from 'react';
 
-import { SummaryWord } from '../../SummaryWord';
 import { usePagesDispatch } from '../../contexts/pagesContext';
 import { useThemeStore } from '../../contexts/themeContext';
 import '../../renderer';
+// eslint-disable-next-line import/no-cycle
+import { useWorkbenchStore } from '../../contexts/workbenchContext';
 
 // eslint-disable-next-line import/no-cycle
 import Recursion from './Recursion';
 import styleJoin from './styleJoin';
+
 
 const { api } = window;
 
@@ -23,9 +27,9 @@ interface Props {
   };
   edit: () => void;
   editable: boolean;
-  summary: SummaryWord;
-  layout: LayoutCard;
-  word: PageCard;
+  pageProperties: PageProperties;
+  layout: Layout;
+  word: Page;
 }
 
 export default function Button({
@@ -35,15 +39,19 @@ export default function Button({
   onClick: onClickButton,
   edit,
   editable,
-  summary,
+  pageProperties,
   layout,
   word,
 }: Props): JSX.Element {
   const theme = useThemeStore();
   const dispatch = usePagesDispatch();
+  const workbenches = useWorkbenchStore();
+  const index = workbenches.findIndex(
+    workbench => workbench.path === pageProperties.path,
+  );
   const onClick = React.useCallback(
     (
-      s: SummaryWord,
+      s: PageProperties,
       c: {
         type: string;
         id: string;
@@ -51,7 +59,7 @@ export default function Button({
       },
     ) => {
       api
-        .onClick(s, c)
+        .modifyPage(s.path, s.id, c)
         .then(mediator => dispatch({ type: 'UPDATE_PAGE', payload: mediator }));
     },
     [],
@@ -61,7 +69,7 @@ export default function Button({
       aria-label="Save"
       className={styleJoin(theme.button, className)}
       onClick={() => {
-        onClick(summary, onClickButton);
+        onClick(pageProperties, onClickButton);
       }}
       type="submit">
       <Recursion
@@ -69,7 +77,7 @@ export default function Button({
         contents={contents}
         edit={edit}
         editable={editable}
-        summary={summary}
+        pageProperties={pageProperties}
         layout={layout}
         word={word}
       />

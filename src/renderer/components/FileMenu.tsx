@@ -2,15 +2,11 @@ import { MenuUnstyledActions } from '@mui/base/MenuUnstyled';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { MenuItem, Typography, useTheme, Divider } from '@mui/material';
 import { useSnackbar } from 'notistack';
-import {
-  BookCreatorProperties,
-  BookLoaderProperties,
-  ExtensionProperties,
-} from 'otamashelf';
-import React from 'react';
+import { ExtensionBaseProperties } from 'otamashelf/ExtensionProperties';
+import { SearchResult } from 'otamashelf/PageExplorer';
+import React, { useEffect } from 'react';
 
 import '../renderer';
-import { StyleThemeProperties } from '../../common/O20fExtensionProperties';
 import StyleThemeParameters from '../../common/StyleThemeParameters';
 import { useExtensionsStore } from '../contexts/extensionsContext';
 import { useThemeDispatch, useThemeStore } from '../contexts/themeContext';
@@ -28,6 +24,14 @@ const { api } = window;
 
 export default function FileMenu(): JSX.Element {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [bookCreators, setBookCreators] = React.useState<
+    (ExtensionBaseProperties & { bookFormatPattern: string } & {
+      type: 'book-creator';
+    })[]
+  >([]);
+  const [styleThemes, setStyleThemes] = React.useState<
+    (ExtensionBaseProperties & { type: 'style-theme' })[]
+  >([]);
   const open = Boolean(anchorEl);
   const buttonRef = React.useRef<HTMLButtonElement>(null);
   const menuActions = React.useRef<MenuUnstyledActions>(null);
@@ -71,35 +75,40 @@ export default function FileMenu(): JSX.Element {
   const dispatch = useThemeDispatch();
   const workbenchDispatch = useWorkbenchDispatch();
   const { enqueueSnackbar } = useSnackbar();
-  const books = useWorkbenchStore().map(w => w.book);
   const extensions = useExtensionsStore();
-  async function onWorkbenchInitialize(book: Book) {
-    const pageExplorers = await api.readPageExplorer();
-    const pageExplorer = pageExplorers[0];
-    const searchModes = await api.readSearchMode(book.path);
-    const searchMode = searchModes[0];
-    const templates = await api.readTemplates(book.path);
+  async function onWorkbenchInitialize(path: string, editable: boolean) {
+    const pageFormats = await api.readAllPageFormats(path);
+    const selectedPageFormatIndex = 0;
+    const selectedPageFormat = pageFormats[selectedPageFormatIndex];
+    const indexes = await api.generateIndex(path, selectedPageFormat);
+    const searchResults = [] as SearchResult[];
+    const searchCriteria = await api.readSearchCriteria();
+    const selectedSearchCriterionIndex = 0;
+    const searchScopes = await api.readSearchScopes(selectedPageFormat);
+    const selectedSearchScopeIndex = 0;
     const searchWord = '';
-    const mediators = await api.selectPage(
-      book.path,
-      pageExplorer.id,
-      searchMode,
-      searchWord,
-    );
     workbenchDispatch({
       type: 'ADD_WORKBENCH',
       payload: {
-        book,
-        pageExplorer,
-        pageExplorers,
-        searchMode,
-        searchModes,
+        path,
+        editable,
+        indexes,
+        searchResults,
+        pageFormats,
+        selectedPageFormatIndex,
+        searchCriteria,
+        selectedSearchCriterionIndex,
+        searchScopes,
+        selectedSearchScopeIndex,
         searchWord,
-        templates,
-        mediators,
       },
     });
   }
+
+  useEffect(() => {
+    api.readAllStyleThemes().then(setStyleThemes);
+    api.readAllBookCreators().then(setBookCreators);
+  }, []);
 
   function onStyleThemeApply(styleTheme: StyleThemeParameters) {
     dispatch({
@@ -108,39 +117,11 @@ export default function FileMenu(): JSX.Element {
     });
   }
 
-  const openBook =
-    (extension: ExtensionProperties, editable: boolean) => () => {
-      api
-        .open(extension.id)
-        .then(paths => {
-          paths.forEach(path =>
-            onWorkbenchInitialize({
-              path,
-              editable,
-            }),
-          );
-        })
-        .catch(err => {
-          if (err instanceof Error) {
-            enqueueSnackbar(err.message);
-            api.log.error(err.message);
-          } else {
-            enqueueSnackbar('原因不明のエラー');
-            api.log.error('原因不明のエラー');
-          }
-        });
-    };
-
-  const newBook = (extension: ExtensionProperties) => () => {
+  const openBook = (type: 'directory' | 'file', editable: boolean) => () => {
     api
-      .newBook(extension.id)
+      .openBook(type)
       .then(paths => {
-        paths.forEach(path =>
-          onWorkbenchInitialize({
-            path,
-            editable: true,
-          }),
-        );
+        paths.forEach(path => onWorkbenchInitialize(path, editable));
       })
       .catch(err => {
         if (err instanceof Error) {
@@ -153,10 +134,8 @@ export default function FileMenu(): JSX.Element {
       });
   };
 
-  const applyStyleTheme = (extension: StyleThemeProperties) => () => {
-    api
-      .applyStyleTheme(extension.id)
-      .then(styleTheme => onStyleThemeApply(styleTheme));
+  const applyStyleTheme = (id: string) => () => {
+    api.applyStyleTheme(id).then(styleTheme => onStyleThemeApply(styleTheme));
   };
 
   return (
@@ -167,7 +146,7 @@ export default function FileMenu(): JSX.Element {
         </Typography>
       </MenuButton>
       <Menu id="file-menu" anchorEl={anchorEl} open={open}>
-        <NestedMenuItem
+        {/* <NestedMenuItem
           rightIcon={<ChevronRightIcon />}
           label="辞書の新規作成"
           parentMenuOpen={open}>
@@ -185,51 +164,25 @@ export default function FileMenu(): JSX.Element {
                 形式で開く
               </MenuItem>
             ))}
-        </NestedMenuItem>
-        <NestedMenuItem
-          rightIcon={<ChevronRightIcon />}
-          label="開く"
-          parentMenuOpen={open}>
-          {extensions
-            .filter(
-              (ext): ext is BookLoaderProperties => ext.type === 'book-loader',
-            )
-            .map(ext => (
-              <MenuItem key={ext.id} onClick={openBook(ext, false)}>
-                {ext.filters.map(
-                  f =>
-                    `${f.name} (${f.extensions.map(e => `*.${e}`).join(', ')})`,
-                )}
-                形式で開く
-              </MenuItem>
-            ))}
-        </NestedMenuItem>
-        <NestedMenuItem
-          rightIcon={<ChevronRightIcon />}
-          label="編集モードで開く"
-          parentMenuOpen={open}>
-          {extensions
-            .filter(
-              (ext): ext is BookLoaderProperties => ext.type === 'book-loader',
-            )
-            .map(ext => (
-              <MenuItem key={ext.id} onClick={openBook(ext, true)}>
-                {ext.filters.map(
-                  f =>
-                    `${f.name} (${f.extensions.map(e => `*.${e}`).join(', ')})`,
-                )}
-                形式を編集モードで開く
-              </MenuItem>
-            ))}
-        </NestedMenuItem>
-        <MenuItem
+        </NestedMenuItem> */}
+        <MenuItem onClick={openBook('file', false)}>ファイルで開く</MenuItem>
+        <MenuItem onClick={openBook('directory', false)}>
+          フォルダで開く
+        </MenuItem>
+        <MenuItem onClick={openBook('file', false)}>
+          編集モードでファイルで開く
+        </MenuItem>
+        <MenuItem onClick={openBook('directory', false)}>
+          編集モードでフォルダで開く
+        </MenuItem>
+        {/* <MenuItem
           onClick={() => {
             books
               .filter(book => book.editable)
               .map(book => api.save(book.path));
           }}>
           保存
-        </MenuItem>
+        </MenuItem> */}
         <Divider />
         <NestedMenuItem
           rightIcon={<ChevronRightIcon />}
@@ -239,16 +192,13 @@ export default function FileMenu(): JSX.Element {
             rightIcon={<ChevronRightIcon />}
             label="スタイルテーマ"
             parentMenuOpen={open}>
-            {extensions
-              .filter(
-                (ext): ext is StyleThemeProperties =>
-                  ext.type === 'style-theme',
-              )
-              .map(ext => (
-                <MenuItem key={ext.id} onClick={applyStyleTheme(ext)}>
-                  {ext.name}
-                </MenuItem>
-              ))}
+            {styleThemes.map(styleTheme => (
+              <MenuItem
+                key={styleTheme.id}
+                onClick={applyStyleTheme(styleTheme.id)}>
+                {styleTheme.name}
+              </MenuItem>
+            ))}
           </NestedMenuItem>
         </NestedMenuItem>
         <Divider />

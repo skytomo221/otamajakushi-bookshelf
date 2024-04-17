@@ -1,13 +1,10 @@
 import flatten, { unflatten } from 'flat';
-import {
-  PageCard,
-  LayoutCard,
-  FormDivComponent,
-} from 'otamashelf';
+import { Layout, FormDivComponent } from 'otamashelf/LayoutCard';
+import { Page } from 'otamashelf/Page';
+import { PageProperties } from 'otamashelf/PageProperties';
 import React, { useState } from 'react';
 
 import { Mediator } from '../../Mediator';
-import { SummaryWord } from '../../SummaryWord';
 import { usePagesDispatch } from '../../contexts/pagesContext';
 import { useThemeStore } from '../../contexts/themeContext';
 
@@ -24,9 +21,9 @@ interface Props {
   inputs: FormDivComponent[];
   submit: () => void;
   reset: () => void;
-  summary: SummaryWord;
-  layout: LayoutCard;
-  word: PageCard;
+  pageProperties: PageProperties;
+  layout: Layout;
+  word: Page;
 }
 
 export default function FormDiv({
@@ -35,7 +32,7 @@ export default function FormDiv({
   inputs,
   submit,
   reset,
-  summary,
+  pageProperties,
   layout,
   word,
 }: Props): JSX.Element {
@@ -45,8 +42,8 @@ export default function FormDiv({
   const dispatch = usePagesDispatch();
   function onSelectedWordPush(mediator: Mediator) {
     api
-      .updatePage(mediator.summary, mediator.word)
-      .then(m => dispatch({ type: 'UPDATE_PAGE', payload: m }));
+      .updatePage(mediator.pageProperties.path, mediator.word)
+      .then(() => dispatch({ type: 'UPDATE_PAGE', payload: mediator }));
   }
   if (typeof flattenCard !== 'object') {
     api.log.error('Layout is invalid.', layout, flattenCard);
@@ -61,12 +58,12 @@ export default function FormDiv({
       <RecursionInForm
         baseReference={baseReference}
         contents={inputs}
-        summary={summary}
+        pageProperties={pageProperties}
         layout={layout}
         submit={() => {
           submit();
           onSelectedWordPush({
-            summary,
+            pageProperties,
             layout,
             word: unflatten(flattenCard),
           });

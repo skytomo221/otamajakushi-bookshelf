@@ -1,8 +1,7 @@
 /* eslint-disable import/no-cycle */
-import { LayoutCard, FormDivComponent } from 'otamashelf';
+import { Layout, FormDivComponent } from 'otamashelf/LayoutCard';
+import { PageProperties } from 'otamashelf/PageProperties';
 import React from 'react';
-
-import { SummaryWord } from '../../SummaryWord';
 
 import Chip from './Chip';
 import DivInForm from './DivInForm';
@@ -28,8 +27,8 @@ interface Props {
   contents: FormDivComponent[];
   submit: () => void;
   reset: () => void;
-  summary: SummaryWord;
-  layout: LayoutCard;
+  pageProperties: PageProperties;
+  layout: Layout;
   flattenCard: { [key: string]: string };
   setFlattenCard: (flattenCard: { [key: string]: string }) => void;
 }
@@ -37,7 +36,7 @@ interface Props {
 export default function RecursionInForm({
   baseReference,
   contents,
-  summary,
+  pageProperties,
   layout,
   submit,
   reset,
@@ -68,7 +67,7 @@ export default function RecursionInForm({
                 contents={child.contents}
                 submit={submit}
                 reset={reset}
-                summary={summary}
+                pageProperties={pageProperties}
                 layout={layout}
                 flattenCard={flattenCard}
                 setFlattenCard={setFlattenCard}
@@ -83,7 +82,7 @@ export default function RecursionInForm({
                 contents={child.contents}
                 submit={submit}
                 reset={reset}
-                summary={summary}
+                pageProperties={pageProperties}
                 layout={layout}
                 flattenCard={flattenCard}
                 setFlattenCard={setFlattenCard}
@@ -98,7 +97,7 @@ export default function RecursionInForm({
                 contents={child.contents}
                 submit={submit}
                 reset={reset}
-                summary={summary}
+                pageProperties={pageProperties}
                 layout={layout}
                 flattenCard={flattenCard}
                 setFlattenCard={setFlattenCard}
@@ -113,7 +112,7 @@ export default function RecursionInForm({
                 contents={child.contents}
                 submit={submit}
                 reset={reset}
-                summary={summary}
+                pageProperties={pageProperties}
                 layout={layout}
                 flattenCard={flattenCard}
                 setFlattenCard={setFlattenCard}
@@ -128,7 +127,7 @@ export default function RecursionInForm({
                 contents={child.contents}
                 submit={submit}
                 reset={reset}
-                summary={summary}
+                pageProperties={pageProperties}
                 layout={layout}
                 flattenCard={flattenCard}
                 setFlattenCard={setFlattenCard}
@@ -143,7 +142,7 @@ export default function RecursionInForm({
                 contents={child.contents}
                 submit={submit}
                 reset={reset}
-                summary={summary}
+                pageProperties={pageProperties}
                 layout={layout}
                 flattenCard={flattenCard}
                 setFlattenCard={setFlattenCard}
@@ -160,7 +159,7 @@ export default function RecursionInForm({
                 contents={child.contents}
                 submit={submit}
                 reset={reset}
-                summary={summary}
+                pageProperties={pageProperties}
                 layout={layout}
                 flattenCard={flattenCard}
                 setFlattenCard={setFlattenCard}
@@ -175,7 +174,7 @@ export default function RecursionInForm({
                 contents={child.contents}
                 submit={submit}
                 reset={reset}
-                summary={summary}
+                pageProperties={pageProperties}
                 layout={layout}
                 flattenCard={flattenCard}
                 setFlattenCard={setFlattenCard}
@@ -191,7 +190,7 @@ export default function RecursionInForm({
                     inputId={child.id}
                     value={child.value}
                     reset={reset}
-                    summary={summary}
+                    pageProperties={pageProperties}
                   />
                 );
               case 'submit':
@@ -202,7 +201,7 @@ export default function RecursionInForm({
                     inputId={child.id}
                     value={child.value}
                     submit={submit}
-                    summary={summary}
+                    pageProperties={pageProperties}
                   />
                 );
               case 'text':
@@ -214,7 +213,7 @@ export default function RecursionInForm({
                     name={child.name}
                     reference={child.reference}
                     pattern={child.pattern}
-                    summary={summary}
+                    pageProperties={pageProperties}
                     flattenCard={flattenCard}
                     setFlattenCard={setFlattenCard}
                   />
@@ -237,7 +236,7 @@ export default function RecursionInForm({
                 for={child.for}
                 submit={submit}
                 reset={reset}
-                summary={summary}
+                pageProperties={pageProperties}
                 layout={layout}
                 flattenCard={flattenCard}
                 setFlattenCard={setFlattenCard}
@@ -255,7 +254,7 @@ export default function RecursionInForm({
                 rows={child.rows}
                 cols={child.cols}
                 wrap={child.wrap}
-                summary={summary}
+                pageProperties={pageProperties}
                 flattenCard={flattenCard}
                 setFlattenCard={setFlattenCard}
               />

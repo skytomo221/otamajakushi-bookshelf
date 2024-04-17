@@ -1,7 +1,7 @@
-import { LayoutCard, FormDivComponent } from 'otamashelf';
+import { Layout, FormDivComponent } from 'otamashelf/LayoutCard';
+import { PageProperties } from 'otamashelf/PageProperties';
 import React from 'react';
 
-import { SummaryWord } from '../../SummaryWord';
 import { useThemeStore } from '../../contexts/themeContext';
 
 // eslint-disable-next-line import/no-cycle
@@ -15,8 +15,8 @@ interface Props {
   for: string;
   submit: () => void;
   reset: () => void;
-  summary: SummaryWord;
-  layout: LayoutCard;
+  pageProperties: PageProperties;
+  layout: Layout;
   flattenCard: { [key: string]: string };
   setFlattenCard: (flattenCard: { [key: string]: string }) => void;
 }
@@ -28,7 +28,7 @@ export default function H5InForm({
   contents,
   submit,
   reset,
-  summary,
+  pageProperties,
   layout,
   flattenCard,
   setFlattenCard,
@@ -37,14 +37,14 @@ export default function H5InForm({
   return (
     // eslint-disable-next-line jsx-a11y/label-has-associated-control
     <label
-      htmlFor={`${summary.bookPath} ${summary.id} ${htmlFor}`}
+      htmlFor={`${pageProperties.path} ${pageProperties.id} ${htmlFor}`}
       className={styleJoin(theme.label, className)}>
       <RecursionInForm
         baseReference={baseReference}
         contents={contents ?? []}
         submit={submit}
         reset={reset}
-        summary={summary}
+        pageProperties={pageProperties}
         layout={layout}
         flattenCard={flattenCard}
         setFlattenCard={setFlattenCard}

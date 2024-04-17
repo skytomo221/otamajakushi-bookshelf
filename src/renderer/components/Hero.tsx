@@ -4,11 +4,10 @@ import FileOpenIcon from '@mui/icons-material/FileOpen';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import { useSnackbar } from 'notistack';
-import {
-  BookCreatorProperties,
-  BookLoaderProperties,
-  ExtensionProperties,
-} from 'otamashelf';
+import { BookCreatorProperties } from 'otamashelf/BookCreator';
+import { BookLoaderProperties } from 'otamashelf/BookLoader';
+import { ExtensionProperties } from 'otamashelf/ExtensionProperties';
+import { SearchResult } from 'otamashelf/PageExplorer';
 import React, { useCallback } from 'react';
 
 import { useExtensionsStore } from '../contexts/extensionsContext';
@@ -23,67 +22,40 @@ export default function Hero(): JSX.Element {
   const { enqueueSnackbar } = useSnackbar();
   const extensions = useExtensionsStore();
   const workbenchDispatch = useWorkbenchDispatch();
-  async function onWorkbenchInitialize(book: Book) {
-    const pageExplorers = await api.readPageExplorer();
-    const pageExplorer = pageExplorers[0];
-    const searchModes = await api.readSearchMode(book.path);
-    const searchMode = searchModes[0];
-    const templates = await api.readTemplates(book.path);
+  async function onWorkbenchInitialize(path: string, editable: boolean) {
+    const pageFormats = await api.readAllPageFormats(path);
+    const selectedPageFormatIndex = 0;
+    const selectedPageFormat = pageFormats[selectedPageFormatIndex];
+    const indexes = await api.generateIndex(path, selectedPageFormat);
+    const searchResults = [] as SearchResult[];
+    const searchCriteria = await api.readSearchCriteria();
+    const selectedSearchCriterionIndex = 0;
+    const searchScopes = await api.readSearchScopes(selectedPageFormat);
+    const selectedSearchScopeIndex = 0;
     const searchWord = '';
-    const mediators = await api.selectPage(
-      book.path,
-      pageExplorer.id,
-      searchMode,
-      searchWord,
-    );
     workbenchDispatch({
       type: 'ADD_WORKBENCH',
       payload: {
-        book,
-        pageExplorer,
-        pageExplorers,
-        searchMode,
-        searchModes,
+        path,
+        editable,
+        indexes,
+        searchResults,
+        pageFormats,
+        selectedPageFormatIndex,
+        searchCriteria,
+        selectedSearchCriterionIndex,
+        searchScopes,
+        selectedSearchScopeIndex,
         searchWord,
-        templates,
-        mediators,
       },
     });
   }
 
-  const openBook =
-    (extension: ExtensionProperties, editable: boolean) => () => {
-      api
-        .open(extension.id)
-        .then(paths => {
-          paths.forEach(path =>
-            onWorkbenchInitialize({
-              path,
-              editable,
-            }),
-          );
-        })
-        .catch(err => {
-          if (err instanceof Error) {
-            enqueueSnackbar(err.message);
-            api.log.error(err.message);
-          } else {
-            enqueueSnackbar('原因不明のエラー');
-            api.log.error('原因不明のエラー');
-          }
-        });
-    };
-
-  const newBook = (extension: ExtensionProperties) => () => {
+  const openBook = (type: 'directory' | 'file', editable: boolean) => () => {
     api
-      .newBook(extension.id)
+      .open(type)
       .then(paths => {
-        paths.forEach(path =>
-          onWorkbenchInitialize({
-            path,
-            editable: true,
-          }),
-        );
+        paths.forEach(path => onWorkbenchInitialize(path, editable));
       })
       .catch(err => {
         if (err instanceof Error) {
@@ -96,98 +68,100 @@ export default function Hero(): JSX.Element {
       });
   };
 
+  // const newBook = (extension: ExtensionProperties) => () => {
+  //   api
+  //     .newBook(extension.id)
+  //     .then(paths => {
+  //       paths.forEach(path => onWorkbenchInitialize(path, true));
+  //     })
+  //     .catch(err => {
+  //       if (err instanceof Error) {
+  //         enqueueSnackbar(err.message);
+  //         api.log.error(err.message);
+  //       } else {
+  //         enqueueSnackbar('原因不明のエラー');
+  //         api.log.error('原因不明のエラー');
+  //       }
+  //     });
+  // };
+
   return (
     <div className={theme.Hero}>
       <h2 className={theme['Hero.h2']}>Otamajakushi Bookshelf</h2>
       <h3 className={theme['Hero.h3']}>手軽に開発、便利な検索</h3>
       <h4 className={theme['Hero.h4']}>はじめよう</h4>
-      {Array.from(
-        new Set(
-          extensions
-            .filter(
-              (ext): ext is BookCreatorProperties | BookLoaderProperties =>
-                ext.type === 'book-creator' || ext.type === 'book-loader',
-            )
-            .map(ext => ext.bookFormat)
-            .flat(),
-        ),
-      ).map(bookFormat => (
-        <div className={theme['Hero.BookControllerDiv']} key={bookFormat}>
-          {bookFormat}形式で
-          <div className={theme['Hero.ButtonGroup']}>
-            <button
-              className={theme['Hero.button']}
-              onClick={newBook(
-                extensions
-                  .filter(
-                    (ext): ext is BookCreatorProperties =>
-                      ext.type === 'book-creator',
-                  )
-                  .filter(ext => ext.bookFormat.includes(bookFormat))[0],
-              )}
-              type="button">
-              <div>
-                {extensions
-                  .filter(
-                    (ext): ext is BookLoaderProperties =>
-                      ext.type === 'book-loader',
-                  )
-                  .filter(ext => ext.bookFormat.includes(bookFormat))[0]
-                  .format === 'directory' ? (
-                  <CreateNewFolderIcon fontSize="large" />
-                ) : (
-                  <NoteAddIcon fontSize="large" />
-                )}
-              </div>
-              <div>新しいブックを作成する</div>
-            </button>
-            <button
-              className={theme['Hero.button']}
-              onClick={openBook(
-                extensions
-                  .filter(
-                    (ext): ext is BookLoaderProperties =>
-                      ext.type === 'book-loader',
-                  )
-                  .filter(ext => ext.bookFormat.includes(bookFormat))[0],
-                false,
-              )}
-              type="button">
-              <div>
-                {extensions
-                  .filter(
-                    (ext): ext is BookLoaderProperties =>
-                      ext.type === 'book-loader',
-                  )
-                  .filter(ext => ext.bookFormat.includes(bookFormat))[0]
-                  .format === 'directory' ? (
-                  <FolderOpenIcon fontSize="large" />
-                ) : (
-                  <FileOpenIcon fontSize="large" />
-                )}
-              </div>
-              <div>ブックを開く</div>
-            </button>
-            <button
-              className={theme['Hero.button']}
-              onClick={openBook(
-                extensions
-                  .filter(
-                    (ext): ext is BookLoaderProperties =>
-                      ext.type === 'book-loader',
-                  )
-                  .filter(ext => ext.bookFormat.includes(bookFormat))[0],
-                true,
-              )}
-              type="button">
-              <div>
-                <EditIcon fontSize="large" />
-              </div>
-              <div>編集モードでブックを開く</div>
-            </button>
-          </div>
+      <div className={theme['Hero.BookControllerDiv']}>
+        <div className={theme['Hero.ButtonGroup']}>
+          {/* <button
+            className={theme['Hero.button']}
+            onClick={newBook(
+              extensions
+                .filter(
+                  (ext): ext is BookCreatorProperties =>
+                    ext.type === 'book-creator',
+                )
+                .filter(ext => ext.bookFormat.includes(bookFormat))[0],
+            )}
+            type="button">
+            <div>
+                <NoteAddIcon fontSize="large" />
+            </div>
+            <div>ファイル形式で新しいブックを作成する</div>
+          </button>
+          <button
+            className={theme['Hero.button']}
+            onClick={newBook(
+              extensions
+                .filter(
+                  (ext): ext is BookCreatorProperties =>
+                    ext.type === 'book-creator',
+                )
+                .filter(ext => ext.bookFormat.includes(bookFormat))[0],
+            )}
+            type="button">
+            <div>
+                <CreateNewFolderIcon fontSize="large" />
+            </div>
+            <div>フォルダ形式で新しいブックを作成する</div>
+          </button> */}
+          <button
+            className={theme['Hero.button']}
+            onClick={openBook('directory', false)}
+            type="button">
+            <div>
+              <FolderOpenIcon fontSize="large" />
+            </div>
+            <div>フォルダとしてブックを開く</div>
+          </button>
+          <button
+            className={theme['Hero.button']}
+            onClick={openBook('file', false)}
+            type="button">
+            <div>
+              <FileOpenIcon fontSize="large" />
+            </div>
+            <div>ファイルとしてブックを開く</div>
+          </button>
+          <button
+            className={theme['Hero.button']}
+            onClick={openBook('directory', true)}
+            type="button">
+            <div>
+              <EditIcon fontSize="large" />
+            </div>
+            <div>フォルダとして編集モードでブックを開く</div>
+          </button>
+          <button
+            className={theme['Hero.button']}
+            onClick={openBook('file', true)}
+            type="button">
+            <div>
+              <EditIcon fontSize="large" />
+            </div>
+            <div>ファイルとして編集モードでブックを開く</div>
+          </button>
         </div>
-      ))}
+      </div>
     </div>
   );
 }

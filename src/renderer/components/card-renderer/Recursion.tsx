@@ -1,8 +1,8 @@
 /* eslint-disable import/no-cycle */
-import { PageCard, LayoutCard, LayoutComponent } from 'otamashelf';
+import { Layout, LayoutComponent } from 'otamashelf/LayoutCard';
+import { Page } from 'otamashelf/Page';
+import { PageProperties } from 'otamashelf/PageProperties';
 import React from 'react';
-
-import { SummaryWord } from '../../SummaryWord';
 
 import Button from './Button';
 import Chip from './Chip';
@@ -28,9 +28,9 @@ interface Props {
   contents: LayoutComponent[];
   edit: () => void;
   editable: boolean;
-  summary: SummaryWord;
-  layout: LayoutCard;
-  word: PageCard;
+  pageProperties: PageProperties;
+  layout: Layout;
+  word: Page;
 }
 
 export default function Recursion({
@@ -38,7 +38,7 @@ export default function Recursion({
   contents,
   edit,
   editable,
-  summary,
+  pageProperties,
   layout,
   word,
 }: Props): JSX.Element {
@@ -48,19 +48,6 @@ export default function Recursion({
         const key = createKey(contents, index, word);
         if (typeof child === 'string') return <Text key={key} text={child} />;
         switch (child.component) {
-          case 'recursion':
-            return (
-              <Recursion
-                key={key}
-                baseReference={baseReference}
-                contents={child.contents}
-                edit={edit}
-                editable={editable}
-                summary={summary}
-                layout={layout}
-                word={word}
-              />
-            );
           case 'button':
             return (
               <Button
@@ -71,7 +58,7 @@ export default function Recursion({
                 contents={child.contents}
                 edit={edit}
                 editable={editable}
-                summary={summary}
+                pageProperties={pageProperties}
                 layout={layout}
                 word={word}
               />
@@ -101,7 +88,7 @@ export default function Recursion({
                 contents={child.contents}
                 edit={edit}
                 editable={editable}
-                summary={summary}
+                pageProperties={pageProperties}
                 layout={layout}
                 word={word}
               />
@@ -118,7 +105,7 @@ export default function Recursion({
                 type={child.type}
                 edit={edit}
                 editable={editable}
-                summary={summary}
+                pageProperties={pageProperties}
                 layout={layout}
                 word={word}
               />
@@ -132,7 +119,7 @@ export default function Recursion({
                 contents={child.contents}
                 edit={edit}
                 editable={editable}
-                summary={summary}
+                pageProperties={pageProperties}
                 layout={layout}
                 word={word}
               />
@@ -155,7 +142,7 @@ export default function Recursion({
                 contents={child.contents}
                 edit={edit}
                 editable={editable}
-                summary={summary}
+                pageProperties={pageProperties}
                 layout={layout}
                 word={word}
               />
@@ -169,7 +156,7 @@ export default function Recursion({
                 contents={child.contents}
                 edit={edit}
                 editable={editable}
-                summary={summary}
+                pageProperties={pageProperties}
                 layout={layout}
                 word={word}
               />
@@ -183,7 +170,7 @@ export default function Recursion({
                 contents={child.contents}
                 edit={edit}
                 editable={editable}
-                summary={summary}
+                pageProperties={pageProperties}
                 layout={layout}
                 word={word}
               />
@@ -197,7 +184,7 @@ export default function Recursion({
                 contents={child.contents}
                 edit={edit}
                 editable={editable}
-                summary={summary}
+                pageProperties={pageProperties}
                 layout={layout}
                 word={word}
               />
@@ -211,7 +198,7 @@ export default function Recursion({
                 contents={child.contents}
                 edit={edit}
                 editable={editable}
-                summary={summary}
+                pageProperties={pageProperties}
                 layout={layout}
                 word={word}
               />
@@ -227,7 +214,7 @@ export default function Recursion({
                 contents={child.contents}
                 edit={edit}
                 editable={editable}
-                summary={summary}
+                pageProperties={pageProperties}
                 layout={layout}
                 word={word}
               />
@@ -241,7 +228,7 @@ export default function Recursion({
                 contents={child.contents}
                 edit={edit}
                 editable={editable}
-                summary={summary}
+                pageProperties={pageProperties}
                 layout={layout}
                 word={word}
               />
@@ -256,7 +243,7 @@ export default function Recursion({
                     inputs={child.inputs}
                     outputs={child.outputs}
                     editable={editable}
-                    summary={summary}
+                    pageProperties={pageProperties}
                     layout={layout}
                     word={word}
                   />
@@ -269,7 +256,7 @@ export default function Recursion({
                     inputs={child.inputs}
                     outputs={child.outputs}
                     editable={editable}
-                    summary={summary}
+                    pageProperties={pageProperties}
                     layout={layout}
                     word={word}
                   />

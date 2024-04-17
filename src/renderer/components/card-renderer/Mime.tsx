@@ -1,4 +1,4 @@
-import { TextConverterProperties } from 'otamashelf';
+import { TextConverterProperties } from 'otamashelf/TextConverter';
 import React, { useEffect, useState } from 'react';
 
 import { useExtensionsStore } from '../../contexts/extensionsContext';
@@ -24,20 +24,17 @@ export default function Mime({ text, mime }: Props): JSX.Element {
   const [innerHtml, setInnerHtml] = useState('');
   useEffect(() => {
     const convertText = async () => {
-      const convertReturns = await api.convertHtml(
-        converterPropertiesList[0].id,
+      const { html } = await api.convertTextConverter(
+        converterPropertiesList.find(c => c.mime === mime)?.id ?? '',
         {
-          action: 'convert',
+          configuration: {
+            specialPage: 'configuration',
+            pageFormat: '',
+            data: {},
+          },
           text,
         },
       );
-      if (convertReturns.status === 'reject') {
-        api.log.error('Text convert is rejected.', text);
-        return;
-      }
-      const {
-        returns: { html },
-      } = convertReturns;
       setInnerHtml(html);
     };
     convertText();

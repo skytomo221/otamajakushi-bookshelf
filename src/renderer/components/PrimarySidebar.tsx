@@ -1,10 +1,9 @@
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { SearchResult } from 'otamashelf/PageExplorer';
+import { PageProperties } from 'otamashelf/PageProperties';
 import * as React from 'react';
 import { VList } from 'virtua';
-
-import SearchProperties from '../../common/SearchProperties';
-import { SummaryWord } from '../SummaryWord';
 
 import '../renderer';
 import { usePagesDispatch, usePagesStore } from '../contexts/pagesContext';
@@ -15,116 +14,128 @@ import {
   useWorkbenchStore,
 } from '../contexts/workbenchContext';
 
-import CardRenderer from './card-renderer/CardRenderer';
-
 const { api } = window;
 
 export const primarySidebarWidth = 240;
 
-function Index(): JSX.Element {
+function Indexes(): JSX.Element {
   const primarySidebar = usePrimarySidebarStore();
   const workbenches = useWorkbenchStore();
   const theme = useThemeStore();
   const pageDispatch = usePagesDispatch();
   const workbenchDispatch = useWorkbenchDispatch();
-  function onSelectedWordFetch(summary: SummaryWord) {
-    api.readPage(summary).then(mediator => {
+  const [searchResults, setSearchResults] = React.useState<SearchResult[]>([]);
+  function onSelectedWordFetch(index: PageProperties) {
+    api.readPage(index).then(mediator => {
       pageDispatch({ type: 'ADD_PAGE', payload: mediator });
     });
   }
-  function onMediatorsUpdate() {
-    const { bookPath } = primarySidebar;
+  function onIndexesUpdate() {
+    const { path: bookPath } = primarySidebar;
     if (bookPath === null) {
       return;
     }
-    workbenchDispatch({
-      type: 'UPDATE_WORKBENCH',
-      payload: { path: bookPath, partial: { searchWord } },
-    });
-    const workbench = workbenches.find(w => w.book.path === bookPath);
+    const workbench = workbenches.find(w => w.path === bookPath);
     if (workbench === undefined) {
       throw new Error('workbench is null');
     }
+    const {
+      path,
+      pageFormats,
+      searchScopes,
+      searchCriteria,
+      searchWord,
+      selectedPageFormatIndex,
+      selectedSearchScopeIndex,
+      selectedSearchCriterionIndex,
+    } = workbench;
+    const pageFormat = pageFormats[selectedPageFormatIndex];
+    const searchScope = searchScopes[selectedSearchScopeIndex];
+    const searchCriterion = searchCriteria[selectedSearchCriterionIndex];
     api
-      .selectPage(
-        workbench.book.path,
-        workbench.pageExplorer.id,
-        workbench.searchMode,
-        workbench.searchWord,
+      .searchPage(
+        path,
+        pageFormat,
+        searchScope.id,
+        searchCriterion.id,
+        searchWord,
       )
-      .then(mediators => {
-        workbenchDispatch({
-          type: 'UPDATE_WORKBENCH',
-          payload: { path: bookPath, partial: { mediators } },
-        });
+      .then(srs => {
+        setSearchResults(srs);
       });
   }
   const selectedWords = usePagesStore();
-  const onDelete = React.useCallback((summary: SummaryWord) => {
-    api.deletePage(summary);
-    pageDispatch({ type: 'REMOVE_PAGE', payload: summary });
+  const onDelete = React.useCallback((index: PageProperties) => {
+    const { path } = primarySidebar;
+    if (path === null) {
+      return;
+    }
+    const workbench = workbenches.find(w => w.path === path);
+    if (workbench === undefined) {
+      throw new Error('workbench is null');
+    }
+    api.deletePage(path, index);
+    pageDispatch({ type: 'REMOVE_PAGE', payload: index });
   }, []);
-  const workbench = workbenches.find(
-    w => w.book.path === primarySidebar.bookPath,
-  );
-  if (
-    !primarySidebar.display ||
-    primarySidebar.bookPath === null ||
-    workbench === undefined
-  ) {
+  const workbench = workbenches.find(w => w.path === primarySidebar.path);
+  if (workbench === undefined) {
     return <></>;
   }
-  const { book, templates, mediators, searchWord } = workbench;
-  const { editable } = book;
+  const { display, path } = primarySidebar;
+  if (display === null) {
+    return <></>;
+  }
+  if (path === null) {
+    return <></>;
+  }
+  const { editable, indexes } = workbench;
 
   return (
     <VList>
-      {editable &&
-        (templates ?? []).map(template => (
-          <div key={template.id} className={theme['Index.li']}>
-            <button
-              className={theme['Index.button']}
-              onClick={async () => {
-                const newPage = await api.createPage(book.path, template.id);
-                onSelectedWordFetch(newPage.summary);
-              }}
-              type="button">
-              <AddIcon fontSize="small" />
-              {template.name}
-            </button>
-          </div>
-        ))}
-      {(mediators ?? []).map(mediator => (
-        <div key={mediator.summary.id} className={theme['Index.li']}>
+      {editable && (
+        <div key="request-new-page" className={theme['Index.li']}>
           <button
-            aria-label={mediator.word.title}
+            className={theme['Index.button']}
+            onClick={async () => {
+              const newPage = await api.requestPage(path);
+              // onSelectedWordFetch(newPage.index);
+            }}
+            type="button">
+            <AddIcon fontSize="small" />
+            ページを作成する
+          </button>
+        </div>
+      )}
+      {(indexes ?? []).map(index => (
+        <div key={index.id} className={theme['Index.li']}>
+          <button
+            aria-label={index.title}
             className={theme['Index.button']}
             onClick={() => {
               if (
                 (selectedWords ?? []).every(
                   m =>
-                    m.summary.id !== mediator.summary.id ||
-                    m.summary.bookPath !== book.path,
+                    m.pageProperties.id !== index.id ||
+                    m.pageProperties.path !== path,
                 )
               ) {
-                onSelectedWordFetch(mediator.summary);
+                onSelectedWordFetch(index);
               }
             }}
             type="button">
-            <CardRenderer
-              word={mediator.word}
-              summary={mediator.summary}
-              layout={mediator.layout}
-            />
+            <div>
+              <div>{index.title}</div>
+              <div>{index.preview}</div>
+            </div>
           </button>
           {editable && (
             <button
               type="button"
-              aria-label={mediator.word.title}
+              aria-label="削除"
               className="flex"
               onClick={() => {
-                onDelete(mediator.summary);
-                onMediatorsUpdate();
+                onDelete(index);
+                onIndexesUpdate();
               }}>
               <DeleteIcon />
             </button>
@@ -135,41 +146,147 @@ function Index(): JSX.Element {
   );
 }
 
-export default function PrimarySidebar(): JSX.Element {
+function SearchResults(): JSX.Element {
   const primarySidebar = usePrimarySidebarStore();
   const workbenches = useWorkbenchStore();
   const workbenchDispatch = useWorkbenchDispatch();
-  const workbench = workbenches.find(
-    w => w.book.path === primarySidebar.bookPath,
-  );
+  const theme = useThemeStore();
+  const pageDispatch = usePagesDispatch();
+  const workbench = workbenches.find(w => w.path === primarySidebar.path);
   if (
     !primarySidebar.display ||
-    primarySidebar.bookPath === null ||
+    primarySidebar.path === null ||
     workbench === undefined
   ) {
     return <></>;
   }
-  const bookPath = workbench.book.path;
-  function onPageExplorerUpdate(pageExplorer: SearchProperties) {
-    workbenchDispatch({
-      type: 'UPDATE_WORKBENCH',
-      payload: { path: bookPath, partial: { pageExplorer } },
+  const { editable, indexes, searchResults } = workbench;
+  function onSelectedWordFetch(searchResult: SearchResult) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const index = indexes.find(i => i.id === searchResult.id)!;
+    api.readPage(index).then(mediator => {
+      pageDispatch({ type: 'ADD_PAGE', payload: mediator });
     });
   }
-  function onSearchModeUpdate(searchMode: string) {
+  const onDelete = React.useCallback((searchResult: SearchResult) => {
+    const { path } = primarySidebar;
+    if (path === null) {
+      return;
+    }
+    api.deletePage(
+      path,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      workbench.indexes.find(i => i.id === searchResult.id)!,
+    );
     workbenchDispatch({
-      type: 'UPDATE_WORKBENCH',
-      payload: { path: bookPath, partial: { searchMode } },
+      type: 'UPDATE_SEARCH_RESULTS',
+      payload: {
+        path: workbench.path,
+        searchResults: workbench.searchResults.filter(
+          sr => sr.id === searchResult.id,
+        ),
+      },
+    });
+  }, []);
+
+  return (
+    <VList>
+      {editable && (
+        <div key="request-new-page" className={theme['Index.li']}>
+          <button
+            className={theme['Index.button']}
+            onClick={async () => {
+              // const newPage = await api.requestPage(path);
+              // onSelectedWordFetch(newPage.index);
+            }}
+            type="button">
+            <AddIcon fontSize="small" />
+            ページを作成する
+          </button>
+        </div>
+      )}
+      {(searchResults ?? []).map(searchResult => {
+        const index = workbench.indexes.find(i => i.id === searchResult.id);
+        if (index === undefined) {
+          return <></>;
+        }
+        return (
+          <div key={searchResult.id} className={theme['Index.li']}>
+            <button
+              aria-label={searchResult.id}
+              className={theme['Index.button']}
+              onClick={() => {
+                if (
+                  (searchResults ?? []).every(sr => sr.id !== searchResult.id)
+                ) {
+                  onSelectedWordFetch(searchResult);
+                }
+              }}
+              type="button">
+              <div>
+                <div>{index.title}</div>
+                <div>{searchResult.matches}</div>
+              </div>
+            </button>
+            {editable && (
+              <button
+                type="button"
+                aria-label="削除"
+                className="flex"
+                onClick={() => {
+                  onDelete(searchResult);
+                }}>
+                <DeleteIcon />
+              </button>
+            )}
+          </div>
+        );
+      })}
+    </VList>
+  );
+}
+
+export default function PrimarySidebar(): JSX.Element {
+  const primarySidebar = usePrimarySidebarStore();
+  const workbenches = useWorkbenchStore();
+  const workbenchDispatch = useWorkbenchDispatch();
+  const workbench = workbenches.find(w => w.path === primarySidebar.path);
+  if (
+    !primarySidebar.display ||
+    primarySidebar.path === null ||
+    workbench === undefined
+  ) {
+    return <></>;
+  }
+  const { path } = workbench;
+  function onSelectedPageFormatIndexUpdate(selectedPageFormatIndex: number) {
+    workbenchDispatch({
+      type: 'UPDATE_SELECTED_PAGE_FORMAT_INDEX',
+      payload: { path, selectedPageFormatIndex },
     });
   }
-  function onSearchWordUpdate(sw: string) {
+  function onSelectedSearchScopeIndexUpdate(selectedSearchScopeIndex: number) {
     workbenchDispatch({
-      type: 'UPDATE_WORKBENCH',
-      payload: { path: bookPath, partial: { searchWord: sw } },
+      type: 'UPDATE_SELECTED_SEARCH_SCOPE_INDEX',
+      payload: { path, selectedSearchScopeIndex },
+    });
+  }
+  function onSelectedSearchCriterionIndexUpdate(
+    selectedSearchCriterionIndex: number,
+  ) {
+    workbenchDispatch({
+      type: 'UPDATE_SELECTED_SEARCH_CRITERION_INDEX',
+      payload: { path, selectedSearchCriterionIndex },
+    });
+  }
+  function onSearchWordUpdate(newSearchWord: string) {
+    workbenchDispatch({
+      type: 'UPDATE_SEARCH_WORD',
+      payload: { path, searchWord: newSearchWord },
     });
   }
 
-  const { pageExplorers, searchModes, searchWord } = workbench;
+  const { searchWord, pageFormats, searchScopes, searchCriteria } = workbench;
 
   return (
     <div className="flex flex-col h-full">
@@ -179,35 +296,43 @@ export default function PrimarySidebar(): JSX.Element {
         onChange={event => onSearchWordUpdate(event.target.value)}
         id="standard-basic"
       />
+      <div className="text-xs">種類</div>
+      <select
+        onChange={event => {
+          onSelectedPageFormatIndexUpdate(parseInt(event.target.value, 10));
+        }}>
+        {pageFormats.map((pageFormat, index) => (
+          <option key={pageFormat} value={index}>
+            {pageFormat}
+          </option>
+        ))}
+      </select>
       <div className="text-xs">検索範囲</div>
       <select
         onChange={event => {
-          onSearchModeUpdate(event.target.value);
+          onSelectedSearchScopeIndexUpdate(parseInt(event.target.value, 10));
         }}>
-        {searchModes.map(mode => (
-          <option key={mode} value={mode}>
-            {mode}
+        {searchScopes.map((criterion, index) => (
+          <option key={criterion.id} value={index}>
+            {criterion.name}
           </option>
         ))}
       </select>
       <div className="text-xs">検索方式</div>
       <select
         onChange={event => {
-          onPageExplorerUpdate(
-            pageExplorers.find(p => p.id === event.target.value) ?? {
-              id: '',
-              displayName: '',
-            },
+          onSelectedSearchCriterionIndexUpdate(
+            parseInt(event.target.value, 10),
           );
         }}>
-        {pageExplorers.map(explorer => (
-          <option key={explorer.id} value={explorer.id}>
-            {explorer.displayName}
+        {searchCriteria.map((criterion, index) => (
+          <option key={criterion.id} value={index}>
+            {criterion.name}
           </option>
         ))}
       </select>
       <div className="grow overflow-auto">
-        <Index />
+        <Indexes />
       </div>
     </div>
   );

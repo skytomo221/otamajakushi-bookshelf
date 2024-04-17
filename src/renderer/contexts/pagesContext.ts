@@ -1,5 +1,6 @@
+import { PageProperties } from 'otamashelf/PageProperties';
+
 import { Mediator } from '../Mediator';
-import { SummaryWord } from '../SummaryWord';
 
 import makeStore from './makeStore';
 
@@ -12,7 +13,7 @@ type Action =
     }
   | {
       type: 'REMOVE_PAGE';
-      payload: SummaryWord;
+      payload: PageProperties;
     }
   | {
       type: 'UPDATE_PAGE';
@@ -27,8 +28,8 @@ const reducer = (state: State, action: Action) => {
       if (
         state.some(
           mediator =>
-            mediator.summary.id === action.payload.summary.id &&
-            mediator.summary.bookPath === action.payload.summary.bookPath,
+            mediator.pageProperties.id === action.payload.pageProperties.id &&
+            mediator.pageProperties.path === action.payload.pageProperties.path,
         )
       ) {
         return state;
@@ -38,14 +39,14 @@ const reducer = (state: State, action: Action) => {
       return (state ?? []).filter(
         mediator =>
           !(
-            mediator.summary.id === action.payload.id &&
-            mediator.summary.bookPath === action.payload.bookPath
+            mediator.pageProperties.id === action.payload.id &&
+            mediator.pageProperties.path === action.payload.path
           ),
       );
     case 'UPDATE_PAGE':
       return (state ?? []).map(mediator =>
-        mediator.summary.id === action.payload.summary.id &&
-        mediator.summary.bookPath === action.payload.summary.bookPath
+        mediator.pageProperties.id === action.payload.pageProperties.id &&
+        mediator.pageProperties.path === action.payload.pageProperties.path
           ? action.payload
           : mediator,
       );

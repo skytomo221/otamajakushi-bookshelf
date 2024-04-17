@@ -1,8 +1,9 @@
-import { PageCard, LayoutCard, LayoutComponent } from 'otamashelf';
+import { Layout, LayoutComponent } from 'otamashelf/LayoutCard';
+import { Page } from 'otamashelf/Page';
+import { PageProperties } from 'otamashelf/PageProperties';
 import React from 'react';
 import { Draggable as RawDraggable } from 'react-beautiful-dnd';
 
-import { SummaryWord } from '../../SummaryWord';
 import { useThemeStore } from '../../contexts/themeContext';
 
 // eslint-disable-next-line import/no-cycle
@@ -16,9 +17,9 @@ interface Props {
   contents: LayoutComponent[];
   edit: () => void;
   editable: boolean;
-  summary: SummaryWord;
-  layout: LayoutCard;
-  word: PageCard;
+  pageProperties: PageProperties;
+  layout: Layout;
+  word: Page;
 }
 
 export default function Draggable({
@@ -28,7 +29,7 @@ export default function Draggable({
   contents,
   edit,
   editable,
-  summary,
+  pageProperties,
   layout,
   word,
 }: Props): JSX.Element {
@@ -53,7 +54,7 @@ export default function Draggable({
             contents={contents}
             edit={edit}
             editable={editable}
-            summary={summary}
+            pageProperties={pageProperties}
             layout={layout}
             word={word}
           />

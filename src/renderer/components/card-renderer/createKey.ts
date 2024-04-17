@@ -1,6 +1,6 @@
 import { flatten } from 'flat';
 import { LayoutComponent } from 'otamashelf/LayoutCard';
-import { PageCard } from 'otamashelf/PageCard';
+import { Page } from 'otamashelf/Page';
 
 import { convertReferenceInForm } from './createKeyInForm';
 
@@ -38,7 +38,7 @@ function convertReference(
 export default function createKey(
   contents: LayoutComponent[],
   index: number,
-  word: PageCard,
+  word: Page,
 ): string {
   return JSON.stringify({
     index,

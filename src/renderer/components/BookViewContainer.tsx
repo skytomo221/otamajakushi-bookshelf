@@ -19,7 +19,7 @@ export default function BookViewContainer({ book }: Props): JSX.Element {
   const workbenchDispatch = useWorkbenchDispatch();
   const onPrimarySidebarChange = React.useCallback((newBook: Book | null) => {
     primarySidebarDispatch({
-      type: 'UPDATE_BOOK_PATH',
+      type: 'UPDATE_PATH',
       payload: newBook === null ? null : newBook.path,
     });
   }, []);

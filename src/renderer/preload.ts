@@ -1,68 +1,126 @@
 import { contextBridge, ipcRenderer } from 'electron';
 
 import log from 'electron-log';
-import { ExtensionProperties, LayoutCard, PageCard } from 'otamashelf';
-import TemplateProperties from 'otamashelf/TemplateProperties';
+import { ExtensionBaseProperties } from 'otamashelf/ExtensionProperties';
+import { LayoutComponent } from 'otamashelf/LayoutCard';
+import { ConfigurationPage, Page, TemplatePage } from 'otamashelf/Page';
+import { SearchResult } from 'otamashelf/PageExplorer';
+import { PageProperties } from 'otamashelf/PageProperties';
+import { SearchCard } from 'otamashelf/SearchCard';
 import { ConvertProps, ConvertReturns } from 'otamashelf/TextConverter';
 
-import SearchProperties from '../common/SearchProperties';
 import StyleThemeParameters from '../common/StyleThemeParameters';
 
 import { Mediator } from './Mediator';
-import { SummaryWord } from './SummaryWord';
 
 contextBridge.exposeInMainWorld('api', {
   windowMinimize: () => ipcRenderer.invoke('window-minimize'),
   windowMaximize: () => ipcRenderer.invoke('window-maximize'),
   windowClose: () => ipcRenderer.invoke('window-close'),
-  newBook: (id: string): Promise<string[]> => ipcRenderer.invoke('new', id),
-  open: (id: string): Promise<string[]> => ipcRenderer.invoke('open', id),
-  save: (filePath: string): Promise<boolean> =>
-    ipcRenderer.invoke('save', filePath),
-  createPage: (bookPath: string, templateId: string): Promise<Mediator> =>
-    ipcRenderer.invoke('page:create', bookPath, templateId),
-  deletePage: (word: SummaryWord): Promise<boolean> =>
-    ipcRenderer.invoke('page:delete', word),
-  selectPage: (
+  requestBook: (bookCreatorId: string): Promise<TemplatePage> =>
+    ipcRenderer.invoke('book:request', bookCreatorId),
+  createBook: (
+    bookCreatorId: string,
+    book: TemplatePage,
+  ): Promise<TemplatePage> =>
+    ipcRenderer.invoke('book:create', bookCreatorId, book),
+  openBook: (type: 'directory' | 'file'): Promise<string[]> =>
+    ipcRenderer.invoke('book:open', type),
+  saveBook: (bookPath: string): Promise<boolean> =>
+    ipcRenderer.invoke('book:save', bookPath),
+  requestPage: (bookPath: string): Promise<TemplatePage> =>
+    ipcRenderer.invoke('page:request', bookPath),
+  createPage: (bookPath: string, template: TemplatePage): Promise<Page> =>
+    ipcRenderer.invoke('page:create', bookPath, template),
+  readPage: (index: PageProperties): Promise<Mediator> =>
+    ipcRenderer.invoke('page:read', index),
+  readConfiguration: (
     bookPath: string,
-    pageExplorerId: string,
-    searchModeId: string,
-    searchWord: string,
-  ): Promise<Mediator[]> =>
+  ): Promise<{ page: ConfigurationPage; layout: LayoutComponent }> =>
+    ipcRenderer.invoke('configuration:read', bookPath),
+  readDescription: (bookPath: string): Promise<string> =>
+    ipcRenderer.invoke('description:read', bookPath),
+  updatePage: (bookPath: string, page: Page): Promise<number> =>
+    ipcRenderer.invoke('page:update', bookPath, page),
+  updateDescription: (bookPath: string, description: string): Promise<number> =>
+    ipcRenderer.invoke('description:update', bookPath, description),
+  updateExtensionConfiguration: (
+    extensionId: string,
+    configuration: ConfigurationPage,
+  ): Promise<number> =>
     ipcRenderer.invoke(
-      'page:select',
+      'extension-configuration:update',
+      extensionId,
+      configuration,
+    ),
+  modifyPage: (
+    bookPath: string,
+    pageId: string,
+    script: JSON,
+  ): Promise<Mediator> =>
+    ipcRenderer.invoke('page:modify', bookPath, pageId, script),
+  mofidyDescription: (
+    bookPath: string,
+    description: string,
+    script: JSON,
+  ): Promise<string> =>
+    ipcRenderer.invoke('description:modify', bookPath, description, script),
+  generateIndex: (
+    bookPath: string,
+    pageFormat: string,
+  ): Promise<PageProperties[]> =>
+    ipcRenderer.invoke('index:generate', bookPath, pageFormat),
+  generateSearchIndex: (
+    bookPath: string,
+    pageFormat: string,
+    searchIndexGeneratorId: string,
+  ): Promise<SearchCard[]> =>
+    ipcRenderer.invoke(
+      'search-index:generate',
       bookPath,
+      pageFormat,
+      searchIndexGeneratorId,
+    ),
+  readAllSearchCriteria: (): Promise<{ id: string; name: string }[]> =>
+    ipcRenderer.invoke('search-criterion:all'),
+  readAllSearchScopes: (
+    pageFormat: string,
+  ): Promise<{ id: string; name: string }[]> =>
+    ipcRenderer.invoke('search-scope:all', pageFormat),
+  searchPage: (
+    bookPath: string,
+    pageFormat: string,
+    searchIndexGeneratorId: string,
+    pageExplorerId: string,
+    searchWord: string,
+  ): Promise<SearchResult[]> =>
+    ipcRenderer.invoke(
+      'page:search',
+      bookPath,
+      pageFormat,
+      searchIndexGeneratorId,
       pageExplorerId,
-      searchModeId,
       searchWord,
     ),
-  readPage: (word: SummaryWord): Promise<LayoutCard> =>
-    ipcRenderer.invoke('page:read', word),
-  readPageExplorer: (): Promise<SearchProperties[]> =>
-    ipcRenderer.invoke('page-explorer:read'),
-  readSearchMode: (bookPath: string): Promise<string[]> =>
-    ipcRenderer.invoke('search-mode:read', bookPath),
-  readTemplates: (word: SummaryWord): Promise<TemplateProperties[]> =>
-    ipcRenderer.invoke('templates:read', word),
-  updatePage: (summary: SummaryWord, word: PageCard): Promise<LayoutCard> =>
-    ipcRenderer.invoke('page:update', summary, word),
-  onClick: (summary: SummaryWord, onClick: {
-    type: string;
-    id: string;
-    script: string;
-  }): Promise<Mediator> =>
-    ipcRenderer.invoke('page:on-click', summary, onClick),
+  deletePage: (bookPath: string, index: PageProperties): Promise<boolean> =>
+    ipcRenderer.invoke('page:delete', bookPath, index),
+  readAllPageFormats: (bookPath: string): Promise<string[]> =>
+    ipcRenderer.invoke('page-format:all', bookPath),
+  readAllStyleThemes: (): Promise<
+    (ExtensionBaseProperties & { type: 'style-theme' })[]
+  > => ipcRenderer.invoke('style-theme:all'),
   applyStyleTheme: (id: string): Promise<StyleThemeParameters> =>
     ipcRenderer.invoke('style-theme:apply', id),
-  convertHtml: (id: string, props: ConvertProps): Promise<ConvertReturns> =>
+  convertTextConverter: (
+    id: string,
+    props: ConvertProps,
+  ): Promise<ConvertReturns> =>
     ipcRenderer.invoke('text-converter:convert', id, props),
-  onExtensions: (
-    channel: 'extensions:send',
-    callback: (
-      event: Electron.IpcRendererEvent,
-      extensions: ExtensionProperties[],
-    ) => void,
-  ) => ipcRenderer.on(channel, (event, argv) => callback(event, argv)),
+  readAllBookCreators: (): Promise<
+    (ExtensionBaseProperties & { bookFormatPattern: string } & {
+      type: 'book-creator';
+    })[]
+  > => ipcRenderer.invoke('book-creator:all'),
   onDefaultLog: (
     channel: 'log:default',
     callback: (event: Electron.IpcRendererEvent, log: string) => void,

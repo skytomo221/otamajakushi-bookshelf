@@ -2,23 +2,23 @@ import makeStore from './makeStore';
 
 export type State = {
   display: boolean;
-  bookPath: null | string;
+  path: null | string;
 };
 
 export type Action = {
-  type: 'UPDATE_BOOK_PATH';
+  type: 'UPDATE_PATH';
   payload: null | string;
 };
 
 const initialState: State = {
   display: false,
-  bookPath: null,
+  path: null,
 };
 
 const reducer = (state: State, action: Action) => {
   switch (action.type) {
-    case 'UPDATE_BOOK_PATH':
-      return { display: action.payload !== null, bookPath: action.payload };
+    case 'UPDATE_PATH':
+      return { display: action.payload !== null, path: action.payload };
     default:
       return state;
   }

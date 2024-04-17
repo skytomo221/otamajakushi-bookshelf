@@ -1,7 +1,7 @@
-import {  Reference } from 'otamashelf';
+import { Reference } from 'otamashelf/LayoutCard';
+import { PageProperties } from 'otamashelf/PageProperties';
 import React, { useState } from 'react';
 
-import { SummaryWord } from '../../SummaryWord';
 import { useThemeStore } from '../../contexts/themeContext';
 
 import styleJoin from './styleJoin';
@@ -12,7 +12,7 @@ interface Props {
   name: string;
   reference: Reference;
   pattern?: string;
-  summary: SummaryWord;
+  pageProperties: PageProperties;
   flattenCard: { [key: string]: string };
   setFlattenCard: (flattenCard: { [key: string]: string }) => void;
 }
@@ -23,7 +23,7 @@ export default function InputText({
   name,
   reference,
   pattern,
-  summary,
+  pageProperties,
   flattenCard,
   setFlattenCard,
 }: Props): JSX.Element {
@@ -33,7 +33,7 @@ export default function InputText({
     <input
       type="text"
       className={styleJoin(theme.InputText, className)}
-      id={`${summary.bookPath} ${summary.id} ${inputId}`}
+      id={`${pageProperties.path} ${pageProperties.id} ${inputId}`}
       name={name}
       value={text}
       pattern={pattern}
