@@ -6,8 +6,6 @@ import React from 'react';
 import { usePagesDispatch } from '../../contexts/pagesContext';
 import { useThemeStore } from '../../contexts/themeContext';
 import '../../renderer';
-// eslint-disable-next-line import/no-cycle
-import { useWorkbenchStore } from '../../contexts/workbenchContext';
 
 // eslint-disable-next-line import/no-cycle
 import Recursion from './Recursion';
@@ -45,10 +43,6 @@ export default function Button({
 }: Props): JSX.Element {
   const theme = useThemeStore();
   const dispatch = usePagesDispatch();
-  const workbenches = useWorkbenchStore();
-  const index = workbenches.findIndex(
-    workbench => workbench.path === pageProperties.path,
-  );
   const onClick = React.useCallback(
     (
       s: PageProperties,
