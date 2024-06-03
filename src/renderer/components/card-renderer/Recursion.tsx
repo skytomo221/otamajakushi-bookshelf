@@ -219,6 +219,20 @@ export default function Recursion({
                 word={word}
               />
             );
+          case 'section':
+            return (
+              <Section
+                key={key}
+                baseReference={baseReference}
+                className={child.class}
+                contents={child.contents}
+                edit={edit}
+                editable={editable}
+                pageProperties={pageProperties}
+                layout={layout}
+                word={word}
+              />
+            );
           case 'span':
             return (
               <Span
