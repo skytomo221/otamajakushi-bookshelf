@@ -12,6 +12,7 @@ import Droppable from './Droppable';
 import EditButton from './EditButton';
 import EditableDiv from './EditableDiv';
 import EditableSpan from './EditableSpan';
+import Error from './Error';
 import H2 from './H2';
 import H3 from './H3';
 import H4 from './H4';
@@ -19,6 +20,7 @@ import H5 from './H5';
 import H6 from './H6';
 import Mime from './Mime';
 import P from './P';
+import Section from './Section';
 import Span from './Span';
 import Text from './Text';
 import createKey from './createKey';
@@ -276,7 +278,12 @@ export default function Recursion({
                   />
                 );
               default:
-                return <></>;
+                return (
+                  <Error key={key}>{`Invalid element: ${
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    (child as any).component
+                  }`}</Error>
+                );
             }
           }
           default:

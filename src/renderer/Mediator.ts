@@ -6,5 +6,5 @@ import { PageProperties } from 'otamashelf/PageProperties';
 export interface Mediator {
   pageProperties: PageProperties;
   layout: Layout;
-  word: NormalPage;
+  page: NormalPage;
 }

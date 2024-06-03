@@ -82,9 +82,9 @@ export default function FileMenu(): JSX.Element {
     const selectedPageFormat = pageFormats[selectedPageFormatIndex];
     const indexes = await api.generateIndex(path, selectedPageFormat);
     const searchResults = [] as SearchResult[];
-    const searchCriteria = await api.readSearchCriteria();
+    const searchCriteria = await api.readAllSearchCriteria();
     const selectedSearchCriterionIndex = 0;
-    const searchScopes = await api.readSearchScopes(selectedPageFormat);
+    const searchScopes = await api.readAllSearchScopes(selectedPageFormat);
     const selectedSearchScopeIndex = 0;
     const searchWord = '';
     workbenchDispatch({

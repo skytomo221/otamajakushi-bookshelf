@@ -42,7 +42,7 @@ export default function FormDiv({
   const dispatch = usePagesDispatch();
   function onSelectedWordPush(mediator: Mediator) {
     api
-      .updatePage(mediator.pageProperties.path, mediator.word)
+      .updatePage(mediator.pageProperties.path, mediator.page)
       .then(() => dispatch({ type: 'UPDATE_PAGE', payload: mediator }));
   }
   if (typeof flattenCard !== 'object') {
@@ -65,7 +65,7 @@ export default function FormDiv({
           onSelectedWordPush({
             pageProperties,
             layout,
-            word: unflatten(flattenCard),
+            page: unflatten(flattenCard),
           });
         }}
         reset={() => {

@@ -25,9 +25,12 @@ function Indexes(): JSX.Element {
   const pageDispatch = usePagesDispatch();
   const workbenchDispatch = useWorkbenchDispatch();
   const [searchResults, setSearchResults] = React.useState<SearchResult[]>([]);
-  function onSelectedWordFetch(index: PageProperties) {
-    api.readPage(index).then(mediator => {
-      pageDispatch({ type: 'ADD_PAGE', payload: mediator });
+  function onSelectedWordFetch(pageProperties: PageProperties) {
+    api.readPage(pageProperties).then(result => {
+      pageDispatch({
+        type: 'ADD_PAGE',
+        payload: { ...result, pageProperties },
+      });
     });
   }
   function onIndexesUpdate() {
@@ -163,9 +166,12 @@ function SearchResults(): JSX.Element {
   const { editable, indexes, searchResults } = workbench;
   function onSelectedWordFetch(searchResult: SearchResult) {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const index = indexes.find(i => i.id === searchResult.id)!;
-    api.readPage(index).then(mediator => {
-      pageDispatch({ type: 'ADD_PAGE', payload: mediator });
+    const pageProperties = indexes.find(i => i.id === searchResult.id)!;
+    api.readPage(pageProperties).then(result => {
+      pageDispatch({
+        type: 'ADD_PAGE',
+        payload: { ...result, pageProperties },
+      });
     });
   }
   const onDelete = React.useCallback((searchResult: SearchResult) => {

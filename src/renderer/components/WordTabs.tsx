@@ -54,7 +54,7 @@ export default function WordTabs(): JSX.Element {
             value={value}
             key={`${mediator.pageProperties.path}/${mediator.pageProperties.id}`}>
             <CardRenderer
-              word={mediator.word}
+              page={mediator.page}
               pageProperties={mediator.pageProperties}
               layout={mediator.layout}
             />

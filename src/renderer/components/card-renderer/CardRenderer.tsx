@@ -8,7 +8,7 @@ import Recursion from './Recursion';
 
 export default function CardRenderer({
   pageProperties,
-  word,
+  page: word,
   layout,
 }: Mediator): JSX.Element {
   const state = useWorkbenchStore();

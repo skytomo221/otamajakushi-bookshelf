@@ -25,7 +25,7 @@ export default function DragDropRenderer({
   const dispatch = usePagesDispatch();
   function onSelectedWordPush(mediator: Mediator) {
     api
-      .updatePage(mediator.pageProperties.path, mediator.word)
+      .updatePage(mediator.pageProperties.path, mediator.page)
       .then(() => dispatch({ type: 'UPDATE_PAGE', payload: mediator }));
   }
   const flat = flatten(word) as { [name: string]: unknown };
@@ -114,7 +114,7 @@ export default function DragDropRenderer({
         onSelectedWordPush({
           pageProperties,
           layout,
-          word: unflatten(newFlat),
+          page: unflatten(newFlat),
         });
       }}>
       {children}

@@ -3,7 +3,7 @@ import { contextBridge, ipcRenderer } from 'electron';
 import log from 'electron-log';
 import { ExtensionBaseProperties } from 'otamashelf/ExtensionProperties';
 import { LayoutComponent } from 'otamashelf/LayoutCard';
-import { ConfigurationPage, Page, TemplatePage } from 'otamashelf/Page';
+import { ConfigurationPage, DescriptionPage, NormalPage, Page, TemplatePage } from 'otamashelf/Page';
 import { SearchResult } from 'otamashelf/PageExplorer';
 import { PageProperties } from 'otamashelf/PageProperties';
 import { SearchCard } from 'otamashelf/SearchCard';
@@ -32,13 +32,17 @@ contextBridge.exposeInMainWorld('api', {
     ipcRenderer.invoke('page:request', bookPath),
   createPage: (bookPath: string, template: TemplatePage): Promise<Page> =>
     ipcRenderer.invoke('page:create', bookPath, template),
-  readPage: (index: PageProperties): Promise<Mediator> =>
+  readPage: (
+    index: PageProperties,
+  ): Promise<{ page: NormalPage; layout: LayoutComponent }> =>
     ipcRenderer.invoke('page:read', index),
   readConfiguration: (
     bookPath: string,
   ): Promise<{ page: ConfigurationPage; layout: LayoutComponent }> =>
     ipcRenderer.invoke('configuration:read', bookPath),
-  readDescription: (bookPath: string): Promise<string> =>
+  readDescription: (
+    bookPath: string,
+  ): Promise<{ page: DescriptionPage; layout: LayoutComponent }> =>
     ipcRenderer.invoke('description:read', bookPath),
   updatePage: (bookPath: string, page: Page): Promise<number> =>
     ipcRenderer.invoke('page:update', bookPath, page),
@@ -111,11 +115,8 @@ contextBridge.exposeInMainWorld('api', {
   > => ipcRenderer.invoke('style-theme:all'),
   applyStyleTheme: (id: string): Promise<StyleThemeParameters> =>
     ipcRenderer.invoke('style-theme:apply', id),
-  convertTextConverter: (
-    id: string,
-    props: ConvertProps,
-  ): Promise<ConvertReturns> =>
-    ipcRenderer.invoke('text-converter:convert', id, props),
+  convertMime: (mime: string, text: string): Promise<ConvertReturns> =>
+    ipcRenderer.invoke('text-converter:convert', mime, text),
   readAllBookCreators: (): Promise<
     (ExtensionBaseProperties & { bookFormatPattern: string } & {
       type: 'book-creator';
