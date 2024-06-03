@@ -19,7 +19,7 @@ import {
   TemplatePage,
 } from 'otamashelf/Page';
 import { PageProperties } from 'otamashelf/PageProperties';
-import { ConvertProps, ConvertReturns } from 'otamashelf/TextConverter';
+import { ConvertReturns } from 'otamashelf/TextConverter';
 import { endsWithPageExplorer } from 'otamashelf/extensions/endsWithPageExplorer';
 import { includesPageExplorer } from 'otamashelf/extensions/includesPageExplorer';
 import { otmAddContentPageModifier } from 'otamashelf/extensions/otmAddContentPageModifier';
@@ -449,13 +449,22 @@ const createWindow = async () => {
 
   ipcMain.handle(
     'text-converter:convert',
-    async (_, id: string, props: ConvertProps): Promise<ConvertReturns> => {
-      const textConverter = otamashelf.textConverters.findById(id);
+    async (_, mime: string, text: string): Promise<ConvertReturns> => {
+      const textConverter = otamashelf.textConverters.find(
+        tc => tc.properties.mime === mime,
+      );
       if (!textConverter) {
-        otamashelf.emit('log.error', `Extension ${id} not found.`);
-        throw new Error(`Extension ${id} not found.`);
+        otamashelf.emit('log.error', `${mime} converter not found.`);
+        throw new Error(`${mime} converter not found.`);
       }
-      return textConverter.convert(props);
+      return textConverter.convert({
+        text,
+        configuration: {
+          specialPage: 'configuration',
+          pageFormat: '',
+          data: {},
+        },
+      });
     },
   );
 
