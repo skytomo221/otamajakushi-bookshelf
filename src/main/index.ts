@@ -23,7 +23,9 @@ import { ConvertReturns } from 'otamashelf/TextConverter';
 import { endsWithPageExplorer } from 'otamashelf/extensions/endsWithPageExplorer';
 import { includesPageExplorer } from 'otamashelf/extensions/includesPageExplorer';
 import { otmAddContentPageModifier } from 'otamashelf/extensions/otmAddContentPageModifier';
+import { otmBothSearchIndexGenerator } from 'otamashelf/extensions/otmBothSearchIndexGenerator';
 import { otmCreator } from 'otamashelf/extensions/otmCreator';
+import { otmDiscriminator } from 'otamashelf/extensions/otmDiscriminator';
 import { otmIndexGenerator } from 'otamashelf/extensions/otmIndexGenerator';
 import { otmLayoutBuilder } from 'otamashelf/extensions/otmLayoutBuilder';
 import { otmLoader } from 'otamashelf/extensions/otmLoader';
@@ -31,6 +33,7 @@ import { otmPageCreator } from 'otamashelf/extensions/otmPageCreator';
 import { otmRemoveContentPageModifier } from 'otamashelf/extensions/otmRemoveContentPageModifier';
 import { otmRenumberModifier } from 'otamashelf/extensions/otmRenumberModifier';
 import { otmSaver } from 'otamashelf/extensions/otmSaver';
+import { otmTranslationSearchIndexGenerator } from 'otamashelf/extensions/otmTranslationSearchIndexGenerator';
 import { startsWithPageExplorer } from 'otamashelf/extensions/startsWithPageExplorer';
 import OtamashelfServer from 'otamashelf-extension/OtamashelfServer';
 
@@ -70,7 +73,9 @@ const createWindow = async () => {
   otamashelf.registerExtension(otamaDefaultTheme);
   otamashelf.registerExtension(otamaLightTheme);
   otamashelf.registerExtension(otmAddContentPageModifier);
+  otamashelf.registerExtension(otmBothSearchIndexGenerator);
   otamashelf.registerExtension(otmCreator);
+  otamashelf.registerExtension(otmDiscriminator);
   otamashelf.registerExtension(otmIndexGenerator);
   otamashelf.registerExtension(otmLayoutBuilder);
   otamashelf.registerExtension(otmLoader);
@@ -78,6 +83,7 @@ const createWindow = async () => {
   otamashelf.registerExtension(otmRemoveContentPageModifier);
   otamashelf.registerExtension(otmRenumberModifier);
   otamashelf.registerExtension(otmSaver);
+  otamashelf.registerExtension(otmTranslationSearchIndexGenerator);
   otamashelf.registerExtension(regexPageExplorer);
   otamashelf.registerExtension(startsWithPageExplorer);
   otamashelf.on('log.error', (...message) => {
