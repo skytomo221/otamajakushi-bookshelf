@@ -71,7 +71,7 @@ export default function BookViewContainer({ book }: Props): JSX.Element {
           onClick={() => {
             workbenchDispatch({
               type: 'EDIT_BOOK',
-              payload: { ...book, editable: true },
+              payload: { path: book.path, editable: true },
             });
             handleClose();
           }}>

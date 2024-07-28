@@ -116,10 +116,7 @@ const reducer = (state: State, action: Action) => {
     case 'EDIT_BOOK':
       return state.map(workbench =>
         workbench.path === payload.path
-          ? {
-              ...workbench,
-              book: { ...workbench, editable: payload.editable },
-            }
+          ? { ...workbench, editable: payload.editable }
           : workbench,
       );
     case 'REMOVE_WORKBENCH':
