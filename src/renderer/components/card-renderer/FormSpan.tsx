@@ -37,7 +37,7 @@ export default function FormDiv({
   word,
 }: Props): JSX.Element {
   const theme = useThemeStore();
-  const defaultFlattenCard = flatten(word) as { [key: string]: string };
+  const defaultFlattenCard = flatten(word.data) as { [key: string]: string };
   const [flattenCard, setFlattenCard] = useState(defaultFlattenCard);
   const dispatch = usePagesDispatch();
   function onSelectedWordPush(mediator: Mediator) {
