@@ -1,6 +1,6 @@
 import flatten, { unflatten } from 'flat';
 import { Layout, FormDivComponent } from 'otamashelf/LayoutCard';
-import { Page } from 'otamashelf/Page';
+import { NormalPage, Page } from 'otamashelf/Page';
 import { PageProperties } from 'otamashelf/PageProperties';
 import React, { useState } from 'react';
 
@@ -43,7 +43,7 @@ export default function FormDiv({
   function onSelectedWordPush(mediator: Mediator) {
     api
       .updatePage(mediator.pageProperties.path, mediator.page)
-      .then(() => dispatch({ type: 'UPDATE_PAGE', payload: mediator }));
+      .then(({ page: newPage, layout: newLayout }) => dispatch({ type: 'UPDATE_PAGE', payload: { ...mediator, page: newPage, layout: newLayout } }));
   }
   if (typeof flattenCard !== 'object') {
     api.log.error('Layout is invalid.', layout, flattenCard);
@@ -65,7 +65,7 @@ export default function FormDiv({
           onSelectedWordPush({
             pageProperties,
             layout,
-            page: unflatten(flattenCard),
+            page: { ...word as NormalPage, data: unflatten(flattenCard) },
           });
         }}
         reset={() => {

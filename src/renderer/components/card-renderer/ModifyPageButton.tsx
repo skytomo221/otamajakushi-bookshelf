@@ -11,6 +11,8 @@ import '../../renderer';
 import Recursion from './Recursion';
 import styleJoin from './styleJoin';
 
+import { Json } from 'otamashelf/Json';
+
 
 const { api } = window;
 
@@ -19,9 +21,8 @@ interface Props {
   className?: string;
   contents: LayoutComponent[];
   onClick: {
-    type: string;
     id: string;
-    script: string;
+    script: Json;
   };
   edit: () => void;
   editable: boolean;
@@ -30,7 +31,7 @@ interface Props {
   word: Page;
 }
 
-export default function Button({
+export default function ModifyPageButton({
   baseReference,
   className,
   contents,
@@ -47,14 +48,13 @@ export default function Button({
     (
       s: PageProperties,
       c: {
-        type: string;
         id: string;
-        script: string;
+        script: Json;
       },
     ) => {
       api
-        .modifyPage(s.path, s.id, c)
-        .then(mediator => dispatch({ type: 'UPDATE_PAGE', payload: mediator }));
+        .modifyPage(s.path, s.id, c.id, c.script)
+        .then(({ page: newPage, layout: newLayout }) => dispatch({ type: 'UPDATE_PAGE', payload: { pageProperties, page: newPage, layout: newLayout } }));
     },
     [],
   );
@@ -80,6 +80,6 @@ export default function Button({
     <></>
   );
 }
-Button.defaultProps = {
+ModifyPageButton.defaultProps = {
   className: '',
 };

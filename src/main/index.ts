@@ -305,9 +305,10 @@ const createWindow = async () => {
     otamashelf.readDescription(bookPath),
   );
 
-  ipcMain.handle('page:update', async (_, bookPath: string, page: NormalPage) =>
-    otamashelf.updatePage(bookPath, page),
-  );
+  ipcMain.handle('page:update', async (_, bookPath: string, page: NormalPage) => {
+    otamashelf.updatePage(bookPath, page);
+    return otamashelf.readPage({ path: bookPath, id: page.id, title: "", preview: "" });
+  });
 
   ipcMain.handle(
     'configuraion:update',
@@ -328,22 +329,32 @@ const createWindow = async () => {
   );
 
   ipcMain.handle(
-    'page:modify',
-    async (_, bookPath: string, pageId: string, script: Json) =>
+    'book:modify',
+    async (_, bookPath: string, bookModifierId: string, script: Json) => 
     {
-      const bookTimeMachine = otamashelf.booksController.get(bookPath);
-      if (!bookTimeMachine) {
-        otamashelf.emit('log.error', `File path ${bookPath} not found.`);
-        throw new Error(`File path ${bookPath} not found.`);
-      }
-      const { currentBook } = bookTimeMachine;
-      const page = currentBook.pages.find(p => p.id === pageId);
-      if (!page) {
-        otamashelf.emit('log.error', `Page ${pageId} not found.`);
-        throw new Error(`Page ${pageId} not found.`);
-      }
-      return otamashelf.modifyPage(bookPath, page, script);
+      otamashelf.modifyBook(bookPath, bookModifierId, script);
+      return true;
     }
+  );
+
+  ipcMain.handle(
+    'pages:modify',
+    async (
+      _,
+      bookPath: string,
+      pageId: string,
+      pagesModifierId: string,
+      script: Json,
+    ) => otamashelf.modifyPages(bookPath, pageId, pagesModifierId, script),
+  );
+
+  ipcMain.handle(
+    'page:modify',
+    async (_, bookPath: string, pageId: string, pageModifierId: string, script: Json) =>
+      {
+        log.info('page:modify', bookPath, pageId, pageModifierId, script);
+        return otamashelf.modifyPage(bookPath, pageId, pageModifierId, script)
+      }
   );
 
   ipcMain.handle(

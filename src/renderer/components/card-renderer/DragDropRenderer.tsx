@@ -1,6 +1,6 @@
 import flatten, { unflatten } from 'flat';
 import { Layout } from 'otamashelf/LayoutCard';
-import { Page } from 'otamashelf/Page';
+import { NormalPage, Page } from 'otamashelf/Page';
 import { PageProperties } from 'otamashelf/PageProperties';
 import React, { ReactNode } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
@@ -26,9 +26,9 @@ export default function DragDropRenderer({
   function onSelectedWordPush(mediator: Mediator) {
     api
       .updatePage(mediator.pageProperties.path, mediator.page)
-      .then(() => dispatch({ type: 'UPDATE_PAGE', payload: mediator }));
+      .then(({ page: newPage, layout: newLayout }) => dispatch({ type: 'UPDATE_PAGE', payload: { ...mediator, page: newPage, layout: newLayout } }));
   }
-  const flat = flatten(word) as { [name: string]: unknown };
+  const flat = flatten(word.data) as { [name: string]: unknown };
   // eslint-disable-next-line @typescript-eslint/ban-types
   const keys = Object.keys(flat);
   return (
@@ -114,7 +114,7 @@ export default function DragDropRenderer({
         onSelectedWordPush({
           pageProperties,
           layout,
-          page: unflatten(newFlat),
+          page: { ...word as NormalPage, data: unflatten(newFlat) },
         });
       }}>
       {children}

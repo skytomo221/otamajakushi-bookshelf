@@ -4,7 +4,6 @@ import { Page } from 'otamashelf/Page';
 import { PageProperties } from 'otamashelf/PageProperties';
 import React from 'react';
 
-import Button from './Button';
 import Chip from './Chip';
 import Div from './Div';
 import Draggable from './Draggable';
@@ -19,6 +18,8 @@ import H4 from './H4';
 import H5 from './H5';
 import H6 from './H6';
 import Mime from './Mime';
+import ModifyPageButton from './ModifyPageButton';
+import ModifyPagesButton from './ModifyPagesButton';
 import P from './P';
 import Section from './Section';
 import Span from './Span';
@@ -50,21 +51,6 @@ export default function Recursion({
         const key = createKey(contents, index, word);
         if (typeof child === 'string') return <Text key={key} text={child} />;
         switch (child.component) {
-          case 'button':
-            return (
-              <Button
-                key={key}
-                baseReference={baseReference}
-                className={child.class}
-                onClick={child.onClick}
-                contents={child.contents}
-                edit={edit}
-                editable={editable}
-                pageProperties={pageProperties}
-                layout={layout}
-                word={word}
-              />
-            );
           case 'chip':
             return (
               <Chip
@@ -207,6 +193,36 @@ export default function Recursion({
             );
           case 'mime':
             return <Mime key={key} text={child.text} mime={child.mime} />;
+          case 'modify-pages-button':
+            return (
+              <ModifyPagesButton
+                key={key}
+                baseReference={baseReference}
+                className={child.class}
+                onClick={child.onClick}
+                contents={child.contents}
+                edit={edit}
+                editable={editable}
+                pageProperties={pageProperties}
+                layout={layout}
+                word={word}
+              />
+            );
+          case 'modify-page-button':
+            return (
+              <ModifyPageButton
+                key={key}
+                baseReference={baseReference}
+                className={child.class}
+                onClick={child.onClick}
+                contents={child.contents}
+                edit={edit}
+                editable={editable}
+                pageProperties={pageProperties}
+                layout={layout}
+                word={word}
+              />
+            );
           case 'p':
             return (
               <P

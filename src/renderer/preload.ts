@@ -44,7 +44,10 @@ contextBridge.exposeInMainWorld('api', {
     bookPath: string,
   ): Promise<{ page: DescriptionPage; layout: LayoutComponent }> =>
     ipcRenderer.invoke('description:read', bookPath),
-  updatePage: (bookPath: string, page: Page): Promise<number> =>
+  updatePage: (
+    bookPath: string,
+    page: Page,
+  ): Promise<{ page: NormalPage; layout: LayoutComponent }> =>
     ipcRenderer.invoke('page:update', bookPath, page),
   updateDescription: (bookPath: string, description: string): Promise<number> =>
     ipcRenderer.invoke('description:update', bookPath, description),
@@ -57,12 +60,32 @@ contextBridge.exposeInMainWorld('api', {
       extensionId,
       configuration,
     ),
+  modifyBook: (
+    bookPath: string,
+    bookModifierId: string,
+    script: JSON,
+  ): Promise<boolean> =>
+    ipcRenderer.invoke('book:modify', bookPath, bookModifierId, script),
+  modifyPages: (
+    bookPath: string,
+    pageId: string,
+    pagesModifierId: string,
+    script: JSON,
+  ): Promise<boolean> =>
+    ipcRenderer.invoke(
+      'book:modify-with-page',
+      bookPath,
+      pageId,
+      pagesModifierId,
+      script,
+    ),
   modifyPage: (
     bookPath: string,
     pageId: string,
+    pageModifierId: string,
     script: JSON,
-  ): Promise<Mediator> =>
-    ipcRenderer.invoke('page:modify', bookPath, pageId, script),
+  ): Promise<{ page: NormalPage; layout: LayoutComponent }> =>
+    ipcRenderer.invoke('page:modify', bookPath, pageId, pageModifierId, script),
   mofidyDescription: (
     bookPath: string,
     description: string,

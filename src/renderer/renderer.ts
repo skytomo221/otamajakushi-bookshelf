@@ -40,17 +40,32 @@ export type Api = {
   readDescription: (
     bookPath: string,
   ) => Promise<{ page: DescriptionPage; layout: LayoutComponent }>;
-  updatePage: (bookPath: string, page: Page) => Promise<number>;
+  updatePage: (
+    bookPath: string,
+    page: Page,
+  ) => Promise<{ page: NormalPage; layout: LayoutComponent }>;
   updateDescription: (bookPath: string, description: string) => Promise<number>;
   updateExtensionConfiguration: (
     extensionId: string,
     configuration: ConfigurationPage,
   ) => Promise<number>;
+  modifyBook: (
+    bookPath: string,
+    bookModifierId: string,
+    script: Json,
+  ) => Promise<{ page: NormalPage; layout: LayoutComponent }>;
+  modifyPages: (
+    bookPath: string,
+    pageId: string,
+    pagesModifierId: string,
+    script: Json,
+  ) => Promise<{ page: NormalPage; layout: LayoutComponent }>;
   modifyPage: (
     bookPath: string,
     pageId: string,
+    pageModifierId: string,
     script: Json,
-  ) => Promise<Mediator>;
+  ) => Promise<{ page: NormalPage; layout: LayoutComponent }>;
   mofidyDescription: (
     bookPath: string,
     description: string,
@@ -82,10 +97,7 @@ export type Api = {
     (ExtensionBaseProperties & { type: 'style-theme' })[]
   >;
   applyStyleTheme: (id: string) => Promise<StyleThemeParameters>;
-  convertMime: (
-    mime: string,
-    text: string,
-  ) => Promise<ConvertReturns>;
+  convertMime: (mime: string, text: string) => Promise<ConvertReturns>;
   readAllBookCreators: () => Promise<
     (ExtensionBaseProperties & { bookFormatPattern: string } & {
       type: 'book-creator';
