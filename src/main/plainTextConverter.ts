@@ -1,17 +1,9 @@
 import MarkdownIt from 'markdown-it';
-import { ConfigurationReturns } from 'otamashelf/ExtensionBase';
-import { ConfigurationPage } from 'otamashelf/Page';
 import {
   ConvertProps,
   ConvertReturns,
   TextConverter,
 } from 'otamashelf/TextConverter';
-
-const configuration: ConfigurationPage = {
-  specialPage: 'configuration',
-  pageFormat: 'simple-configuration-format-v1',
-  data: {},
-};
 
 const plainTextConverter: TextConverter = {
   properties: {
@@ -22,8 +14,8 @@ const plainTextConverter: TextConverter = {
     mime: 'text/plain',
     type: 'text-converter',
   },
-  configuration(): ConfigurationReturns {
-    return { configuration };
+  defaultConfiguration() {
+    return { configuration: {}, configurationsSchema: {} };
   },
   convert({ text }: ConvertProps): Promise<ConvertReturns> {
     const md = new MarkdownIt();

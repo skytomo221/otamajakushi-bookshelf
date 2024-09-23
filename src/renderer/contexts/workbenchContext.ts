@@ -1,12 +1,13 @@
 import { SearchResult } from 'otamashelf/PageExplorer';
-import { PageProperties } from 'otamashelf/PageProperties';
+import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
 
 import makeStore from './makeStore';
+import { NormalPageReference } from 'otamashelf/PageReference';
 
 type Workbench = {
   path: string;
   editable: boolean;
-  indexes: PageProperties[];
+  indexes: (NormalPageReference & PageDisplayInformation)[];
   searchResults: SearchResult[];
   pageFormats: string[];
   selectedPageFormatIndex: number;
@@ -39,14 +40,14 @@ type Action =
       type: 'REMOVE_INDEX';
       payload: {
         path: string;
-        pageProperties: PageProperties;
+        index: NormalPageReference;
       };
     }
   | {
       type: 'UPDATE_INDEXES';
       payload: {
         path: string;
-        indexes: PageProperties[];
+        indexes: (NormalPageReference & PageDisplayInformation)[];
       };
     }
   | {
@@ -127,7 +128,7 @@ const reducer = (state: State, action: Action) => {
           ? {
               ...workbench,
               indexes: workbench.indexes.filter(
-                index => index !== payload.pageProperties,
+                index => index !== payload.index,
               ),
             }
           : workbench,

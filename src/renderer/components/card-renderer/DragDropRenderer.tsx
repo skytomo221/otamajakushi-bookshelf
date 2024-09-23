@@ -1,23 +1,24 @@
 import flatten, { unflatten } from 'flat';
 import { Layout } from 'otamashelf/LayoutCard';
 import { NormalPage, Page } from 'otamashelf/Page';
-import { PageProperties } from 'otamashelf/PageProperties';
+import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
 import React, { ReactNode } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
 
 import { Mediator } from '../../Mediator';
 import { usePagesDispatch } from '../../contexts/pagesContext';
+import { NormalPageReference } from 'otamashelf/PageReference';
 
 const { api } = window;
 
 type Props = {
-  pageProperties: PageProperties;
+  pageIndex: NormalPageReference & PageDisplayInformation;
   word: Page;
   layout: Layout;
   children: ReactNode;
 };
 export default function DragDropRenderer({
-  pageProperties,
+  pageIndex,
   word,
   layout,
   children,
@@ -25,7 +26,7 @@ export default function DragDropRenderer({
   const dispatch = usePagesDispatch();
   function onSelectedWordPush(mediator: Mediator) {
     api
-      .updatePage(mediator.pageProperties.path, mediator.page)
+      .updatePage(mediator.index.bookPath, mediator.page)
       .then(({ page: newPage, layout: newLayout }) => dispatch({ type: 'UPDATE_PAGE', payload: { ...mediator, page: newPage, layout: newLayout } }));
   }
   const flat = flatten(word.data) as { [name: string]: unknown };
@@ -112,7 +113,7 @@ export default function DragDropRenderer({
           }
         });
         onSelectedWordPush({
-          pageProperties,
+          index: pageIndex,
           layout,
           page: { ...word as NormalPage, data: unflatten(newFlat) },
         });

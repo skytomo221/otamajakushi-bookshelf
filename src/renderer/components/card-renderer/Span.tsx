@@ -1,6 +1,6 @@
 import { Layout, LayoutComponent } from 'otamashelf/LayoutCard';
 import { Page } from 'otamashelf/Page';
-import { PageProperties } from 'otamashelf/PageProperties';
+import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
 import React from 'react';
 
 import { useThemeStore } from '../../contexts/themeContext';
@@ -8,6 +8,7 @@ import { useThemeStore } from '../../contexts/themeContext';
 // eslint-disable-next-line import/no-cycle
 import Recursion from './Recursion';
 import styleJoin from './styleJoin';
+import { NormalPageReference } from 'otamashelf/PageReference';
 
 interface Props {
   baseReference: string;
@@ -15,7 +16,7 @@ interface Props {
   contents: LayoutComponent[];
   edit: () => void;
   editable: boolean;
-  pageProperties: PageProperties;
+  pageIndex: NormalPageReference & PageDisplayInformation;
   layout: Layout;
   word: Page;
 }
@@ -26,7 +27,7 @@ export default function Span({
   contents,
   edit,
   editable,
-  pageProperties,
+  pageIndex,
   layout,
   word,
 }: Props): JSX.Element {
@@ -38,7 +39,7 @@ export default function Span({
         contents={contents}
         edit={edit}
         editable={editable}
-        pageProperties={pageProperties}
+        pageIndex={pageIndex}
         layout={layout}
         word={word}
       />

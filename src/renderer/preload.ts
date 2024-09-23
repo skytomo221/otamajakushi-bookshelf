@@ -3,11 +3,22 @@ import { contextBridge, ipcRenderer } from 'electron';
 import log from 'electron-log';
 import { ExtensionBaseProperties } from 'otamashelf/ExtensionProperties';
 import { LayoutComponent } from 'otamashelf/LayoutCard';
-import { ConfigurationPage, DescriptionPage, NormalPage, Page, TemplatePage } from 'otamashelf/Page';
+import { Book } from 'otamashelf/Book';
+import {
+  BookTemplatePage,
+  PageTemplatePage,
+  Page,
+  BookParametersPage,
+  NormalPage,
+  DescriptionPage,
+} from 'otamashelf/Page';
 import { SearchResult } from 'otamashelf/PageExplorer';
-import { PageProperties } from 'otamashelf/PageProperties';
+import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
 import { SearchCard } from 'otamashelf/SearchCard';
 import { ConvertProps, ConvertReturns } from 'otamashelf/TextConverter';
+import { Configuration } from 'otamashelf/Configuration';
+import { ConfigurationScheme } from 'otamashelf/ConfigurationScheme';
+import { NormalPageReference } from 'otamashelf/PageReference';
 
 import StyleThemeParameters from '../common/StyleThemeParameters';
 
@@ -17,29 +28,26 @@ contextBridge.exposeInMainWorld('api', {
   windowMinimize: () => ipcRenderer.invoke('window-minimize'),
   windowMaximize: () => ipcRenderer.invoke('window-maximize'),
   windowClose: () => ipcRenderer.invoke('window-close'),
-  requestBook: (bookCreatorId: string): Promise<TemplatePage> =>
+  requestBook: (bookCreatorId: string): Promise<BookTemplatePage> =>
     ipcRenderer.invoke('book:request', bookCreatorId),
-  createBook: (
-    bookCreatorId: string,
-    book: TemplatePage,
-  ): Promise<TemplatePage> =>
+  createBook: (bookCreatorId: string, book: BookTemplatePage): Promise<Book> =>
     ipcRenderer.invoke('book:create', bookCreatorId, book),
   openBook: (type: 'directory' | 'file'): Promise<string[]> =>
     ipcRenderer.invoke('book:open', type),
   saveBook: (bookPath: string): Promise<boolean> =>
     ipcRenderer.invoke('book:save', bookPath),
-  requestPage: (bookPath: string): Promise<TemplatePage> =>
+  requestPage: (bookPath: string): Promise<PageTemplatePage> =>
     ipcRenderer.invoke('page:request', bookPath),
-  createPage: (bookPath: string, template: TemplatePage): Promise<Page> =>
+  createPage: (bookPath: string, template: PageTemplatePage): Promise<Page> =>
     ipcRenderer.invoke('page:create', bookPath, template),
   readPage: (
-    index: PageProperties,
+    index: PageDisplayInformation,
   ): Promise<{ page: NormalPage; layout: LayoutComponent }> =>
     ipcRenderer.invoke('page:read', index),
-  readConfiguration: (
-    bookPath: string,
-  ): Promise<{ page: ConfigurationPage; layout: LayoutComponent }> =>
-    ipcRenderer.invoke('configuration:read', bookPath),
+  readBookParameters: (bookPath: string): Promise<BookParametersPage> =>
+    ipcRenderer.invoke('book-parameters:read', bookPath),
+  updateBookParameters: (bookPath: string, parameters: BookParametersPage) =>
+    ipcRenderer.invoke('book-parameters:update', bookPath, parameters),
   readDescription: (
     bookPath: string,
   ): Promise<{ page: DescriptionPage; layout: LayoutComponent }> =>
@@ -51,15 +59,12 @@ contextBridge.exposeInMainWorld('api', {
     ipcRenderer.invoke('page:update', bookPath, page),
   updateDescription: (bookPath: string, description: string): Promise<number> =>
     ipcRenderer.invoke('description:update', bookPath, description),
-  updateExtensionConfiguration: (
-    extensionId: string,
-    configuration: ConfigurationPage,
-  ): Promise<number> =>
-    ipcRenderer.invoke(
-      'extension-configuration:update',
-      extensionId,
-      configuration,
-    ),
+  readConfiguration: (): Promise<{
+    configuration: Configuration;
+    configurationsSchema: ConfigurationScheme;
+  }> => ipcRenderer.invoke('configuration:read', bookPath),
+  updateConfiguration: (configuration: Configuration): Promise<number> =>
+    ipcRenderer.invoke('configuration:update', configuration),
   modifyBook: (
     bookPath: string,
     bookModifierId: string,
@@ -92,11 +97,15 @@ contextBridge.exposeInMainWorld('api', {
     script: JSON,
   ): Promise<string> =>
     ipcRenderer.invoke('description:modify', bookPath, description, script),
-  generateIndex: (
+  indexAllPages: (
     bookPath: string,
     pageFormat: string,
-  ): Promise<PageProperties[]> =>
-    ipcRenderer.invoke('index:generate', bookPath, pageFormat),
+  ): Promise<PageDisplayInformation[]> =>
+    ipcRenderer.invoke(
+      'all-pages:index',
+      bookPath,
+      pageFormat,
+    ),
   generateSearchIndex: (
     bookPath: string,
     pageFormat: string,
@@ -129,8 +138,8 @@ contextBridge.exposeInMainWorld('api', {
       pageExplorerId,
       searchWord,
     ),
-  deletePage: (bookPath: string, index: PageProperties): Promise<boolean> =>
-    ipcRenderer.invoke('page:delete', bookPath, index),
+  deletePage: (normalPageReference: NormalPageReference): Promise<number> =>
+    ipcRenderer.invoke('page:delete', normalPageReference),
   readAllPageFormats: (bookPath: string): Promise<string[]> =>
     ipcRenderer.invoke('page-format:all', bookPath),
   readAllStyleThemes: (): Promise<

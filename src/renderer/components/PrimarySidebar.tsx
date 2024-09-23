@@ -1,7 +1,7 @@
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { SearchResult } from 'otamashelf/PageExplorer';
-import { PageProperties } from 'otamashelf/PageProperties';
+import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
 import * as React from 'react';
 import { VList } from 'virtua';
 
@@ -13,6 +13,7 @@ import {
   useWorkbenchDispatch,
   useWorkbenchStore,
 } from '../contexts/workbenchContext';
+import { NormalPageReference } from 'otamashelf/PageReference';
 
 const { api } = window;
 
@@ -25,11 +26,11 @@ function Indexes(): JSX.Element {
   const pageDispatch = usePagesDispatch();
   const workbenchDispatch = useWorkbenchDispatch();
   const [searchResults, setSearchResults] = React.useState<SearchResult[]>([]);
-  function onSelectedWordFetch(pageProperties: PageProperties) {
-    api.readPage(pageProperties).then(result => {
+  function onSelectedWordFetch(index: NormalPageReference & PageDisplayInformation) {
+    api.readPage(index).then(result => {
       pageDispatch({
         type: 'ADD_PAGE',
-        payload: { ...result, pageProperties },
+        payload: { ...result, index },
       });
     });
   }
@@ -68,7 +69,7 @@ function Indexes(): JSX.Element {
       });
   }
   const selectedWords = usePagesStore();
-  const onDelete = React.useCallback((index: PageProperties) => {
+  const onDelete = React.useCallback((index: NormalPageReference) => {
     const { path } = primarySidebar;
     if (path === null) {
       return;
@@ -77,7 +78,7 @@ function Indexes(): JSX.Element {
     if (workbench === undefined) {
       throw new Error('workbench is null');
     }
-    api.deletePage(path, index);
+    api.deletePage(index);
     pageDispatch({ type: 'REMOVE_PAGE', payload: index });
   }, []);
   const workbench = workbenches.find(w => w.path === primarySidebar.path);
@@ -110,7 +111,7 @@ function Indexes(): JSX.Element {
         </div>
       )}
       {(indexes ?? []).map(index => (
-        <div key={index.id} className={theme['Index.li']}>
+        <div key={index.pageId} className={theme['Index.li']}>
           <button
             aria-label={index.title}
             className={theme['Index.button']}
@@ -118,8 +119,8 @@ function Indexes(): JSX.Element {
               if (
                 (selectedWords ?? []).every(
                   m =>
-                    m.pageProperties.id !== index.id ||
-                    m.pageProperties.path !== path,
+                    m.index.pageId !== index.pageId ||
+                    m.index.bookPath !== path,
                 )
               ) {
                 onSelectedWordFetch(index);
@@ -166,11 +167,11 @@ function SearchResults(): JSX.Element {
   const { editable, indexes, searchResults } = workbench;
   function onSelectedWordFetch(searchResult: SearchResult) {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const pageProperties = indexes.find(i => i.id === searchResult.id)!;
-    api.readPage(pageProperties).then(result => {
+    const index = indexes.find(i => i.pageId === searchResult.id)!;
+    api.readPage(index).then(result => {
       pageDispatch({
         type: 'ADD_PAGE',
-        payload: { ...result, pageProperties },
+        payload: { ...result, index },
       });
     });
   }
@@ -180,9 +181,8 @@ function SearchResults(): JSX.Element {
       return;
     }
     api.deletePage(
-      path,
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      workbench.indexes.find(i => i.id === searchResult.id)!,
+      workbench.indexes.find(i => i.pageId === searchResult.id)!,
     );
     workbenchDispatch({
       type: 'UPDATE_SEARCH_RESULTS',
@@ -212,7 +212,7 @@ function SearchResults(): JSX.Element {
         </div>
       )}
       {(searchResults ?? []).map(searchResult => {
-        const index = workbench.indexes.find(i => i.id === searchResult.id);
+        const index = workbench.indexes.find(i => i.pageId === searchResult.id);
         if (index === undefined) {
           return <></>;
         }

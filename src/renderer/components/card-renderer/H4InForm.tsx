@@ -1,5 +1,5 @@
 import { Layout, FormDivComponent } from 'otamashelf/LayoutCard';
-import { PageProperties } from 'otamashelf/PageProperties';
+import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
 import React from 'react';
 
 import { useThemeStore } from '../../contexts/themeContext';
@@ -7,6 +7,7 @@ import { useThemeStore } from '../../contexts/themeContext';
 // eslint-disable-next-line import/no-cycle
 import RecursionInForm from './RecursionInForm';
 import styleJoin from './styleJoin';
+import { NormalPageReference } from 'otamashelf/PageReference';
 
 interface Props {
   baseReference: string;
@@ -14,7 +15,7 @@ interface Props {
   contents: FormDivComponent[];
   submit: () => void;
   reset: () => void;
-  pageProperties: PageProperties;
+  pageIndex: NormalPageReference & PageDisplayInformation;
   layout: Layout;
   flattenCard: { [key: string]: string };
   setFlattenCard: (flattenCard: { [key: string]: string }) => void;
@@ -26,7 +27,7 @@ export default function H4InForm({
   contents,
   submit,
   reset,
-  pageProperties,
+  pageIndex,
   layout,
   flattenCard,
   setFlattenCard,
@@ -39,7 +40,7 @@ export default function H4InForm({
         contents={contents}
         submit={submit}
         reset={reset}
-        pageProperties={pageProperties}
+        pageIndex={pageIndex}
         layout={layout}
         flattenCard={flattenCard}
         setFlattenCard={setFlattenCard}

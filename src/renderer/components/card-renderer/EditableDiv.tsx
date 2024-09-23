@@ -4,7 +4,7 @@ import {
   LayoutComponent,
 } from 'otamashelf/LayoutCard';
 import { Page } from 'otamashelf/Page';
-import { PageProperties } from 'otamashelf/PageProperties';
+import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
 import React, { useState } from 'react';
 
 import { useThemeStore } from '../../contexts/themeContext';
@@ -13,6 +13,7 @@ import FormDiv from './FormDiv';
 // eslint-disable-next-line import/no-cycle
 import Recursion from './Recursion';
 import styleJoin from './styleJoin';
+import { NormalPageReference } from 'otamashelf/PageReference';
 
 interface Props {
   baseReference: string;
@@ -20,7 +21,7 @@ interface Props {
   inputs: FormDivComponent[];
   outputs: LayoutComponent[];
   editable: boolean;
-  pageProperties: PageProperties;
+  pageIndex: NormalPageReference & PageDisplayInformation;
   layout: Layout;
   word: Page;
 }
@@ -31,7 +32,7 @@ export default function EditableDiv({
   inputs,
   outputs,
   editable,
-  pageProperties,
+  pageIndex,
   layout,
   word,
 }: Props): JSX.Element {
@@ -43,7 +44,7 @@ export default function EditableDiv({
       inputs={inputs}
       submit={() => setEdit(false)}
       reset={() => setEdit(false)}
-      pageProperties={pageProperties}
+      pageIndex={pageIndex}
       layout={layout}
       word={word}
     />
@@ -54,7 +55,7 @@ export default function EditableDiv({
         contents={outputs}
         edit={() => setEdit(true)}
         editable={editable}
-        pageProperties={pageProperties}
+        pageIndex={pageIndex}
         layout={layout}
         word={word}
       />

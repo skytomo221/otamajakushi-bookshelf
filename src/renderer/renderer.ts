@@ -2,15 +2,26 @@ import log from 'electron-log';
 import { ExtensionBaseProperties } from 'otamashelf/ExtensionProperties';
 import { Json } from 'otamashelf/Json';
 import { LayoutComponent } from 'otamashelf/LayoutCard';
-import { TemplatePage, Page, ConfigurationPage, NormalPage, DescriptionPage } from 'otamashelf/Page';
+import {
+  BookTemplatePage,
+  PageTemplatePage,
+  Page,
+  BookParametersPage,
+  NormalPage,
+  DescriptionPage,
+} from 'otamashelf/Page';
 import { SearchResult } from 'otamashelf/PageExplorer';
-import { PageProperties } from 'otamashelf/PageProperties';
+import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
 import { SearchCard } from 'otamashelf/SearchCard';
 import { ConvertReturns } from 'otamashelf/TextConverter';
 
 import StyleThemeParameters from '../common/StyleThemeParameters';
 
 import { Mediator } from './Mediator';
+import { Book } from 'otamashelf/Book';
+import { Configuration } from 'otamashelf/Configuration';
+import { ConfigurationScheme } from 'otamashelf/ConfigurationScheme';
+import { NormalPageReference } from 'otamashelf/PageReference';
 
 declare global {
   interface Window {
@@ -22,21 +33,24 @@ export type Api = {
   windowMinimize: () => void;
   windowMaximize: () => void;
   windowClose: () => void;
-  requestBook: (bookCreatorId: string) => Promise<TemplatePage>;
-  createBook: (
-    bookCreatorId: string,
-    book: TemplatePage,
-  ) => Promise<TemplatePage>;
+  requestBook: (bookCreatorId: string) => Promise<BookTemplatePage>;
+  createBook: (bookCreatorId: string, book: BookTemplatePage) => Promise<Book>;
   openBook: (type: 'directory' | 'file') => Promise<string[]>;
   saveBook: (bookPath: string) => Promise<boolean>;
-  requestPage: (bookPath: string) => Promise<TemplatePage>;
-  createPage: (bookPath: string, template: TemplatePage) => Promise<Page>;
+  requestPage: (bookPath: string) => Promise<PageTemplatePage>;
+  createPage: (bookPath: string, template: PageTemplatePage) => Promise<Page>;
   readPage: (
-    index: PageProperties,
+    normalPageReference: NormalPageReference,
   ) => Promise<{ page: NormalPage; layout: LayoutComponent }>;
-  readConfiguration: (
+  readBookParameters: (bookPath: string) => Promise<BookParametersPage>;
+  updateBookParameters: (
     bookPath: string,
-  ) => Promise<{ page: ConfigurationPage; layout: LayoutComponent }>;
+    parameters: BookParametersPage,
+  ) => Promise<number>;
+  readConfiguration: () => Promise<{
+    configuration: Configuration;
+    configurationsSchema: ConfigurationScheme;
+  }>;
   readDescription: (
     bookPath: string,
   ) => Promise<{ page: DescriptionPage; layout: LayoutComponent }>;
@@ -45,10 +59,7 @@ export type Api = {
     page: Page,
   ) => Promise<{ page: NormalPage; layout: LayoutComponent }>;
   updateDescription: (bookPath: string, description: string) => Promise<number>;
-  updateExtensionConfiguration: (
-    extensionId: string,
-    configuration: ConfigurationPage,
-  ) => Promise<number>;
+  updateConfiguration: (configuration: Configuration) => Promise<number>;
   modifyBook: (
     bookPath: string,
     bookModifierId: string,
@@ -71,10 +82,10 @@ export type Api = {
     description: string,
     script: Json,
   ) => Promise<string>;
-  generateIndex: (
+  indexAllPages: (
     bookPath: string,
     pageFormat: string,
-  ) => Promise<PageProperties[]>;
+  ) => Promise<(NormalPageReference & PageDisplayInformation)[]>;
   generateSearchIndex: (
     bookPath: string,
     pageFormat: string,
@@ -91,7 +102,7 @@ export type Api = {
     pageExplorerId: string,
     searchWord: string,
   ) => Promise<SearchResult[]>;
-  deletePage: (bookPath: string, index: PageProperties) => Promise<boolean>;
+  deletePage: (normalPageReference: NormalPageReference) => Promise<number>;
   readAllPageFormats: (bookPath: string) => Promise<string[]>;
   readAllStyleThemes: () => Promise<
     (ExtensionBaseProperties & { type: 'style-theme' })[]

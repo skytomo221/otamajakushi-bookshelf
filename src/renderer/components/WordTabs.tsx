@@ -17,7 +17,7 @@ export default function WordTabs(): JSX.Element {
   const [value, setValue] = useState(0);
   const selectedWords = usePagesStore();
   function removeSelectedWord(selectedWord: Mediator) {
-    dispatch({ type: 'REMOVE_PAGE', payload: selectedWord.pageProperties });
+    dispatch({ type: 'REMOVE_PAGE', payload: selectedWord.index });
   };
 
   return (
@@ -35,9 +35,9 @@ export default function WordTabs(): JSX.Element {
               <Tab
                 index={index}
                 value={value}
-                key={`${mediator.pageProperties.path}/${mediator.pageProperties.id}`}
+                key={`${mediator.index.bookPath}/${mediator.index.pageId}`}
                 onClick={() => setValue(index)}>
-                {mediator.pageProperties.title}
+                {mediator.index.title}
                 <CloseIcon
                   fontSize="small"
                   onClick={() => {
@@ -52,10 +52,10 @@ export default function WordTabs(): JSX.Element {
           <TabPanel
             index={index}
             value={value}
-            key={`${mediator.pageProperties.path}/${mediator.pageProperties.id}`}>
+            key={`${mediator.index.bookPath}/${mediator.index.pageId}`}>
             <CardRenderer
               page={mediator.page}
-              pageProperties={mediator.pageProperties}
+              index={mediator.index}
               layout={mediator.layout}
             />
           </TabPanel>

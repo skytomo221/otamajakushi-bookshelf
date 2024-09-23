@@ -7,23 +7,23 @@ import DragDropRenderer from './DragDropRenderer';
 import Recursion from './Recursion';
 
 export default function CardRenderer({
-  pageProperties,
+  index,
   page: word,
   layout,
 }: Mediator): JSX.Element {
   const state = useWorkbenchStore();
   const editable =
-    state?.find(workbench => workbench.path === pageProperties.path)
+    state?.find(workbench => workbench.path === index.bookPath)
       ?.editable ?? false;
   return (
     <DragDropRenderer
-      pageProperties={pageProperties}
+      pageIndex={index}
       word={word}
       layout={layout}>
       <Recursion
         baseReference=""
         layout={layout}
-        pageProperties={pageProperties}
+        pageIndex={index}
         word={word}
         contents={[layout]}
         edit={() => {

@@ -1,12 +1,4 @@
-import { ConfigurationReturns } from 'otamashelf/ExtensionBase';
-import { ConfigurationPage } from 'otamashelf/Page';
 import { StyleReturns, StyleTheme } from 'otamashelf/StyleTheme';
-
-const configuration: ConfigurationPage = {
-  specialPage: 'configuration',
-  pageFormat: 'simple-configuration-format-v1',
-  data: {},
-};
 
 const otamaLightTheme: StyleTheme = {
   properties: {
@@ -16,8 +8,8 @@ const otamaLightTheme: StyleTheme = {
     type: 'style-theme',
     author: 'skytomo221',
   },
-  configuration(): ConfigurationReturns {
-    return { configuration };
+  defaultConfiguration() {
+    return { configuration: {}, configurationsSchema: {} };
   },
   style(): Promise<StyleReturns> {
     return Promise.resolve({

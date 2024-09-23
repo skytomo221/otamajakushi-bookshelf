@@ -26,7 +26,7 @@ export default function Hero(): JSX.Element {
     const pageFormats = await api.readAllPageFormats(path);
     const selectedPageFormatIndex = 0;
     const selectedPageFormat = pageFormats[selectedPageFormatIndex];
-    const indexes = await api.generateIndex(path, selectedPageFormat);
+    const indexes = await api.indexAllPages(path, selectedPageFormat);
     const searchResults = [] as SearchResult[];
     const searchCriteria = await api.readAllSearchCriteria();
     const selectedSearchCriterionIndex = 0;

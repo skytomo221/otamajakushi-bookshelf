@@ -12,13 +12,13 @@ import { Book } from 'otamashelf/Book';
 import { Json } from 'otamashelf/Json';
 import Otamashelf from 'otamashelf/Otamashelf';
 import {
-  ConfigurationPage,
+  BookParametersPage,
+  BookTemplatePage,
   DescriptionPage,
   NormalPage,
   Page,
-  TemplatePage,
+  PageTemplatePage,
 } from 'otamashelf/Page';
-import { PageProperties } from 'otamashelf/PageProperties';
 import { ConvertReturns } from 'otamashelf/TextConverter';
 import { endsWithPageExplorer } from 'otamashelf/extensions/endsWithPageExplorer';
 import { includesPageExplorer } from 'otamashelf/extensions/includesPageExplorer';
@@ -26,10 +26,10 @@ import { otmAddContentPageModifier } from 'otamashelf/extensions/otmAddContentPa
 import { otmBothSearchIndexGenerator } from 'otamashelf/extensions/otmBothSearchIndexGenerator';
 import { otmCreator } from 'otamashelf/extensions/otmCreator';
 import { otmDiscriminator } from 'otamashelf/extensions/otmDiscriminator';
-import { otmIndexGenerator } from 'otamashelf/extensions/otmIndexGenerator';
 import { otmLayoutBuilder } from 'otamashelf/extensions/otmLayoutBuilder';
 import { otmLoader } from 'otamashelf/extensions/otmLoader';
 import { otmPageCreator } from 'otamashelf/extensions/otmPageCreator';
+import { otmPagesIndexer } from 'otamashelf/extensions/otmPagesIndexer';
 import { otmRemoveContentPageModifier } from 'otamashelf/extensions/otmRemoveContentPageModifier';
 import { otmRenumberModifier } from 'otamashelf/extensions/otmRenumberModifier';
 import { otmSaver } from 'otamashelf/extensions/otmSaver';
@@ -44,6 +44,8 @@ import markdownTextConverter from './markdownTextConverter';
 import otamaDarkTheme from './otamaDarkTheme';
 import otamaDefaultTheme from './otamaDefaultTheme';
 import otamaLightTheme from './otamaLightTheme';
+import { Configuration } from 'otamashelf/Configuration';
+import { NormalPageReference } from 'otamashelf/PageReference';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
@@ -76,10 +78,10 @@ const createWindow = async () => {
   otamashelf.registerExtension(otmBothSearchIndexGenerator);
   otamashelf.registerExtension(otmCreator);
   otamashelf.registerExtension(otmDiscriminator);
-  otamashelf.registerExtension(otmIndexGenerator);
   otamashelf.registerExtension(otmLayoutBuilder);
   otamashelf.registerExtension(otmLoader);
   otamashelf.registerExtension(otmPageCreator);
+  otamashelf.registerExtension(otmPagesIndexer);
   otamashelf.registerExtension(otmRemoveContentPageModifier);
   otamashelf.registerExtension(otmRenumberModifier);
   otamashelf.registerExtension(otmSaver);
@@ -234,13 +236,13 @@ const createWindow = async () => {
 
   ipcMain.handle(
     'book:request',
-    (_, bookCreatorId: string): Promise<TemplatePage> =>
+    (_, bookCreatorId: string): Promise<BookTemplatePage> =>
       otamashelf.requestNewBook(bookCreatorId),
   );
 
   ipcMain.handle(
     'book:create',
-    (_, bookCreatorId: string, template: TemplatePage): Promise<Book> =>
+    (_, bookCreatorId: string, template: BookTemplatePage): Promise<Book> =>
       otamashelf.createBook(bookCreatorId, template),
   );
 
@@ -283,37 +285,52 @@ const createWindow = async () => {
 
   ipcMain.handle(
     'page:request',
-    (_, bookPath: string): Promise<TemplatePage> =>
+    (_, bookPath: string): Promise<PageTemplatePage> =>
       otamashelf.requestNewPage(bookPath),
   );
 
   ipcMain.handle(
     'page:create',
-    (_, bookPath: string, template: TemplatePage): Promise<Page> =>
+    (_, bookPath: string, template: PageTemplatePage): Promise<Page> =>
       otamashelf.createPage(bookPath, template),
   );
 
-  ipcMain.handle('page:read', async (_, index: PageProperties) =>
-    otamashelf.readPage(index),
+  ipcMain.handle(
+    'page:read',
+    async (_, normalPageReference: NormalPageReference) =>
+      otamashelf.readPage(normalPageReference),
   );
 
-  ipcMain.handle('configuraion:read', (_, bookPath: string) =>
-    otamashelf.readConfiguration(bookPath),
+  ipcMain.handle('book-parameters:read', (_, bookPath: string) =>
+    otamashelf.readBookParameters(bookPath),
+  );
+
+  ipcMain.handle(
+    'book-parameters:update',
+    async (_, bookPath: string, parameters: BookParametersPage) =>
+      otamashelf.updateBookParameters(bookPath, parameters),
   );
 
   ipcMain.handle('description:read', async (_, bookPath: string) =>
     otamashelf.readDescription(bookPath),
   );
 
-  ipcMain.handle('page:update', async (_, bookPath: string, page: NormalPage) => {
-    otamashelf.updatePage(bookPath, page);
-    return otamashelf.readPage({ path: bookPath, id: page.id, title: "", preview: "" });
-  });
+  ipcMain.handle(
+    'page:update',
+    async (_, bookPath: string, page: NormalPage) => {
+      otamashelf.updatePage(bookPath, page);
+      return otamashelf.readPage({ type: 'normal', bookPath, pageId: page.id });
+    },
+  );
+
+  ipcMain.handle('configuraion:read', async () =>
+    otamashelf.configurationsRegistry.get(),
+  );
 
   ipcMain.handle(
     'configuraion:update',
-    async (_, bookPath: string, configuration: ConfigurationPage) =>
-      otamashelf.updateConfiguration(bookPath, configuration),
+    async (_, configuration: Configuration) =>
+      otamashelf.updateConfiguration(configuration),
   );
 
   ipcMain.handle(
@@ -323,18 +340,11 @@ const createWindow = async () => {
   );
 
   ipcMain.handle(
-    'extension-configuration:update',
-    async (_, id: string, configuraion: ConfigurationPage) =>
-      otamashelf.updateExtensionConfiguration(id, configuraion),
-  );
-
-  ipcMain.handle(
     'book:modify',
-    async (_, bookPath: string, bookModifierId: string, script: Json) => 
-    {
+    async (_, bookPath: string, bookModifierId: string, script: Json) => {
       otamashelf.modifyBook(bookPath, bookModifierId, script);
       return true;
-    }
+    },
   );
 
   ipcMain.handle(
@@ -350,21 +360,16 @@ const createWindow = async () => {
 
   ipcMain.handle(
     'page:modify',
-    async (_, bookPath: string, pageId: string, pageModifierId: string, script: Json) =>
-      {
-        log.info('page:modify', bookPath, pageId, pageModifierId, script);
-        return otamashelf.modifyPage(bookPath, pageId, pageModifierId, script)
-      }
-  );
-
-  ipcMain.handle(
-    'configuraion:modify',
     async (
       _,
       bookPath: string,
-      configuration: ConfigurationPage,
+      pageId: string,
+      pageModifierId: string,
       script: Json,
-    ) => otamashelf.modifyConfiguration(bookPath, configuration, script),
+    ) => {
+      log.info('page:modify', bookPath, pageId, pageModifierId, script);
+      return otamashelf.modifyPage(bookPath, pageId, pageModifierId, script);
+    },
   );
 
   ipcMain.handle(
@@ -374,9 +379,9 @@ const createWindow = async () => {
   );
 
   ipcMain.handle(
-    'index:generate',
+    'all-pages:index',
     async (_, bookPath: string, pageFormat: string) =>
-      otamashelf.generateIndex(bookPath, pageFormat),
+      otamashelf.indexAllPages(bookPath, pageFormat),
   );
 
   ipcMain.handle(
@@ -423,22 +428,8 @@ const createWindow = async () => {
 
   ipcMain.handle(
     'page:delete',
-    async (_, bookPath: string, index: PageProperties): Promise<boolean> => {
-      otamashelf.emit('log.debug', 'page:delete 1');
-      const bookTimeMachine = otamashelf.booksController.get(bookPath);
-      if (!bookTimeMachine) {
-        otamashelf.emit('log.error', `File path ${bookPath} not found.`);
-        return false;
-      }
-      const { currentBook } = bookTimeMachine;
-      const page = currentBook.pages.find(p => p.id === index.id);
-      if (!page) {
-        otamashelf.emit('log.error', `Page ${index.id} not found.`);
-        return false;
-      }
-      bookTimeMachine.removePage(page, 'remove page');
-      return true;
-    },
+    async (_, normalPageReference: NormalPageReference): Promise<number> =>
+      otamashelf.deletePage(normalPageReference),
   );
 
   ipcMain.handle('page-format:all', async (_, bookPath: string) => {
@@ -474,14 +465,8 @@ const createWindow = async () => {
         otamashelf.emit('log.error', `${mime} converter not found.`);
         throw new Error(`${mime} converter not found.`);
       }
-      return textConverter.convert({
-        text,
-        configuration: {
-          specialPage: 'configuration',
-          pageFormat: '',
-          data: {},
-        },
-      });
+      const { configuration } = otamashelf.configurationsRegistry.get();
+      return textConverter.convert({ text, configuration });
     },
   );
 

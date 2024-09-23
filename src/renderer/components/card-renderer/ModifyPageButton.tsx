@@ -1,6 +1,6 @@
 import { Layout, LayoutComponent } from 'otamashelf/LayoutCard';
 import { Page } from 'otamashelf/Page';
-import { PageProperties } from 'otamashelf/PageProperties';
+import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
 import React from 'react';
 
 import { usePagesDispatch } from '../../contexts/pagesContext';
@@ -12,6 +12,7 @@ import Recursion from './Recursion';
 import styleJoin from './styleJoin';
 
 import { Json } from 'otamashelf/Json';
+import { NormalPageReference } from 'otamashelf/PageReference';
 
 
 const { api } = window;
@@ -26,7 +27,7 @@ interface Props {
   };
   edit: () => void;
   editable: boolean;
-  pageProperties: PageProperties;
+  pageIndex: NormalPageReference & PageDisplayInformation;
   layout: Layout;
   word: Page;
 }
@@ -38,7 +39,7 @@ export default function ModifyPageButton({
   onClick: onClickButton,
   edit,
   editable,
-  pageProperties,
+  pageIndex,
   layout,
   word,
 }: Props): JSX.Element {
@@ -46,15 +47,15 @@ export default function ModifyPageButton({
   const dispatch = usePagesDispatch();
   const onClick = React.useCallback(
     (
-      s: PageProperties,
+      s: NormalPageReference & PageDisplayInformation,
       c: {
         id: string;
         script: Json;
       },
     ) => {
       api
-        .modifyPage(s.path, s.id, c.id, c.script)
-        .then(({ page: newPage, layout: newLayout }) => dispatch({ type: 'UPDATE_PAGE', payload: { pageProperties, page: newPage, layout: newLayout } }));
+        .modifyPage(s.bookPath, s.pageId, c.id, c.script)
+        .then(({ page: newPage, layout: newLayout }) => dispatch({ type: 'UPDATE_PAGE', payload: { index: pageIndex, page: newPage, layout: newLayout } }));
     },
     [],
   );
@@ -63,7 +64,7 @@ export default function ModifyPageButton({
       aria-label="Save"
       className={styleJoin(theme.button, className)}
       onClick={() => {
-        onClick(pageProperties, onClickButton);
+        onClick(pageIndex, onClickButton);
       }}
       type="submit">
       <Recursion
@@ -71,7 +72,7 @@ export default function ModifyPageButton({
         contents={contents}
         edit={edit}
         editable={editable}
-        pageProperties={pageProperties}
+        pageIndex={pageIndex}
         layout={layout}
         word={word}
       />

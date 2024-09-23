@@ -1,7 +1,7 @@
 import flatten, { unflatten } from 'flat';
 import { Layout, FormDivComponent } from 'otamashelf/LayoutCard';
 import { NormalPage, Page } from 'otamashelf/Page';
-import { PageProperties } from 'otamashelf/PageProperties';
+import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
 import React, { useState } from 'react';
 
 import { Mediator } from '../../Mediator';
@@ -12,6 +12,7 @@ import Error from './Error';
 // eslint-disable-next-line import/no-cycle
 import RecursionInForm from './RecursionInForm';
 import styleJoin from './styleJoin';
+import { NormalPageReference } from 'otamashelf/PageReference';
 
 const { api } = window;
 
@@ -21,7 +22,7 @@ interface Props {
   inputs: FormDivComponent[];
   submit: () => void;
   reset: () => void;
-  pageProperties: PageProperties;
+  pageIndex: NormalPageReference & PageDisplayInformation;
   layout: Layout;
   word: Page;
 }
@@ -32,7 +33,7 @@ export default function FormDiv({
   inputs,
   submit,
   reset,
-  pageProperties,
+  pageIndex,
   layout,
   word,
 }: Props): JSX.Element {
@@ -42,7 +43,7 @@ export default function FormDiv({
   const dispatch = usePagesDispatch();
   function onSelectedWordPush(mediator: Mediator) {
     api
-      .updatePage(mediator.pageProperties.path, mediator.page)
+      .updatePage(mediator.index.bookPath, mediator.page)
       .then(({ page: newPage, layout: newLayout }) => dispatch({ type: 'UPDATE_PAGE', payload: { ...mediator, page: newPage, layout: newLayout } }));
   }
   if (typeof flattenCard !== 'object') {
@@ -58,12 +59,12 @@ export default function FormDiv({
       <RecursionInForm
         baseReference={baseReference}
         contents={inputs}
-        pageProperties={pageProperties}
+        pageIndex={pageIndex}
         layout={layout}
         submit={() => {
           submit();
           onSelectedWordPush({
-            pageProperties,
+            index: pageIndex,
             layout,
             page: { ...word as NormalPage, data: unflatten(flattenCard) },
           });

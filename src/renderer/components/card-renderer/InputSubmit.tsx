@@ -1,16 +1,17 @@
-import { PageProperties } from 'otamashelf/PageProperties';
+import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
 import React from 'react';
 
 import { useThemeStore } from '../../contexts/themeContext';
 
 import styleJoin from './styleJoin';
+import { NormalPageReference } from 'otamashelf/PageReference';
 
 interface Props {
   className?: string;
   inputId: string;
   value: string;
   submit: () => void;
-  pageProperties: PageProperties;
+  pageIndex: NormalPageReference & PageDisplayInformation;
 }
 
 export default function InputSubmit({
@@ -18,14 +19,14 @@ export default function InputSubmit({
   inputId,
   value,
   submit,
-  pageProperties,
+  pageIndex,
 }: Props): JSX.Element {
   const theme = useThemeStore();
   return (
     <input
       type="button"
       className={styleJoin(theme.InputSubmit, className)}
-      id={`${pageProperties.path} ${pageProperties.id} ${inputId}`}
+      id={`${pageIndex.bookPath} ${pageIndex.pageId} ${inputId}`}
       value={value}
       onClick={submit}
     />

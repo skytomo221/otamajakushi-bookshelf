@@ -1,8 +1,7 @@
-import { PageProperties } from 'otamashelf/PageProperties';
-
 import { Mediator } from '../Mediator';
 
 import makeStore from './makeStore';
+import { NormalPageReference } from 'otamashelf/PageReference';
 
 type State = Mediator[];
 
@@ -13,7 +12,7 @@ type Action =
     }
   | {
       type: 'REMOVE_PAGE';
-      payload: PageProperties;
+      payload: NormalPageReference;
     }
   | {
       type: 'UPDATE_PAGE';
@@ -28,8 +27,8 @@ const reducer = (state: State, action: Action) => {
       if (
         state.some(
           mediator =>
-            mediator.pageProperties.id === action.payload.pageProperties.id &&
-            mediator.pageProperties.path === action.payload.pageProperties.path,
+            mediator.index.pageId === action.payload.index.pageId &&
+            mediator.index.bookPath === action.payload.index.bookPath,
         )
       ) {
         return state;
@@ -39,14 +38,14 @@ const reducer = (state: State, action: Action) => {
       return (state ?? []).filter(
         mediator =>
           !(
-            mediator.pageProperties.id === action.payload.id &&
-            mediator.pageProperties.path === action.payload.path
+            mediator.index.pageId === action.payload.pageId &&
+            mediator.index.bookPath === action.payload.bookPath
           ),
       );
     case 'UPDATE_PAGE':
       return (state ?? []).map(mediator =>
-        mediator.pageProperties.id === action.payload.pageProperties.id &&
-        mediator.pageProperties.path === action.payload.pageProperties.path
+        mediator.index.pageId === action.payload.index.pageId &&
+        mediator.index.bookPath === action.payload.index.bookPath
           ? action.payload
           : mediator,
       );

@@ -1,16 +1,9 @@
-import { ConfigurationPage } from 'otamashelf/Page';
 import {
   PageExplorer,
   NameReturns,
   SearchProps,
   SearchReturns,
 } from 'otamashelf/PageExplorer';
-
-const configuration: ConfigurationPage = {
-  specialPage: 'configuration',
-  pageFormat: 'simple-configuration-format-v1',
-  data: {},
-};
 
 function isMatch(matchWithIndex: {
   match: RegExpMatchArray | null;
@@ -27,8 +20,8 @@ const regexPageExplorer: PageExplorer = {
     author: 'skytomo221',
     type: 'page-explorer',
   },
-  configuration() {
-    return { configuration };
+  defaultConfiguration() {
+    return { configuration: {}, configurationsSchema: {} };
   },
   name(): Promise<NameReturns> {
     return Promise.resolve({ name: '正規表現' });

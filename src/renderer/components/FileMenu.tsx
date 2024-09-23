@@ -73,6 +73,7 @@ export default function FileMenu(): JSX.Element {
   };
   const theme = useThemeStore();
   const dispatch = useThemeDispatch();
+  const workbenches = useWorkbenchStore();
   const workbenchDispatch = useWorkbenchDispatch();
   const { enqueueSnackbar } = useSnackbar();
   const extensions = useExtensionsStore();
@@ -80,7 +81,7 @@ export default function FileMenu(): JSX.Element {
     const pageFormats = await api.readAllPageFormats(path);
     const selectedPageFormatIndex = 0;
     const selectedPageFormat = pageFormats[selectedPageFormatIndex];
-    const indexes = await api.generateIndex(path, selectedPageFormat);
+    const indexes = await api.indexAllPages(path, selectedPageFormat);
     const searchResults = [] as SearchResult[];
     const searchCriteria = await api.readAllSearchCriteria();
     const selectedSearchCriterionIndex = 0;
@@ -175,14 +176,14 @@ export default function FileMenu(): JSX.Element {
         <MenuItem onClick={openBook('directory', false)}>
           編集モードでフォルダで開く
         </MenuItem>
-        {/* <MenuItem
+        <MenuItem
           onClick={() => {
-            books
-              .filter(book => book.editable)
-              .map(book => api.save(book.path));
+            workbenches
+              .filter(workbench => workbench.editable)
+              .map(workbench => api.saveBook(workbench.path));
           }}>
           保存
-        </MenuItem> */}
+        </MenuItem>
         <Divider />
         <NestedMenuItem
           rightIcon={<ChevronRightIcon />}
