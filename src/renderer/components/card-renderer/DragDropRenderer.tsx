@@ -2,12 +2,12 @@ import flatten, { unflatten } from 'flat';
 import { Layout } from 'otamashelf/LayoutCard';
 import { NormalPage, Page } from 'otamashelf/Page';
 import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
+import { NormalPageReference } from 'otamashelf/PageReference';
 import React, { ReactNode } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
 
 import { Mediator } from '../../Mediator';
 import { usePagesDispatch } from '../../contexts/pagesContext';
-import { NormalPageReference } from 'otamashelf/PageReference';
 
 const { api } = window;
 

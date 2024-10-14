@@ -1,11 +1,11 @@
 import { Reference } from 'otamashelf/LayoutCard';
 import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
+import { NormalPageReference } from 'otamashelf/PageReference';
 import React, { useState } from 'react';
 
 import { useThemeStore } from '../../contexts/themeContext';
 
 import styleJoin from './styleJoin';
-import { NormalPageReference } from 'otamashelf/PageReference';
 
 interface Props {
   className?: string;

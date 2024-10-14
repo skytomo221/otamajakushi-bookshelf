@@ -5,6 +5,7 @@ import {
 } from 'otamashelf/LayoutCard';
 import { Page } from 'otamashelf/Page';
 import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
+import { NormalPageReference } from 'otamashelf/PageReference';
 import React, { useState } from 'react';
 
 import { useThemeStore } from '../../contexts/themeContext';
@@ -13,7 +14,6 @@ import FormDiv from './FormDiv';
 // eslint-disable-next-line import/no-cycle
 import Recursion from './Recursion';
 import styleJoin from './styleJoin';
-import { NormalPageReference } from 'otamashelf/PageReference';
 
 interface Props {
   baseReference: string;

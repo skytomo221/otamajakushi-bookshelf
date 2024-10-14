@@ -1,6 +1,7 @@
 /* eslint-disable import/no-cycle */
 import { Layout, FormDivComponent } from 'otamashelf/LayoutCard';
 import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
+import { NormalPageReference } from 'otamashelf/PageReference';
 import React from 'react';
 
 import Chip from './Chip';
@@ -21,7 +22,6 @@ import PInForm from './PInForm';
 import SpanInForm from './SpanInForm';
 import Text from './Text';
 import createKeyInForm from './createKeyInForm';
-import { NormalPageReference } from 'otamashelf/PageReference';
 
 interface Props {
   baseReference: string;

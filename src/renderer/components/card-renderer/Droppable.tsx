@@ -1,6 +1,7 @@
 import { Layout, LayoutComponent } from 'otamashelf/LayoutCard';
 import { Page } from 'otamashelf/Page';
 import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
+import { NormalPageReference } from 'otamashelf/PageReference';
 import React from 'react';
 import { Droppable as RawDroppable } from 'react-beautiful-dnd';
 
@@ -8,7 +9,6 @@ import { useThemeStore } from '../../contexts/themeContext';
 
 // eslint-disable-next-line import/no-cycle
 import Recursion from './Recursion';
-import { NormalPageReference } from 'otamashelf/PageReference';
 
 interface Props {
   baseReference: string;

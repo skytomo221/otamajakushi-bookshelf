@@ -1,6 +1,7 @@
 import { Layout, LayoutComponent } from 'otamashelf/LayoutCard';
 import { Page } from 'otamashelf/Page';
 import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
+import { NormalPageReference } from 'otamashelf/PageReference';
 import React from 'react';
 
 import { usePagesDispatch } from '../../contexts/pagesContext';
@@ -12,7 +13,6 @@ import Recursion from './Recursion';
 import styleJoin from './styleJoin';
 
 import { Json } from 'otamashelf/Json';
-import { NormalPageReference } from 'otamashelf/PageReference';
 
 
 const { api } = window;

@@ -1,7 +1,8 @@
+import { NormalPageReference } from 'otamashelf/PageReference';
+
 import { Mediator } from '../Mediator';
 
 import makeStore from './makeStore';
-import { NormalPageReference } from 'otamashelf/PageReference';
 
 type State = Mediator[];
 

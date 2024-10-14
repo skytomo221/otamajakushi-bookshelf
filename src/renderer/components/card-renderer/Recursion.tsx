@@ -2,6 +2,7 @@
 import { Layout, LayoutComponent } from 'otamashelf/LayoutCard';
 import { Page } from 'otamashelf/Page';
 import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
+import { NormalPageReference } from 'otamashelf/PageReference';
 import React from 'react';
 
 import Chip from './Chip';
@@ -25,7 +26,6 @@ import Section from './Section';
 import Span from './Span';
 import Text from './Text';
 import createKey from './createKey';
-import { NormalPageReference } from 'otamashelf/PageReference';
 
 interface Props {
   baseReference: string;

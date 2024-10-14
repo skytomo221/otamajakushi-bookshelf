@@ -2,6 +2,7 @@ import flatten, { unflatten } from 'flat';
 import { Layout, FormDivComponent } from 'otamashelf/LayoutCard';
 import { NormalPage, Page } from 'otamashelf/Page';
 import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
+import { NormalPageReference } from 'otamashelf/PageReference';
 import React, { useState } from 'react';
 
 import { Mediator } from '../../Mediator';
@@ -12,7 +13,6 @@ import Error from './Error';
 // eslint-disable-next-line import/no-cycle
 import RecursionInForm from './RecursionInForm';
 import styleJoin from './styleJoin';
-import { NormalPageReference } from 'otamashelf/PageReference';
 
 const { api } = window;
 

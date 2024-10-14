@@ -9,6 +9,7 @@ import log from 'electron-log';
 import getPort from 'get-port';
 import MarkdownIt from 'markdown-it';
 import { Book } from 'otamashelf/Book';
+import { Configuration } from 'otamashelf/Configuration';
 import { Json } from 'otamashelf/Json';
 import Otamashelf from 'otamashelf/Otamashelf';
 import {
@@ -19,6 +20,7 @@ import {
   Page,
   PageTemplatePage,
 } from 'otamashelf/Page';
+import { NormalPageReference } from 'otamashelf/PageReference';
 import { ConvertReturns } from 'otamashelf/TextConverter';
 import { endsWithPageExplorer } from 'otamashelf/extensions/endsWithPageExplorer';
 import { includesPageExplorer } from 'otamashelf/extensions/includesPageExplorer';
@@ -44,8 +46,6 @@ import markdownTextConverter from './markdownTextConverter';
 import otamaDarkTheme from './otamaDarkTheme';
 import otamaDefaultTheme from './otamaDefaultTheme';
 import otamaLightTheme from './otamaLightTheme';
-import { Configuration } from 'otamashelf/Configuration';
-import { NormalPageReference } from 'otamashelf/PageReference';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
