@@ -4,6 +4,7 @@ import { MenuItem, Typography, useTheme, Divider } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { ExtensionBaseProperties } from 'otamashelf/ExtensionProperties';
 import { SearchResult } from 'otamashelf/PageExplorer';
+import { SearchCard } from 'otamashelf/SearchCard';
 import React, { useEffect } from 'react';
 
 import '../renderer';
@@ -82,7 +83,7 @@ export default function FileMenu(): JSX.Element {
     const selectedPageFormatIndex = 0;
     const selectedPageFormat = pageFormats[selectedPageFormatIndex];
     const indexes = await api.indexAllPages(path, selectedPageFormat);
-    const searchResults = [] as SearchResult[];
+    const searchResults = [] as (SearchCard & SearchResult)[];
     const searchCriteria = await api.readAllSearchCriteria();
     const selectedSearchCriterionIndex = 0;
     const searchScopes = await api.readAllSearchScopes(selectedPageFormat);

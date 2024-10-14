@@ -1,9 +1,11 @@
 import { contextBridge, ipcRenderer } from 'electron';
 
 import log from 'electron-log';
+import { Book } from 'otamashelf/Book';
+import { Configuration } from 'otamashelf/Configuration';
+import { ConfigurationScheme } from 'otamashelf/ConfigurationScheme';
 import { ExtensionBaseProperties } from 'otamashelf/ExtensionProperties';
 import { LayoutComponent } from 'otamashelf/LayoutCard';
-import { Book } from 'otamashelf/Book';
 import {
   BookTemplatePage,
   PageTemplatePage,
@@ -12,13 +14,11 @@ import {
   NormalPage,
   DescriptionPage,
 } from 'otamashelf/Page';
-import { SearchResult } from 'otamashelf/PageExplorer';
 import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
+import { SearchResult } from 'otamashelf/PageExplorer';
+import { NormalPageReference } from 'otamashelf/PageReference';
 import { SearchCard } from 'otamashelf/SearchCard';
 import { ConvertProps, ConvertReturns } from 'otamashelf/TextConverter';
-import { Configuration } from 'otamashelf/Configuration';
-import { ConfigurationScheme } from 'otamashelf/ConfigurationScheme';
-import { NormalPageReference } from 'otamashelf/PageReference';
 
 import StyleThemeParameters from '../common/StyleThemeParameters';
 
@@ -101,11 +101,7 @@ contextBridge.exposeInMainWorld('api', {
     bookPath: string,
     pageFormat: string,
   ): Promise<PageDisplayInformation[]> =>
-    ipcRenderer.invoke(
-      'all-pages:index',
-      bookPath,
-      pageFormat,
-    ),
+    ipcRenderer.invoke('all-pages:index', bookPath, pageFormat),
   generateSearchIndex: (
     bookPath: string,
     pageFormat: string,
@@ -129,7 +125,7 @@ contextBridge.exposeInMainWorld('api', {
     searchIndexGeneratorId: string,
     pageExplorerId: string,
     searchWord: string,
-  ): Promise<SearchResult[]> =>
+  ): Promise<(SearchCard & SearchResult)[]> =>
     ipcRenderer.invoke(
       'page:search',
       bookPath,

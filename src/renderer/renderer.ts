@@ -1,4 +1,7 @@
 import log from 'electron-log';
+import { Book } from 'otamashelf/Book';
+import { Configuration } from 'otamashelf/Configuration';
+import { ConfigurationScheme } from 'otamashelf/ConfigurationScheme';
 import { ExtensionBaseProperties } from 'otamashelf/ExtensionProperties';
 import { Json } from 'otamashelf/Json';
 import { LayoutComponent } from 'otamashelf/LayoutCard';
@@ -10,18 +13,16 @@ import {
   NormalPage,
   DescriptionPage,
 } from 'otamashelf/Page';
-import { SearchResult } from 'otamashelf/PageExplorer';
 import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
+import { SearchResult } from 'otamashelf/PageExplorer';
+import { NormalPageReference } from 'otamashelf/PageReference';
 import { SearchCard } from 'otamashelf/SearchCard';
 import { ConvertReturns } from 'otamashelf/TextConverter';
 
 import StyleThemeParameters from '../common/StyleThemeParameters';
 
 import { Mediator } from './Mediator';
-import { Book } from 'otamashelf/Book';
-import { Configuration } from 'otamashelf/Configuration';
-import { ConfigurationScheme } from 'otamashelf/ConfigurationScheme';
-import { NormalPageReference } from 'otamashelf/PageReference';
+
 
 declare global {
   interface Window {
@@ -101,7 +102,7 @@ export type Api = {
     searchIndexGeneratorId: string,
     pageExplorerId: string,
     searchWord: string,
-  ) => Promise<SearchResult[]>;
+  ) => Promise<(SearchCard & SearchResult)[]>;
   deletePage: (normalPageReference: NormalPageReference) => Promise<number>;
   readAllPageFormats: (bookPath: string) => Promise<string[]>;
   readAllStyleThemes: () => Promise<

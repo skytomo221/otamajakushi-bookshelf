@@ -1,14 +1,15 @@
-import { SearchResult } from 'otamashelf/PageExplorer';
 import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
+import { SearchResult } from 'otamashelf/PageExplorer';
+import { NormalPageReference } from 'otamashelf/PageReference';
+import { SearchCard } from 'otamashelf/SearchCard';
 
 import makeStore from './makeStore';
-import { NormalPageReference } from 'otamashelf/PageReference';
 
 type Workbench = {
   path: string;
   editable: boolean;
   indexes: (NormalPageReference & PageDisplayInformation)[];
-  searchResults: SearchResult[];
+  searchResults: (SearchCard & SearchResult)[];
   pageFormats: string[];
   selectedPageFormatIndex: number;
   searchCriteria: { id: string; name: string }[];
@@ -54,7 +55,7 @@ type Action =
       type: 'UPDATE_SEARCH_RESULTS';
       payload: {
         path: string;
-        searchResults: SearchResult[];
+        searchResults: (SearchCard & SearchResult)[];
       };
     }
   | {
@@ -104,8 +105,8 @@ type Action =
       payload: {
         path: string;
         searchWord: string;
-      };
     };
+  };
 
 const initialState: State = [];
 

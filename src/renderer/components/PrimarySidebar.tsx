@@ -1,7 +1,9 @@
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { SearchResult } from 'otamashelf/PageExplorer';
 import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
+import { SearchResult } from 'otamashelf/PageExplorer';
+import { NormalPageReference } from 'otamashelf/PageReference';
+import { SearchCard } from 'otamashelf/SearchCard';
 import * as React from 'react';
 import { VList } from 'virtua';
 
@@ -13,7 +15,7 @@ import {
   useWorkbenchDispatch,
   useWorkbenchStore,
 } from '../contexts/workbenchContext';
-import { NormalPageReference } from 'otamashelf/PageReference';
+
 
 const { api } = window;
 
@@ -150,6 +152,17 @@ function Indexes(): JSX.Element {
   );
 }
 
+function HighlightMatches(searchResult: (SearchCard & SearchResult)): JSX.Element {
+  console.log(searchResult);
+  return <div>
+    {searchResult.matches.map((match, index) => <div key={index}>
+        {searchResult.targets[match.targetIndex].slice(0, match.begin)}
+        <span className="bg-yellow-300">{searchResult.targets[match.targetIndex].slice(match.begin, match.end)}</span>
+        {searchResult.targets[match.targetIndex].slice(match.end)}
+      </div>)}
+  </div>;
+}
+
 function SearchResults(): JSX.Element {
   const primarySidebar = usePrimarySidebarStore();
   const workbenches = useWorkbenchStore();
@@ -231,7 +244,7 @@ function SearchResults(): JSX.Element {
               type="button">
               <div>
                 <div>{index.title}</div>
-                <div>{searchResult.matches}</div>
+                <div>{HighlightMatches(searchResult)}</div>
               </div>
             </button>
             {editable && (
@@ -265,34 +278,63 @@ export default function PrimarySidebar(): JSX.Element {
     return <></>;
   }
   const { path } = workbench;
-  function onSelectedPageFormatIndexUpdate(selectedPageFormatIndex: number) {
+  function onSearchResultsUpdate(selectedPageFormatIndex: number, selectedSearchScopeIndex: number, selectedSearchCriterionIndex: number, searchWord: string) {
+    if (workbench === undefined) {
+      return;
+    }
+    const {
+      path,
+      searchCriteria,
+      searchScopes,
+    } = workbench;
+    const pageFormat = pageFormats[selectedPageFormatIndex];
+    const searchScope = searchScopes[selectedSearchScopeIndex];
+    const searchCriterion = searchCriteria[selectedSearchCriterionIndex];
+    api
+      .searchPage(
+        path,
+        pageFormat,
+        searchScope.id,
+        searchCriterion.id,
+        searchWord,
+      ).then(searchResults => {
+        workbenchDispatch({
+          type: 'UPDATE_SEARCH_RESULTS',
+          payload: { path, searchResults },
+        });
+      });
+  }
+  const { searchWord, pageFormats, searchScopes, searchCriteria, selectedPageFormatIndex, selectedSearchScopeIndex, selectedSearchCriterionIndex } = workbench;
+  function onSelectedPageFormatIndexUpdate(newSelectedPageFormatIndex: number) {
+    onSearchResultsUpdate(newSelectedPageFormatIndex, selectedSearchScopeIndex, selectedSearchCriterionIndex, searchWord);
     workbenchDispatch({
       type: 'UPDATE_SELECTED_PAGE_FORMAT_INDEX',
-      payload: { path, selectedPageFormatIndex },
+      payload: { path, selectedPageFormatIndex: newSelectedPageFormatIndex },
     });
   }
-  function onSelectedSearchScopeIndexUpdate(selectedSearchScopeIndex: number) {
+  function onSelectedSearchScopeIndexUpdate(newSelectedSearchScopeIndex: number) {
+    onSearchResultsUpdate(selectedPageFormatIndex, newSelectedSearchScopeIndex, selectedSearchCriterionIndex, searchWord);
     workbenchDispatch({
       type: 'UPDATE_SELECTED_SEARCH_SCOPE_INDEX',
-      payload: { path, selectedSearchScopeIndex },
+      payload: { path, selectedSearchScopeIndex: newSelectedSearchScopeIndex },
     });
   }
   function onSelectedSearchCriterionIndexUpdate(
-    selectedSearchCriterionIndex: number,
+    newSelectedSearchCriterionIndex: number,
   ) {
+    onSearchResultsUpdate(selectedPageFormatIndex, selectedSearchScopeIndex, newSelectedSearchCriterionIndex, searchWord);
     workbenchDispatch({
       type: 'UPDATE_SELECTED_SEARCH_CRITERION_INDEX',
-      payload: { path, selectedSearchCriterionIndex },
+      payload: { path, selectedSearchCriterionIndex: newSelectedSearchCriterionIndex },
     });
   }
-  function onSearchWordUpdate(newSearchWord: string) {
+  async function onSearchWordUpdate(newSearchWord: string) {
+    onSearchResultsUpdate(selectedPageFormatIndex, selectedSearchScopeIndex, selectedSearchCriterionIndex, newSearchWord);
     workbenchDispatch({
       type: 'UPDATE_SEARCH_WORD',
       payload: { path, searchWord: newSearchWord },
     });
   }
-
-  const { searchWord, pageFormats, searchScopes, searchCriteria } = workbench;
 
   return (
     <div className="flex flex-col h-full">
@@ -338,7 +380,7 @@ export default function PrimarySidebar(): JSX.Element {
         ))}
       </select>
       <div className="grow overflow-auto">
-        <Indexes />
+        {searchWord === '' ? <Indexes /> : <SearchResults />}
       </div>
     </div>
   );

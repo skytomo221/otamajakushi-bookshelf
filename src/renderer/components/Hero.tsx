@@ -8,6 +8,7 @@ import { BookCreatorProperties } from 'otamashelf/BookCreator';
 import { BookLoaderProperties } from 'otamashelf/BookLoader';
 import { ExtensionProperties } from 'otamashelf/ExtensionProperties';
 import { SearchResult } from 'otamashelf/PageExplorer';
+import { SearchCard } from 'otamashelf/SearchCard';
 import React, { useCallback } from 'react';
 
 import { useExtensionsStore } from '../contexts/extensionsContext';
@@ -27,7 +28,7 @@ export default function Hero(): JSX.Element {
     const selectedPageFormatIndex = 0;
     const selectedPageFormat = pageFormats[selectedPageFormatIndex];
     const indexes = await api.indexAllPages(path, selectedPageFormat);
-    const searchResults = [] as SearchResult[];
+    const searchResults = [] as (SearchCard & SearchResult)[];
     const searchCriteria = await api.readAllSearchCriteria();
     const selectedSearchCriterionIndex = 0;
     const searchScopes = await api.readAllSearchScopes(selectedPageFormat);
