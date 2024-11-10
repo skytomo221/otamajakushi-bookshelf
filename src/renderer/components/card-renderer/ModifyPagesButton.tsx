@@ -4,6 +4,7 @@ import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
 import { NormalPageReference } from 'otamashelf/PageReference';
 import React from 'react';
 
+import { Mediator, NormalMediator } from '../../Mediator';
 import { usePagesDispatch } from '../../contexts/pagesContext';
 import { useThemeStore } from '../../contexts/themeContext';
 import '../../renderer';
@@ -26,7 +27,7 @@ interface Props {
   };
   edit: () => void;
   editable: boolean;
-  pageIndex: NormalPageReference & PageDisplayInformation;
+  pageIndex: Mediator['index'];
   layout: Layout;
   word: Page;
 }
@@ -46,15 +47,17 @@ export default function ModifyPagesButton({
   const dispatch = usePagesDispatch();
   const onClick = React.useCallback(
     (
-      s: NormalPageReference & PageDisplayInformation,
+      s: Mediator,
       c: {
         id: string;
         script: Json;
       },
     ) => {
-      api
-        .modifyPages(s.bookPath, s.pageId, c.id, c.script)
-        .then(({ page: newPage, layout: newLayout }) => dispatch({ type: 'UPDATE_PAGE', payload: { index: pageIndex, page: newPage, layout: newLayout } }));
+      if (s.index.type === 'normal') {
+        api
+          .modifyPagesFromNormalPage(s.index, c.id, c.script)
+          .then(({ page: newPage, layout: newLayout }) => dispatch({ type: 'UPDATE_PAGE', payload: { index: pageIndex, page: newPage, layout: newLayout } as NormalMediator }));
+      }
     },
     [],
   );
@@ -63,7 +66,7 @@ export default function ModifyPagesButton({
       aria-label="Save"
       className={styleJoin(theme.button, className)}
       onClick={() => {
-        onClick(pageIndex, onClickButton);
+        onClick({ index: pageIndex, layout, page: word } as Mediator, onClickButton);
       }}
       type="submit">
       <Recursion

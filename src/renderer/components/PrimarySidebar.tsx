@@ -8,6 +8,7 @@ import * as React from 'react';
 import { VList } from 'virtua';
 
 import '../renderer';
+import { Mediator, isNormalMediator } from '../Mediator';
 import { usePagesDispatch, usePagesStore } from '../contexts/pagesContext';
 import { usePrimarySidebarStore } from '../contexts/primarySidebarContext';
 import { useThemeStore } from '../contexts/themeContext';
@@ -33,6 +34,14 @@ function Indexes(): JSX.Element {
       pageDispatch({
         type: 'ADD_PAGE',
         payload: { ...result, index },
+      });
+    });
+  }
+  function onRequestedNewPageFetch(bookPath: string) {
+    api.requestPage(bookPath).then((mediator) => {
+      pageDispatch({
+        type: 'ADD_PAGE',
+        payload: mediator,
       });
     });
   }
@@ -81,7 +90,8 @@ function Indexes(): JSX.Element {
       throw new Error('workbench is null');
     }
     api.deletePage(index);
-    pageDispatch({ type: 'REMOVE_PAGE', payload: index });
+    pageDispatch({ type: 'REMOVE_NORMAL_PAGE', payload: index });
+    workbenchDispatch({ type: 'REMOVE_INDEX', payload: { path, index, } });
   }, []);
   const workbench = workbenches.find(w => w.path === primarySidebar.path);
   if (workbench === undefined) {
@@ -103,8 +113,7 @@ function Indexes(): JSX.Element {
           <button
             className={theme['Index.button']}
             onClick={async () => {
-              const newPage = await api.requestPage(path);
-              // onSelectedWordFetch(newPage.index);
+              onRequestedNewPageFetch(path);
             }}
             type="button">
             <AddIcon fontSize="small" />
@@ -121,8 +130,9 @@ function Indexes(): JSX.Element {
               if (
                 (selectedWords ?? []).every(
                   m =>
-                    m.index.pageId !== index.pageId ||
-                    m.index.bookPath !== path,
+                    isNormalMediator(m) &&
+                    (m.index.pageId !== index.pageId ||
+                      m.index.bookPath !== path),
                 )
               ) {
                 onSelectedWordFetch(index);
@@ -156,10 +166,10 @@ function HighlightMatches(searchResult: (SearchCard & SearchResult)): JSX.Elemen
   console.log(searchResult);
   return <div>
     {searchResult.matches.map((match, index) => <div key={index}>
-        {searchResult.targets[match.targetIndex].slice(0, match.begin)}
-        <span className="bg-yellow-300">{searchResult.targets[match.targetIndex].slice(match.begin, match.end)}</span>
-        {searchResult.targets[match.targetIndex].slice(match.end)}
-      </div>)}
+      {searchResult.targets[match.targetIndex].slice(0, match.begin)}
+      <span className="bg-yellow-300">{searchResult.targets[match.targetIndex].slice(match.begin, match.end)}</span>
+      {searchResult.targets[match.targetIndex].slice(match.end)}
+    </div>)}
   </div>;
 }
 

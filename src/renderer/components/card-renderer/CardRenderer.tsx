@@ -1,30 +1,26 @@
 import React from 'react';
 
-import { Mediator } from '../../Mediator';
+import { Mediator, isBookTemplateMediator, isNormalMediator, isPageTemplateMediator } from '../../Mediator';
 import { useWorkbenchStore } from '../../contexts/workbenchContext';
 
 import DragDropRenderer from './DragDropRenderer';
 import Recursion from './Recursion';
 
-export default function CardRenderer({
-  index,
-  page: word,
-  layout,
-}: Mediator): JSX.Element {
+export default function CardRenderer(mediator: Mediator): JSX.Element {
   const state = useWorkbenchStore();
+  const { index, page, layout } = mediator;
   const editable =
-    state?.find(workbench => workbench.path === index.bookPath)
-      ?.editable ?? false;
+    isNormalMediator(mediator) && (state?.find(workbench => workbench.path === mediator.index.bookPath)
+      ?.editable ?? false) || isBookTemplateMediator(mediator) || isPageTemplateMediator(mediator);
   return (
     <DragDropRenderer
-      pageIndex={index}
-      word={word}
-      layout={layout}>
+      mediator={mediator}
+    >
       <Recursion
         baseReference=""
         layout={layout}
         pageIndex={index}
-        word={word}
+        word={page}
         contents={[layout]}
         edit={() => {
           // do nothing.

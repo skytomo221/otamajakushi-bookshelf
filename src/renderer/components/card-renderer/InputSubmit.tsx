@@ -2,6 +2,7 @@ import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
 import { NormalPageReference } from 'otamashelf/PageReference';
 import React from 'react';
 
+import { Mediator } from '../../Mediator';
 import { useThemeStore } from '../../contexts/themeContext';
 
 import styleJoin from './styleJoin';
@@ -11,7 +12,7 @@ interface Props {
   inputId: string;
   value: string;
   submit: () => void;
-  pageIndex: NormalPageReference & PageDisplayInformation;
+  pageIndex: Mediator['index'];
 }
 
 export default function InputSubmit({
@@ -26,7 +27,7 @@ export default function InputSubmit({
     <input
       type="button"
       className={styleJoin(theme.InputSubmit, className)}
-      id={`${pageIndex.bookPath} ${pageIndex.pageId} ${inputId}`}
+      id={JSON.stringify({ pageIndex, inputId })}
       value={value}
       onClick={submit}
     />

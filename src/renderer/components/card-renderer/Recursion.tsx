@@ -5,6 +5,8 @@ import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
 import { NormalPageReference } from 'otamashelf/PageReference';
 import React from 'react';
 
+import { Mediator } from '../../Mediator';
+
 import Chip from './Chip';
 import Div from './Div';
 import Draggable from './Draggable';
@@ -32,7 +34,7 @@ interface Props {
   contents: LayoutComponent[];
   edit: () => void;
   editable: boolean;
-  pageIndex: NormalPageReference & PageDisplayInformation;
+  pageIndex: Mediator['index'];
   layout: Layout;
   word: Page;
 }

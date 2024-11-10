@@ -3,6 +3,7 @@ import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
 import { NormalPageReference } from 'otamashelf/PageReference';
 import React, { useState } from 'react';
 
+import { Mediator } from '../../Mediator';
 import { useThemeStore } from '../../contexts/themeContext';
 
 import styleJoin from './styleJoin';
@@ -13,7 +14,7 @@ interface Props {
   name: string;
   reference: Reference;
   pattern?: string;
-  pageIndex: NormalPageReference & PageDisplayInformation;
+  pageIndex: Mediator['index'];
   flattenCard: { [key: string]: string };
   setFlattenCard: (flattenCard: { [key: string]: string }) => void;
 }
@@ -34,7 +35,7 @@ export default function InputText({
     <input
       type="text"
       className={styleJoin(theme.InputText, className)}
-      id={`${pageIndex.bookPath} ${pageIndex.pageId} ${inputId}`}
+      id={JSON.stringify({ pageIndex, inputId })}
       name={name}
       value={text}
       pattern={pattern}

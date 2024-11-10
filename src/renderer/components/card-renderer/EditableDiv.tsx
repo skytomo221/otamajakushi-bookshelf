@@ -8,6 +8,7 @@ import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
 import { NormalPageReference } from 'otamashelf/PageReference';
 import React, { useState } from 'react';
 
+import { Mediator } from '../../Mediator';
 import { useThemeStore } from '../../contexts/themeContext';
 
 import FormDiv from './FormDiv';
@@ -21,7 +22,7 @@ interface Props {
   inputs: FormDivComponent[];
   outputs: LayoutComponent[];
   editable: boolean;
-  pageIndex: NormalPageReference & PageDisplayInformation;
+  pageIndex: Mediator['index'];
   layout: Layout;
   word: Page;
 }

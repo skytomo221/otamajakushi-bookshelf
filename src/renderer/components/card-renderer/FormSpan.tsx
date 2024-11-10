@@ -5,7 +5,7 @@ import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
 import { NormalPageReference } from 'otamashelf/PageReference';
 import React, { useState } from 'react';
 
-import { Mediator } from '../../Mediator';
+import { Mediator, isNormalMediator } from '../../Mediator';
 import { usePagesDispatch } from '../../contexts/pagesContext';
 import { useThemeStore } from '../../contexts/themeContext';
 
@@ -22,7 +22,7 @@ interface Props {
   inputs: FormDivComponent[];
   submit: () => void;
   reset: () => void;
-  pageIndex: NormalPageReference & PageDisplayInformation;
+  pageIndex: Mediator['index'];
   layout: Layout;
   word: Page;
 }
@@ -42,9 +42,13 @@ export default function FormDiv({
   const [flattenCard, setFlattenCard] = useState(defaultFlattenCard);
   const dispatch = usePagesDispatch();
   function onSelectedWordPush(mediator: Mediator) {
-    api
-      .updatePage(mediator.index.bookPath, mediator.page)
-      .then(({ page: newPage, layout: newLayout }) => dispatch({ type: 'UPDATE_PAGE', payload: { ...mediator, page: newPage, layout: newLayout } }));
+    if (isNormalMediator(mediator)) {
+      api
+        .updatePage(mediator.index.bookPath, mediator.page)
+        .then(({ page: newPage, layout: newLayout }) => dispatch({ type: 'UPDATE_PAGE', payload: { ...mediator, page: newPage, layout: newLayout } }));
+    } else {
+      dispatch({ type: 'UPDATE_PAGE', payload: mediator });
+    }
   }
   if (typeof flattenCard !== 'object') {
     api.log.error('Layout is invalid.', layout, flattenCard);
@@ -67,7 +71,7 @@ export default function FormDiv({
             index: pageIndex,
             layout,
             page: { ...word as NormalPage, data: unflatten(flattenCard) },
-          });
+          } as Mediator);
         }}
         reset={() => {
           reset();

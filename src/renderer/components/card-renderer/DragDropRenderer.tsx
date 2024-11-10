@@ -1,35 +1,35 @@
 import flatten, { unflatten } from 'flat';
 import { Layout } from 'otamashelf/LayoutCard';
-import { NormalPage, Page } from 'otamashelf/Page';
+import { BookTemplatePage, NormalPage, Page, PageTemplatePage } from 'otamashelf/Page';
 import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
 import { NormalPageReference } from 'otamashelf/PageReference';
 import React, { ReactNode } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
 
-import { Mediator } from '../../Mediator';
+import { Mediator, isNormalMediator } from '../../Mediator';
 import { usePagesDispatch } from '../../contexts/pagesContext';
 
 const { api } = window;
 
 type Props = {
-  pageIndex: NormalPageReference & PageDisplayInformation;
-  word: Page;
-  layout: Layout;
+  mediator: Mediator;
   children: ReactNode;
 };
 export default function DragDropRenderer({
-  pageIndex,
-  word,
-  layout,
+  mediator: { index, page, layout },
   children,
 }: Props): JSX.Element {
   const dispatch = usePagesDispatch();
   function onSelectedWordPush(mediator: Mediator) {
-    api
-      .updatePage(mediator.index.bookPath, mediator.page)
-      .then(({ page: newPage, layout: newLayout }) => dispatch({ type: 'UPDATE_PAGE', payload: { ...mediator, page: newPage, layout: newLayout } }));
+    if (isNormalMediator(mediator)) {
+      api
+        .updatePage(mediator.index.bookPath, mediator.page)
+        .then(({ page: newPage, layout: newLayout }) => dispatch({ type: 'UPDATE_PAGE', payload: { ...mediator, page: newPage, layout: newLayout } }));
+    } else {
+      dispatch({ type: 'UPDATE_PAGE', payload: mediator });
+    }
   }
-  const flat = flatten(word.data) as { [name: string]: unknown };
+  const flat = flatten(page.data) as { [name: string]: unknown };
   // eslint-disable-next-line @typescript-eslint/ban-types
   const keys = Object.keys(flat);
   return (
@@ -113,10 +113,10 @@ export default function DragDropRenderer({
           }
         });
         onSelectedWordPush({
-          index: pageIndex,
+          index,
           layout,
-          page: { ...word as NormalPage, data: unflatten(newFlat) },
-        });
+          page: { ...page, data: unflatten(newFlat) },
+        } as Mediator);
       }}>
       {children}
     </DragDropContext>

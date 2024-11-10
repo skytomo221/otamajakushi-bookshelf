@@ -20,13 +20,18 @@ import {
   Page,
   PageTemplatePage,
 } from 'otamashelf/Page';
-import { NormalPageReference } from 'otamashelf/PageReference';
+import {
+  BookTemplatePageReference,
+  NormalPageReference,
+  PageTemplatePageReference,
+} from 'otamashelf/PageReference';
 import { ConvertReturns } from 'otamashelf/TextConverter';
 import { endsWithPageExplorer } from 'otamashelf/extensions/endsWithPageExplorer';
 import { includesPageExplorer } from 'otamashelf/extensions/includesPageExplorer';
 import { otmAddContentPageModifier } from 'otamashelf/extensions/otmAddContentPageModifier';
 import { otmBothSearchIndexGenerator } from 'otamashelf/extensions/otmBothSearchIndexGenerator';
 import { otmCreator } from 'otamashelf/extensions/otmCreator';
+import { otmCreatorTemplateLayoutBuilder } from 'otamashelf/extensions/otmCreatorTemplateLayoutBuilder';
 import { otmDiscriminator } from 'otamashelf/extensions/otmDiscriminator';
 import { otmLayoutBuilder } from 'otamashelf/extensions/otmLayoutBuilder';
 import { otmLoader } from 'otamashelf/extensions/otmLoader';
@@ -77,6 +82,7 @@ const createWindow = async () => {
   otamashelf.registerExtension(otmAddContentPageModifier);
   otamashelf.registerExtension(otmBothSearchIndexGenerator);
   otamashelf.registerExtension(otmCreator);
+  otamashelf.registerExtension(otmCreatorTemplateLayoutBuilder);
   otamashelf.registerExtension(otmDiscriminator);
   otamashelf.registerExtension(otmLayoutBuilder);
   otamashelf.registerExtension(otmLoader);
@@ -234,16 +240,23 @@ const createWindow = async () => {
     app.quit();
   });
 
-  ipcMain.handle(
-    'book:request',
-    (_, bookCreatorId: string): Promise<BookTemplatePage> =>
-      otamashelf.requestNewBook(bookCreatorId),
+  ipcMain.handle('show-save-dialog-sync', async () => dialog.showSaveDialogSync(mainWindow, {
+      buttonLabel: '開く',
+      properties: ['createDirectory', 'showOverwriteConfirmation'],
+    }));
+
+  ipcMain.handle('book:request', (_, bookCreatorId: string) =>
+    otamashelf.requestNewBook(bookCreatorId),
   );
 
   ipcMain.handle(
     'book:create',
-    (_, bookCreatorId: string, template: BookTemplatePage): Promise<Book> =>
-      otamashelf.createBook(bookCreatorId, template),
+    (
+      _,
+      pageReference: BookTemplatePageReference,
+      template: BookTemplatePage,
+      path: string
+    ): Promise<Book> => otamashelf.createBook(pageReference, template, path),
   );
 
   ipcMain.handle(
@@ -283,16 +296,20 @@ const createWindow = async () => {
         .catch(() => Promise.resolve(false)),
   );
 
-  ipcMain.handle(
-    'page:request',
-    (_, bookPath: string): Promise<PageTemplatePage> =>
-      otamashelf.requestNewPage(bookPath),
-  );
+  ipcMain.handle('page:request', async (_, bookPath: string) => {
+    otamashelf.emit('log.info', 'page:request', bookPath);
+    const result = await otamashelf.requestNewPage(bookPath);
+    console.log(result);
+    return result;
+  });
 
   ipcMain.handle(
     'page:create',
-    (_, bookPath: string, template: PageTemplatePage): Promise<Page> =>
-      otamashelf.createPage(bookPath, template),
+    async (
+      _,
+      pageReference: PageTemplatePageReference,
+      template: PageTemplatePage,
+    ) => otamashelf.createPage(pageReference, template),
   );
 
   ipcMain.handle(
@@ -348,27 +365,80 @@ const createWindow = async () => {
   );
 
   ipcMain.handle(
-    'pages:modify',
+    'pages-from-normal-page:modify',
     async (
       _,
-      bookPath: string,
-      pageId: string,
+      pageReference: NormalPageReference,
       pagesModifierId: string,
       script: Json,
-    ) => otamashelf.modifyPages(bookPath, pageId, pagesModifierId, script),
+    ) =>
+      otamashelf.modifyPagesFromNormalPage(
+        pageReference,
+        pagesModifierId,
+        script,
+      ),
   );
 
   ipcMain.handle(
-    'page:modify',
+    'pages-from-page-template-page:modify',
     async (
       _,
-      bookPath: string,
-      pageId: string,
+      pageReference: PageTemplatePageReference,
+      page: PageTemplatePage,
+      pagesModifierId: string,
+      script: Json,
+    ) =>
+      otamashelf.modifyPagesFromPageTemplatePage(
+        pageReference,
+        page,
+        pagesModifierId,
+        script,
+      ),
+  );
+
+  ipcMain.handle(
+    'normal-page:modify',
+    async (
+      _,
+      pageReference: NormalPageReference,
       pageModifierId: string,
       script: Json,
     ) => {
-      log.info('page:modify', bookPath, pageId, pageModifierId, script);
-      return otamashelf.modifyPage(bookPath, pageId, pageModifierId, script);
+      log.info('normal-page:modify', pageReference, pageModifierId, script);
+      return otamashelf.modifyNormalPage(pageReference, pageModifierId, script);
+    },
+  );
+
+  ipcMain.handle(
+    'page-template-page:modify',
+    async (
+      _,
+      pageReference: PageTemplatePageReference,
+      page: PageTemplatePage,
+      pageModifierId: string,
+      script: Json,
+    ) => {
+      log.info(
+        'page-template-page:modify',
+        pageReference,
+        page,
+        pageModifierId,
+        script,
+      );
+      return otamashelf.modifyPageTemplatePage(
+        pageReference,
+        page,
+        pageModifierId,
+        script,
+      );
+    },
+  );
+
+  ipcMain.handle(
+    'book-template-page:modify',
+    async (_, page: BookTemplatePage, pageModifierId: string, script: Json) => {
+      log.info('book-template-page:modify', page, pageModifierId, script);
+      return otamashelf.modifyBookTemplatePage(page, pageModifierId, script);
     },
   );
 
@@ -381,7 +451,9 @@ const createWindow = async () => {
   ipcMain.handle(
     'all-pages:index',
     async (_, bookPath: string, pageFormat: string) =>
-      otamashelf.indexAllPages(bookPath, pageFormat),
+      {
+        log.info('all-pages:index', bookPath, pageFormat);
+        return otamashelf.indexAllPages(bookPath, pageFormat); }
   );
 
   ipcMain.handle(

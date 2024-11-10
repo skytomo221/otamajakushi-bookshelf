@@ -4,6 +4,8 @@ import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
 import { NormalPageReference } from 'otamashelf/PageReference';
 import React from 'react';
 
+import { Mediator } from '../../Mediator';
+
 import Chip from './Chip';
 import DivInForm from './DivInForm';
 import Error from './Error';
@@ -28,7 +30,7 @@ interface Props {
   contents: FormDivComponent[];
   submit: () => void;
   reset: () => void;
-  pageIndex: NormalPageReference & PageDisplayInformation;
+  pageIndex: Mediator['index'];
   layout: Layout;
   flattenCard: { [key: string]: string };
   setFlattenCard: (flattenCard: { [key: string]: string }) => void;

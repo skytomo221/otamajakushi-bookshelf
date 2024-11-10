@@ -1,9 +1,10 @@
 import { Layout, LayoutComponent } from 'otamashelf/LayoutCard';
-import { Page } from 'otamashelf/Page';
+import { BookTemplatePage, Page, PageTemplatePage } from 'otamashelf/Page';
 import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
 import { NormalPageReference } from 'otamashelf/PageReference';
 import React from 'react';
 
+import { Mediator, NormalMediator } from '../../Mediator';
 import { usePagesDispatch } from '../../contexts/pagesContext';
 import { useThemeStore } from '../../contexts/themeContext';
 import '../../renderer';
@@ -27,7 +28,7 @@ interface Props {
   };
   edit: () => void;
   editable: boolean;
-  pageIndex: NormalPageReference & PageDisplayInformation;
+  pageIndex: Mediator['index'];
   layout: Layout;
   word: Page;
 }
@@ -47,15 +48,27 @@ export default function ModifyPageButton({
   const dispatch = usePagesDispatch();
   const onClick = React.useCallback(
     (
-      s: NormalPageReference & PageDisplayInformation,
+      s: Mediator,
       c: {
         id: string;
         script: Json;
       },
     ) => {
-      api
-        .modifyPage(s.bookPath, s.pageId, c.id, c.script)
-        .then(({ page: newPage, layout: newLayout }) => dispatch({ type: 'UPDATE_PAGE', payload: { index: pageIndex, page: newPage, layout: newLayout } }));
+      if (s.index.type === 'normal') {
+        api
+          .modifyNormalPage(s.index, c.id, c.script)
+          .then(({ page: newPage, layout: newLayout }) => dispatch({ type: 'UPDATE_PAGE', payload: { index: pageIndex, page: newPage, layout: newLayout } as NormalMediator }));
+      }
+      else if (s.index.type === 'book-template') {
+        api
+          .modifyBookTemplatePage(s.index, s.page as BookTemplatePage, c.script)
+          .then(({ page: newPage, layout: newLayout }) => dispatch({ type: 'UPDATE_PAGE', payload: { index: pageIndex, page: newPage, layout: newLayout } as Mediator }));
+      }
+      else if (s.index.type === 'page-template') {
+        api
+          .modifyPageTemplatePage(s.index, s.page as PageTemplatePage, c.id, c.script)
+          .then(({ page: newPage, layout: newLayout }) => dispatch({ type: 'UPDATE_PAGE', payload: { index: pageIndex, page: newPage, layout: newLayout } as Mediator }));
+      }
     },
     [],
   );
@@ -64,7 +77,7 @@ export default function ModifyPageButton({
       aria-label="Save"
       className={styleJoin(theme.button, className)}
       onClick={() => {
-        onClick(pageIndex, onClickButton);
+        onClick({ index: pageIndex, layout, page: word } as Mediator, onClickButton);
       }}
       type="submit">
       <Recursion

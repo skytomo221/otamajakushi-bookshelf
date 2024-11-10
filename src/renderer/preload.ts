@@ -16,30 +16,53 @@ import {
 } from 'otamashelf/Page';
 import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
 import { SearchResult } from 'otamashelf/PageExplorer';
-import { NormalPageReference } from 'otamashelf/PageReference';
+import {
+  BookTemplatePageReference,
+  NormalPageReference,
+  PageTemplatePageReference,
+} from 'otamashelf/PageReference';
 import { SearchCard } from 'otamashelf/SearchCard';
 import { ConvertProps, ConvertReturns } from 'otamashelf/TextConverter';
 
 import StyleThemeParameters from '../common/StyleThemeParameters';
 
-import { Mediator } from './Mediator';
+import { Mediator, NormalMediator } from './Mediator';
 
 contextBridge.exposeInMainWorld('api', {
   windowMinimize: () => ipcRenderer.invoke('window-minimize'),
   windowMaximize: () => ipcRenderer.invoke('window-maximize'),
   windowClose: () => ipcRenderer.invoke('window-close'),
-  requestBook: (bookCreatorId: string): Promise<BookTemplatePage> =>
-    ipcRenderer.invoke('book:request', bookCreatorId),
-  createBook: (bookCreatorId: string, book: BookTemplatePage): Promise<Book> =>
-    ipcRenderer.invoke('book:create', bookCreatorId, book),
+  showSaveDialogSync: (): Promise<string | undefined> =>
+    ipcRenderer.invoke('show-save-dialog-sync'),
+  requestBook: (
+    bookCreatorId: string,
+  ): Promise<{
+    page: BookTemplatePage;
+    layout: LayoutComponent;
+    index: BookTemplatePageReference;
+  }> => ipcRenderer.invoke('book:request', bookCreatorId),
+  createBook: (
+    pageReference: BookTemplatePageReference,
+    book: BookTemplatePage,
+    path: string,
+  ): Promise<Book> =>
+    ipcRenderer.invoke('book:create', pageReference, book, path),
   openBook: (type: 'directory' | 'file'): Promise<string[]> =>
     ipcRenderer.invoke('book:open', type),
   saveBook: (bookPath: string): Promise<boolean> =>
     ipcRenderer.invoke('book:save', bookPath),
-  requestPage: (bookPath: string): Promise<PageTemplatePage> =>
-    ipcRenderer.invoke('page:request', bookPath),
-  createPage: (bookPath: string, template: PageTemplatePage): Promise<Page> =>
-    ipcRenderer.invoke('page:create', bookPath, template),
+  requestPage: (
+    bookPath: string,
+  ): Promise<{
+    page: PageTemplatePage;
+    layout: LayoutComponent;
+    index: PageTemplatePageReference;
+  }> => ipcRenderer.invoke('page:request', bookPath),
+  createPage: (
+    pageReference: PageTemplatePageReference,
+    template: PageTemplatePage,
+  ): Promise<NormalMediator> =>
+    ipcRenderer.invoke('page:create', pageReference, template),
   readPage: (
     index: PageDisplayInformation,
   ): Promise<{ page: NormalPage; layout: LayoutComponent }> =>
@@ -71,26 +94,65 @@ contextBridge.exposeInMainWorld('api', {
     script: JSON,
   ): Promise<boolean> =>
     ipcRenderer.invoke('book:modify', bookPath, bookModifierId, script),
-  modifyPages: (
-    bookPath: string,
-    pageId: string,
+  modifyPagesFromNormalPage: (
+    normalPageReference: NormalPageReference,
     pagesModifierId: string,
     script: JSON,
-  ): Promise<boolean> =>
+  ): Promise<{ page: NormalPage; layout: LayoutComponent }> =>
     ipcRenderer.invoke(
-      'book:modify-with-page',
-      bookPath,
-      pageId,
+      'normal-page:modify-with-page',
+      normalPageReference,
       pagesModifierId,
       script,
     ),
-  modifyPage: (
-    bookPath: string,
-    pageId: string,
+  modifyPagesFromPageTemplatePage: (
+    pageTemplatePageReference: PageTemplatePageReference,
+    pageTemplatePage: PageTemplatePage,
+    pagesModifierId: string,
+    script: JSON,
+  ): Promise<{ page: PageTemplatePage; layout: LayoutComponent }> =>
+    ipcRenderer.invoke(
+      'page-template-page:modify-with-page',
+      pageTemplatePageReference,
+      pageTemplatePage,
+      pagesModifierId,
+      script,
+    ),
+  modifyNormalPage: (
+    normalPageReference: NormalPageReference,
     pageModifierId: string,
     script: JSON,
   ): Promise<{ page: NormalPage; layout: LayoutComponent }> =>
-    ipcRenderer.invoke('page:modify', bookPath, pageId, pageModifierId, script),
+    ipcRenderer.invoke(
+      'normal-page:modify',
+      normalPageReference,
+      pageModifierId,
+      script,
+    ),
+  modifyPageTemplatePage: (
+    pageTemplatePageReference: PageTemplatePageReference,
+    pageTemplatePage: PageTemplatePage,
+    pageModifierId: string,
+    script: JSON,
+  ): Promise<{ page: PageTemplatePage; layout: LayoutComponent }> =>
+    ipcRenderer.invoke(
+      'page-template-page:modify',
+      pageTemplatePageReference,
+      pageTemplatePage,
+      pageModifierId,
+      script,
+    ),
+  modifyBookTemplatePage: (
+    bookTemplatePageReference: BookTemplatePageReference,
+    bookTemplatePage: BookTemplatePage,
+    script: JSON,
+  ): Promise<{ page: BookTemplatePage; layout: LayoutComponent }> =>
+    ipcRenderer.invoke(
+      'book-template-page:modify',
+      bookTemplatePageReference,
+      bookTemplatePage,
+      script,
+    ),
   mofidyDescription: (
     bookPath: string,
     description: string,

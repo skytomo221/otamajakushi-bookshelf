@@ -3,6 +3,7 @@ import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
 import { NormalPageReference } from 'otamashelf/PageReference';
 import React from 'react';
 
+import { Mediator } from '../../Mediator';
 import { useThemeStore } from '../../contexts/themeContext';
 
 // eslint-disable-next-line import/no-cycle
@@ -16,7 +17,7 @@ interface Props {
   for: string;
   submit: () => void;
   reset: () => void;
-  pageIndex: NormalPageReference & PageDisplayInformation;
+  pageIndex: Mediator['index'];
   layout: Layout;
   flattenCard: { [key: string]: string };
   setFlattenCard: (flattenCard: { [key: string]: string }) => void;
@@ -38,7 +39,7 @@ export default function H5InForm({
   return (
     // eslint-disable-next-line jsx-a11y/label-has-associated-control
     <label
-      htmlFor={`${pageIndex.bookPath} ${pageIndex.pageId} ${htmlFor}`}
+      htmlFor={JSON.stringify({ pageIndex, htmlFor })}
       className={styleJoin(theme.label, className)}>
       <RecursionInForm
         baseReference={baseReference}

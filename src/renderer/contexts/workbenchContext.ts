@@ -38,6 +38,13 @@ type Action =
       payload: string;
     }
   | {
+      type: 'ADD_INDEX';
+      payload: {
+        path: string;
+        index: NormalPageReference & PageDisplayInformation;
+      };
+    }
+  | {
       type: 'REMOVE_INDEX';
       payload: {
         path: string;
@@ -105,8 +112,8 @@ type Action =
       payload: {
         path: string;
         searchWord: string;
+      };
     };
-  };
 
 const initialState: State = [];
 
@@ -123,6 +130,12 @@ const reducer = (state: State, action: Action) => {
       );
     case 'REMOVE_WORKBENCH':
       return state.filter(workbench => workbench.path !== payload);
+    case 'ADD_INDEX':
+      return state.map(workbench =>
+        workbench.path === payload.path
+          ? { ...workbench, indexes: [...workbench.indexes, payload.index] }
+          : workbench,
+      );
     case 'REMOVE_INDEX':
       return state.map(workbench =>
         workbench.path === payload.path

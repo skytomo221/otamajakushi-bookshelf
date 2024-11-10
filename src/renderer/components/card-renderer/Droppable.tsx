@@ -5,6 +5,7 @@ import { NormalPageReference } from 'otamashelf/PageReference';
 import React from 'react';
 import { Droppable as RawDroppable } from 'react-beautiful-dnd';
 
+import { Mediator } from '../../Mediator';
 import { useThemeStore } from '../../contexts/themeContext';
 
 // eslint-disable-next-line import/no-cycle
@@ -18,7 +19,7 @@ interface Props {
   contents: LayoutComponent[];
   edit: () => void;
   editable: boolean;
-  pageIndex: NormalPageReference & PageDisplayInformation;
+  pageIndex: Mediator['index'];
   layout: Layout;
   word: Page;
 }

@@ -15,13 +15,13 @@ import {
 } from 'otamashelf/Page';
 import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
 import { SearchResult } from 'otamashelf/PageExplorer';
-import { NormalPageReference } from 'otamashelf/PageReference';
+import { BookTemplatePageReference, NormalPageReference, PageTemplatePageReference } from 'otamashelf/PageReference';
 import { SearchCard } from 'otamashelf/SearchCard';
 import { ConvertReturns } from 'otamashelf/TextConverter';
 
 import StyleThemeParameters from '../common/StyleThemeParameters';
 
-import { Mediator } from './Mediator';
+import { Mediator, NormalMediator } from './Mediator';
 
 
 declare global {
@@ -34,12 +34,28 @@ export type Api = {
   windowMinimize: () => void;
   windowMaximize: () => void;
   windowClose: () => void;
-  requestBook: (bookCreatorId: string) => Promise<BookTemplatePage>;
-  createBook: (bookCreatorId: string, book: BookTemplatePage) => Promise<Book>;
+  showSaveDialogSync: () => Promise<string | undefined>;
+  requestBook: (bookCreatorId: string) => Promise<{
+    page: BookTemplatePage;
+    layout: LayoutComponent;
+    index: BookTemplatePageReference;
+  }>;
+  createBook: (
+    pageReference: BookTemplatePageReference,
+    book: BookTemplatePage,
+    path: string,
+  ) => Promise<Book>;
   openBook: (type: 'directory' | 'file') => Promise<string[]>;
   saveBook: (bookPath: string) => Promise<boolean>;
-  requestPage: (bookPath: string) => Promise<PageTemplatePage>;
-  createPage: (bookPath: string, template: PageTemplatePage) => Promise<Page>;
+  requestPage: (bookPath: string) => Promise<{
+    page: PageTemplatePage;
+    layout: LayoutComponent;
+    index: PageTemplatePageReference;
+  }>;
+  createPage: (
+    pageReference: PageTemplatePageReference,
+    template: PageTemplatePage,
+  ) => Promise<NormalMediator>;
   readPage: (
     normalPageReference: NormalPageReference,
   ) => Promise<{ page: NormalPage; layout: LayoutComponent }>;
@@ -66,18 +82,33 @@ export type Api = {
     bookModifierId: string,
     script: Json,
   ) => Promise<{ page: NormalPage; layout: LayoutComponent }>;
-  modifyPages: (
-    bookPath: string,
-    pageId: string,
+  modifyPagesFromNormalPage: (
+    normalPageReference: NormalPageReference,
     pagesModifierId: string,
     script: Json,
   ) => Promise<{ page: NormalPage; layout: LayoutComponent }>;
-  modifyPage: (
-    bookPath: string,
-    pageId: string,
+  modifyPagesFromPageTemplatePage: (
+    pageTemplatePageReference: PageTemplatePageReference,
+    pageTemplatePage: PageTemplatePage,
+    pagesModifierId: string,
+    script: Json,
+  ) => Promise<{ page: PageTemplatePage; layout: LayoutComponent }>;
+  modifyNormalPage: (
+    normalPageReference: NormalPageReference,
     pageModifierId: string,
     script: Json,
   ) => Promise<{ page: NormalPage; layout: LayoutComponent }>;
+  modifyPageTemplatePage: (
+    pageTemplatePageReference: PageTemplatePageReference,
+    pageTemplatePage: PageTemplatePage,
+    pageModifierId: string,
+    script: Json,
+  ) => Promise<{ page: PageTemplatePage; layout: LayoutComponent }>;
+  modifyBookTemplatePage: (
+    bookTemplatePageReference: BookTemplatePageReference,
+    bookTemplatePage: BookTemplatePage,
+    script: Json,
+  ) => Promise<{ page: BookTemplatePage; layout: LayoutComponent }>;
   mofidyDescription: (
     bookPath: string,
     description: string,

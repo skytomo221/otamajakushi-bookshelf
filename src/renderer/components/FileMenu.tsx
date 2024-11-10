@@ -2,6 +2,7 @@ import { MenuUnstyledActions } from '@mui/base/MenuUnstyled';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { MenuItem, Typography, useTheme, Divider } from '@mui/material';
 import { useSnackbar } from 'notistack';
+import { BookCreatorProperties } from 'otamashelf/BookCreator';
 import { ExtensionBaseProperties } from 'otamashelf/ExtensionProperties';
 import { SearchResult } from 'otamashelf/PageExplorer';
 import { SearchCard } from 'otamashelf/SearchCard';
@@ -10,6 +11,7 @@ import React, { useEffect } from 'react';
 import '../renderer';
 import StyleThemeParameters from '../../common/StyleThemeParameters';
 import { useExtensionsStore } from '../contexts/extensionsContext';
+import { usePagesDispatch } from '../contexts/pagesContext';
 import { useThemeDispatch, useThemeStore } from '../contexts/themeContext';
 import {
   useWorkbenchDispatch,
@@ -76,6 +78,7 @@ export default function FileMenu(): JSX.Element {
   const dispatch = useThemeDispatch();
   const workbenches = useWorkbenchStore();
   const workbenchDispatch = useWorkbenchDispatch();
+  const pagesDispatch = usePagesDispatch();
   const { enqueueSnackbar } = useSnackbar();
   const extensions = useExtensionsStore();
   async function onWorkbenchInitialize(path: string, editable: boolean) {
@@ -136,6 +139,12 @@ export default function FileMenu(): JSX.Element {
       });
   };
 
+  const newBook = (ext: BookCreatorProperties) => () => {
+    api.requestBook(ext.id).then(mediator => {
+      pagesDispatch({ type: 'ADD_PAGE', payload: mediator });
+    })
+  }
+
   const applyStyleTheme = (id: string) => () => {
     api.applyStyleTheme(id).then(styleTheme => onStyleThemeApply(styleTheme));
   };
@@ -148,25 +157,17 @@ export default function FileMenu(): JSX.Element {
         </Typography>
       </MenuButton>
       <Menu id="file-menu" anchorEl={anchorEl} open={open}>
-        {/* <NestedMenuItem
+        <NestedMenuItem
           rightIcon={<ChevronRightIcon />}
           label="辞書の新規作成"
           parentMenuOpen={open}>
-          {extensions
-            .filter(
-              (ext): ext is BookCreatorProperties =>
-                ext.type === 'book-creator',
-            )
+          {bookCreators
             .map(ext => (
               <MenuItem key={ext.id} onClick={newBook(ext)}>
-                {ext.filters.map(
-                  f =>
-                    `${f.name} (${f.extensions.map(e => `*.${e}`).join(', ')})`,
-                )}
-                形式で開く
+                {ext.name}から作成する
               </MenuItem>
             ))}
-        </NestedMenuItem> */}
+        </NestedMenuItem>
         <MenuItem onClick={openBook('file', false)}>ファイルで開く</MenuItem>
         <MenuItem onClick={openBook('directory', false)}>
           フォルダで開く
