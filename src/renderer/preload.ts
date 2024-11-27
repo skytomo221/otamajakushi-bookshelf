@@ -80,6 +80,10 @@ contextBridge.exposeInMainWorld('api', {
     page: Page,
   ): Promise<{ page: NormalPage; layout: LayoutComponent }> =>
     ipcRenderer.invoke('page:update', bookPath, page),
+  layout: (
+    page: Page,
+  ): Promise<LayoutComponent> =>
+    ipcRenderer.invoke('layout', page),
   updateDescription: (bookPath: string, description: string): Promise<number> =>
     ipcRenderer.invoke('description:update', bookPath, description),
   readConfiguration: (): Promise<{

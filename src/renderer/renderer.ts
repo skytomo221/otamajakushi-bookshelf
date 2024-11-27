@@ -75,6 +75,9 @@ export type Api = {
     bookPath: string,
     page: Page,
   ) => Promise<{ page: NormalPage; layout: LayoutComponent }>;
+  layout: (
+    page: Page,
+  ) => Promise<LayoutComponent>;
   updateDescription: (bookPath: string, description: string) => Promise<number>;
   updateConfiguration: (configuration: Configuration) => Promise<number>;
   modifyBook: (

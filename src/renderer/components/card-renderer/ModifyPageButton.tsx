@@ -2,7 +2,7 @@ import { Layout, LayoutComponent } from 'otamashelf/LayoutCard';
 import { BookTemplatePage, Page, PageTemplatePage } from 'otamashelf/Page';
 import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
 import { NormalPageReference } from 'otamashelf/PageReference';
-import React from 'react';
+import React, { useContext } from 'react';
 
 import { Mediator, NormalMediator } from '../../Mediator';
 import { usePagesDispatch } from '../../contexts/pagesContext';
@@ -10,6 +10,8 @@ import { useThemeStore } from '../../contexts/themeContext';
 import '../../renderer';
 
 // eslint-disable-next-line import/no-cycle
+import { WordTabIndexContext } from '../../contexts/wordTabIndexContext';
+
 import Recursion from './Recursion';
 import styleJoin from './styleJoin';
 
@@ -46,6 +48,7 @@ export default function ModifyPageButton({
 }: Props): JSX.Element {
   const theme = useThemeStore();
   const dispatch = usePagesDispatch();
+  const wordTabsIndex = useContext(WordTabIndexContext);
   const onClick = React.useCallback(
     (
       s: Mediator,
@@ -62,12 +65,12 @@ export default function ModifyPageButton({
       else if (s.index.type === 'book-template') {
         api
           .modifyBookTemplatePage(s.index, s.page as BookTemplatePage, c.script)
-          .then(({ page: newPage, layout: newLayout }) => dispatch({ type: 'UPDATE_PAGE', payload: { index: pageIndex, page: newPage, layout: newLayout } as Mediator }));
+          .then(({ page: newPage, layout: newLayout }) => dispatch({ type: 'UPDATE_PAGE_WITH_INDEX', index: wordTabsIndex, payload: { index: pageIndex, page: newPage, layout: newLayout } as Mediator }));
       }
       else if (s.index.type === 'page-template') {
         api
           .modifyPageTemplatePage(s.index, s.page as PageTemplatePage, c.id, c.script)
-          .then(({ page: newPage, layout: newLayout }) => dispatch({ type: 'UPDATE_PAGE', payload: { index: pageIndex, page: newPage, layout: newLayout } as Mediator }));
+          .then(({ page: newPage, layout: newLayout }) => dispatch({ type: 'UPDATE_PAGE_WITH_INDEX', index: wordTabsIndex, payload: { index: pageIndex, page: newPage, layout: newLayout } as Mediator }));
       }
     },
     [],

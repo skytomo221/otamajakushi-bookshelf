@@ -340,6 +340,10 @@ const createWindow = async () => {
     },
   );
 
+  ipcMain.handle('layout', async (_, page: Page) =>
+    otamashelf.layout(page),
+  );
+
   ipcMain.handle('configuraion:read', async () =>
     otamashelf.configurationsRegistry.get(),
   );

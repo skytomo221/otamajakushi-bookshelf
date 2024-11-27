@@ -3,11 +3,12 @@ import { Layout, FormDivComponent } from 'otamashelf/LayoutCard';
 import { NormalPage, Page } from 'otamashelf/Page';
 import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
 import { NormalPageReference } from 'otamashelf/PageReference';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 
 import { Mediator, isNormalMediator } from '../../Mediator';
 import { usePagesDispatch } from '../../contexts/pagesContext';
 import { useThemeStore } from '../../contexts/themeContext';
+import { WordTabIndexContext } from '../../contexts/wordTabIndexContext';
 
 import Error from './Error';
 // eslint-disable-next-line import/no-cycle
@@ -41,13 +42,16 @@ export default function FormDiv({
   const defaultFlattenCard = flatten(word.data) as { [key: string]: string };
   const [flattenCard, setFlattenCard] = useState(defaultFlattenCard);
   const dispatch = usePagesDispatch();
+  const wordTabsIndex = useContext(WordTabIndexContext);
   function onSelectedWordPush(mediator: Mediator) {
     if (isNormalMediator(mediator)) {
       api
         .updatePage(mediator.index.bookPath, mediator.page)
         .then(({ page: newPage, layout: newLayout }) => dispatch({ type: 'UPDATE_PAGE', payload: { ...mediator, page: newPage, layout: newLayout } }));
     } else {
-      dispatch({ type: 'UPDATE_PAGE', payload: mediator });
+      api
+        .layout(mediator.page)
+        .then(newLayout => dispatch({ type: 'UPDATE_PAGE_WITH_INDEX', index: wordTabsIndex, payload: { ...mediator, layout: newLayout } }));
     }
   }
   if (typeof flattenCard !== 'object') {

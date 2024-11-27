@@ -7,6 +7,7 @@ import { useState } from 'react';
 
 import { BookTemplateMediator, Mediator, NormalMediator, PageTemplateMediator, isBookTemplateMediator, isNormalMediator, isPageTemplateMediator } from '../Mediator';
 import { usePagesDispatch, usePagesStore } from '../contexts/pagesContext';
+import { WordTabIndexContext } from '../contexts/wordTabIndexContext';
 import { useWorkbenchDispatch } from '../contexts/workbenchContext';
 
 import Tab from './Tab';
@@ -32,7 +33,7 @@ function CardRendererSwitcher({ mediator, index }: { mediator: Mediator, index: 
     const pageFormats = await api.readAllPageFormats(path);
     const selectedPageFormatIndex = 0;
     const selectedPageFormat = pageFormats[selectedPageFormatIndex];
-    const indexes = (pageFormats.length === 0) ? [] : await api.indexAllPages(path, selectedPageFormat) ;
+    const indexes = (pageFormats.length === 0) ? [] : await api.indexAllPages(path, selectedPageFormat);
     const searchResults = [] as (SearchCard & SearchResult)[];
     const searchCriteria = await api.readAllSearchCriteria();
     const selectedSearchCriterionIndex = 0;
@@ -69,13 +70,13 @@ function CardRendererSwitcher({ mediator, index }: { mediator: Mediator, index: 
     }
   }
   if (isNormalMediator(mediator)) {
-    return <CardRenderer
+    return <WordTabIndexContext.Provider value={index}><CardRenderer
       page={mediator.page}
       index={mediator.index}
       layout={mediator.layout}
-    />;
+    /></WordTabIndexContext.Provider >;
   } if (isPageTemplateMediator(mediator)) {
-    return <>
+    return <WordTabIndexContext.Provider value={index}>
       <CardRenderer
         page={mediator.page}
         index={mediator.index}
@@ -84,9 +85,9 @@ function CardRendererSwitcher({ mediator, index }: { mediator: Mediator, index: 
       <button onClick={() => createPage(mediator)}>
         ページを作成する
       </button>
-    </>;
+    </WordTabIndexContext.Provider>;
   } if (isBookTemplateMediator(mediator)) {
-    return <>
+    return <WordTabIndexContext.Provider value={index}>
       <CardRenderer
         page={mediator.page}
         index={mediator.index}
@@ -103,7 +104,7 @@ function CardRendererSwitcher({ mediator, index }: { mediator: Mediator, index: 
       <button onClick={() => createBook(mediator)}>
         ブックを作成する
       </button>
-    </>;
+    </WordTabIndexContext.Provider >;
   }
   return <div>不明なMediatorです。</div>;
 }
