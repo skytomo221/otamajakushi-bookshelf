@@ -4,9 +4,7 @@ import {
   LayoutComponent,
 } from 'otamashelf/LayoutCard';
 import { Page } from 'otamashelf/Page';
-import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
-import { NormalPageReference } from 'otamashelf/PageReference';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 
 import { Mediator } from '../../Mediator';
 import { useThemeStore } from '../../contexts/themeContext';
@@ -15,6 +13,8 @@ import FormDiv from './FormDiv';
 // eslint-disable-next-line import/no-cycle
 import Recursion from './Recursion';
 import styleJoin from './styleJoin';
+import { PageRendererContext } from './PageRendererContext';
+import { PageRendererInFormContext } from './PageRendererInFormContext';
 
 interface Props {
   baseReference: string;
@@ -38,29 +38,26 @@ export default function EditableDiv({
   word,
 }: Props): JSX.Element {
   const theme = useThemeStore();
+  const value = useContext(PageRendererContext);
   const [edit, setEdit] = useState(false);
   return edit ? (
-    <FormDiv
-      baseReference={baseReference}
-      inputs={inputs}
-      submit={() => setEdit(false)}
-      reset={() => setEdit(false)}
-      pageIndex={pageIndex}
-      layout={layout}
-      word={word}
-    />
-  ) : (
-    <div className={styleJoin(theme.EditableDiv, className)}>
-      <Recursion
+    <PageRendererContext.Provider value={{ ...value, edit: () => setEdit(true) }}>
+      <FormDiv
         baseReference={baseReference}
-        contents={outputs}
-        edit={() => setEdit(true)}
-        editable={editable}
+        inputs={inputs}
+        submit={() => setEdit(false)}
+        reset={() => setEdit(false)}
         pageIndex={pageIndex}
         layout={layout}
         word={word}
       />
-    </div>
+    </PageRendererContext.Provider>
+  ) : (
+    <PageRendererContext.Provider value={{ ...value, edit: () => setEdit(true) }}>
+      <div className={styleJoin(theme.EditableDiv, className)}>
+        <Recursion />
+      </div>
+    </PageRendererContext.Provider>
   );
 }
 EditableDiv.defaultProps = {

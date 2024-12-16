@@ -8,7 +8,7 @@ import * as React from 'react';
 import { VList } from 'virtua';
 
 import '../renderer';
-import { Mediator, isNormalMediator } from '../Mediator';
+import { isNormalMediator } from '../Mediator';
 import { usePagesDispatch, usePagesStore } from '../contexts/pagesContext';
 import { usePrimarySidebarStore } from '../contexts/primarySidebarContext';
 import { useThemeStore } from '../contexts/themeContext';

@@ -1,21 +1,21 @@
-import React from 'react';
+import React, { useContext } from 'react';
 
 import { useThemeStore } from '../../contexts/themeContext';
 
+import { PageRendererContext } from './PageRendererContext';
 import styleJoin from './styleJoin';
 
 interface Props {
-  className?: string;
   keyword: string;
   value: string | undefined;
 }
 
 export default function Chip({
-  className,
   keyword,
   value,
 }: Props): JSX.Element {
   const theme = useThemeStore();
+  const { className } = useContext(PageRendererContext);
   return (
     <span className={styleJoin(theme.Chip, className)}>
       <span className={theme['Chip.Key']}>{keyword}</span>
@@ -23,6 +23,3 @@ export default function Chip({
     </span>
   );
 }
-Chip.defaultProps = {
-  className: '',
-};

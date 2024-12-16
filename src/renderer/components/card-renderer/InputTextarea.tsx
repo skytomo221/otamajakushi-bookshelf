@@ -1,15 +1,13 @@
 import { Reference } from 'otamashelf/LayoutCard';
-import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
-import { NormalPageReference } from 'otamashelf/PageReference';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 
-import { Mediator } from '../../Mediator';
 import { useThemeStore } from '../../contexts/themeContext';
 
 import styleJoin from './styleJoin';
+import { PageRendererContext } from './PageRendererContext';
+import { PageRendererInFormContext } from './PageRendererInFormContext';
 
 interface Props {
-  className?: string;
   inputId: string;
   name: string;
   reference: Reference;
@@ -17,13 +15,9 @@ interface Props {
   rows?: number;
   cols?: number;
   wrap?: 'hard' | 'soft' | 'off';
-  pageIndex: Mediator['index'];
-  flattenCard: { [key: string]: string };
-  setFlattenCard: (flattenCard: { [key: string]: string }) => void;
 }
 
 export default function InputTextarea({
-  className,
   inputId,
   name,
   reference,
@@ -31,11 +25,10 @@ export default function InputTextarea({
   rows,
   cols,
   wrap,
-  pageIndex,
-  flattenCard,
-  setFlattenCard,
 }: Props): JSX.Element {
   const theme = useThemeStore();
+  const { className, pageIndex } = useContext(PageRendererContext);
+  const { flattenCard, setFlattenCard } = useContext(PageRendererInFormContext);
   const [text, setText] = useState(flattenCard[reference]);
   return (
     <textarea

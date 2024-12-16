@@ -1,28 +1,24 @@
-import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
-import { NormalPageReference } from 'otamashelf/PageReference';
-import React from 'react';
+import React, { useContext } from 'react';
 
 import { Mediator } from '../../Mediator';
 import { useThemeStore } from '../../contexts/themeContext';
 
 import styleJoin from './styleJoin';
+import { PageRendererInFormContext } from './PageRendererInFormContext';
+import { PageRendererContext } from './PageRendererContext';
 
 interface Props {
-  className?: string;
   inputId: string;
   value: string;
-  reset: () => void;
-  pageIndex: Mediator['index'];
 }
 
 export default function InputReset({
-  className,
   inputId,
   value,
-  reset,
-  pageIndex,
 }: Props): JSX.Element {
   const theme = useThemeStore();
+  const { className, pageIndex } = useContext(PageRendererContext);
+  const { reset } = useContext(PageRendererInFormContext);
   return (
     <input
       type="button"
@@ -33,6 +29,3 @@ export default function InputReset({
     />
   );
 }
-InputReset.defaultProps = {
-  className: '',
-};

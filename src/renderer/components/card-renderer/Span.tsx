@@ -1,52 +1,18 @@
-import { Layout, LayoutComponent } from 'otamashelf/LayoutCard';
-import { Page } from 'otamashelf/Page';
-import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
-import { NormalPageReference } from 'otamashelf/PageReference';
-import React from 'react';
+import React, { useContext } from 'react';
 
-import { Mediator } from '../../Mediator';
 import { useThemeStore } from '../../contexts/themeContext';
 
+import { PageRendererContext } from './PageRendererContext';
 // eslint-disable-next-line import/no-cycle
 import Recursion from './Recursion';
 import styleJoin from './styleJoin';
 
-interface Props {
-  baseReference: string;
-  className?: string;
-  contents: LayoutComponent[];
-  edit: () => void;
-  editable: boolean;
-  pageIndex: Mediator['index'];
-  layout: Layout;
-  word: Page;
-}
-
-export default function Span({
-  baseReference,
-  className,
-  contents,
-  edit,
-  editable,
-  pageIndex,
-  layout,
-  word,
-}: Props): JSX.Element {
+export default function Span(): JSX.Element {
   const theme = useThemeStore();
+  const { className } = useContext(PageRendererContext);
   return (
     <span className={styleJoin(theme.span, className)}>
-      <Recursion
-        baseReference={baseReference}
-        contents={contents}
-        edit={edit}
-        editable={editable}
-        pageIndex={pageIndex}
-        layout={layout}
-        word={word}
-      />
+      <Recursion />
     </span>
   );
 }
-Span.defaultProps = {
-  className: '',
-};

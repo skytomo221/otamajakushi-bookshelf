@@ -1,35 +1,28 @@
 import { Reference } from 'otamashelf/LayoutCard';
-import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
-import { NormalPageReference } from 'otamashelf/PageReference';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 
-import { Mediator } from '../../Mediator';
 import { useThemeStore } from '../../contexts/themeContext';
 
 import styleJoin from './styleJoin';
+import { PageRendererContext } from './PageRendererContext';
+import { PageRendererInFormContext } from './PageRendererInFormContext';
 
 interface Props {
-  className?: string;
   inputId: string;
   name: string;
   reference: Reference;
   pattern?: string;
-  pageIndex: Mediator['index'];
-  flattenCard: { [key: string]: string };
-  setFlattenCard: (flattenCard: { [key: string]: string }) => void;
 }
 
 export default function InputText({
-  className,
   inputId,
   name,
   reference,
   pattern,
-  pageIndex,
-  flattenCard,
-  setFlattenCard,
 }: Props): JSX.Element {
   const theme = useThemeStore();
+  const { className, pageIndex } = useContext(PageRendererContext);
+  const { flattenCard, setFlattenCard } = useContext(PageRendererInFormContext);
   const [text, setText] = useState(flattenCard[reference]);
   return (
     <input
@@ -51,7 +44,3 @@ export default function InputText({
     />
   );
 }
-InputText.defaultProps = {
-  className: '',
-  pattern: undefined,
-};

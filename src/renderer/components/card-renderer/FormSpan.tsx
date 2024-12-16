@@ -1,5 +1,5 @@
 import flatten, { unflatten } from 'flat';
-import { Layout, FormDivComponent } from 'otamashelf/LayoutCard';
+import { Layout, FormDivComponent, LayoutComponent } from 'otamashelf/LayoutCard';
 import { NormalPage, Page } from 'otamashelf/Page';
 import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
 import { NormalPageReference } from 'otamashelf/PageReference';
@@ -14,6 +14,7 @@ import Error from './Error';
 // eslint-disable-next-line import/no-cycle
 import RecursionInForm from './RecursionInForm';
 import styleJoin from './styleJoin';
+import { PageRendererInFormContext } from './PageRendererInFormContext';
 
 const { api } = window;
 
@@ -64,29 +65,25 @@ export default function FormDiv({
   }
   return (
     <span className={styleJoin(theme.FormSpan, className)}>
-      <RecursionInForm
-        baseReference={baseReference}
-        contents={inputs}
-        pageIndex={pageIndex}
-        layout={layout}
-        submit={() => {
+      <PageRendererInFormContext.Provider value={{
+        inputs,
+        submit: () => {
           submit();
           onSelectedWordPush({
             index: pageIndex,
             layout,
             page: { ...word as NormalPage, data: unflatten(flattenCard) },
           } as Mediator);
-        }}
-        reset={() => {
+        },
+        reset: () => {
           reset();
           setFlattenCard(defaultFlattenCard);
-        }}
-        flattenCard={defaultFlattenCard}
-        setFlattenCard={setFlattenCard}
-      />
+        },
+        flattenCard: defaultFlattenCard,
+        setFlattenCard,
+      }}>
+        <RecursionInForm />
+      </PageRendererInFormContext.Provider>
     </span>
   );
 }
-FormDiv.defaultProps = {
-  className: '',
-};

@@ -6,7 +6,7 @@ import {
 import { Page } from 'otamashelf/Page';
 import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
 import { NormalPageReference } from 'otamashelf/PageReference';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 
 import { Mediator } from '../../Mediator';
 import { useThemeStore } from '../../contexts/themeContext';
@@ -15,6 +15,7 @@ import FormSpan from './FormSpan';
 // eslint-disable-next-line import/no-cycle
 import Recursion from './Recursion';
 import styleJoin from './styleJoin';
+import { PageRendererContext } from './PageRendererContext';
 
 interface Props {
   baseReference: string;
@@ -38,29 +39,26 @@ export default function EditableSpan({
   word,
 }: Props): JSX.Element {
   const theme = useThemeStore();
+  const value = useContext(PageRendererContext);
   const [edit, setEdit] = useState(false);
   return edit ? (
-    <FormSpan
-      baseReference={baseReference}
-      inputs={inputs}
-      submit={() => setEdit(false)}
-      reset={() => setEdit(false)}
-      pageIndex={pageIndex}
-      layout={layout}
-      word={word}
-    />
-  ) : (
-    <span className={styleJoin(theme.EditableSpan, className)}>
-      <Recursion
+    <PageRendererContext.Provider value={{ ...value, edit: () => setEdit(true) }}>
+      <FormSpan
         baseReference={baseReference}
-        contents={outputs}
-        edit={() => setEdit(true)}
-        editable={editable}
+        inputs={inputs}
+        submit={() => setEdit(false)}
+        reset={() => setEdit(false)}
         pageIndex={pageIndex}
         layout={layout}
         word={word}
       />
-    </span>
+    </PageRendererContext.Provider>
+  ) : (
+    <PageRendererContext.Provider value={{ ...value, edit: () => setEdit(true) }}>
+      <span className={styleJoin(theme.EditableSpan, className)}>
+        <Recursion />
+      </span>
+    </PageRendererContext.Provider>
   );
 }
 EditableSpan.defaultProps = {

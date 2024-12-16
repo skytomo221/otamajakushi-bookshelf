@@ -1,11 +1,5 @@
 /* eslint-disable import/no-cycle */
-import { Layout, LayoutComponent } from 'otamashelf/LayoutCard';
-import { Page } from 'otamashelf/Page';
-import { PageDisplayInformation } from 'otamashelf/PageDisplayInformation';
-import { NormalPageReference } from 'otamashelf/PageReference';
-import React from 'react';
-
-import { Mediator } from '../../Mediator';
+import React, { useContext } from 'react';
 
 import Chip from './Chip';
 import Div from './Div';
@@ -24,30 +18,23 @@ import Mime from './Mime';
 import ModifyPageButton from './ModifyPageButton';
 import ModifyPagesButton from './ModifyPagesButton';
 import P from './P';
+import { PageRendererContext } from './PageRendererContext';
 import Section from './Section';
 import Span from './Span';
 import Text from './Text';
 import createKey from './createKey';
 
-interface Props {
-  baseReference: string;
-  contents: LayoutComponent[];
-  edit: () => void;
-  editable: boolean;
-  pageIndex: Mediator['index'];
-  layout: Layout;
-  word: Page;
-}
-
-export default function Recursion({
-  baseReference,
-  contents,
-  edit,
-  editable,
-  pageIndex,
-  layout,
-  word,
-}: Props): JSX.Element {
+export default function Recursion(): JSX.Element {
+  const value = useContext(PageRendererContext);
+  const {
+    baseReference,
+    contents,
+    edit,
+    editable,
+    pageIndex,
+    layout,
+    word,
+  } = value;
   return (
     <>
       {contents.map((child, index) => {
@@ -56,12 +43,12 @@ export default function Recursion({
         switch (child.component) {
           case 'chip':
             return (
-              <Chip
-                key={key}
-                className={child.class}
-                keyword={child.key}
-                value={child.value}
-              />
+              <PageRendererContext.Provider key={key} value={{ ...value, className: child.class, contents: [] }}>
+                <Chip
+                  keyword={child.key}
+                  value={child.value}
+                />
+              </PageRendererContext.Provider>
             );
           case 'draggable': {
             const draggableIndex = contents
@@ -70,55 +57,33 @@ export default function Recursion({
                 c => typeof c !== 'string' && c.component === 'draggable',
               ).length;
             return (
-              <Draggable
-                key={key}
-                draggableId={key}
-                baseReference={baseReference}
-                className={child.class}
-                index={draggableIndex}
-                contents={child.contents}
-                edit={edit}
-                editable={editable}
-                pageIndex={pageIndex}
-                layout={layout}
-                word={word}
-              />
+              <PageRendererContext.Provider key={key} value={{ ...value, className: child.class, contents: child.contents }}>
+                <Draggable
+                  draggableId={key}
+                  index={draggableIndex}
+                />
+              </PageRendererContext.Provider>
             );
           }
           case 'droppable':
             return (
-              <Droppable
-                key={key}
-                baseReference={baseReference}
-                className={child.class}
-                contents={child.contents}
-                droppableId={child.droppableId}
-                type={child.type}
-                edit={edit}
-                editable={editable}
-                pageIndex={pageIndex}
-                layout={layout}
-                word={word}
-              />
+              <PageRendererContext.Provider key={key} value={{ ...value, className: child.class, contents: child.contents }}>
+                <Droppable
+                  droppableId={child.droppableId}
+                  type={child.type}
+                  editable={editable}
+                />
+              </PageRendererContext.Provider>
             );
           case 'div':
             return (
-              <Div
-                key={key}
-                baseReference={baseReference}
-                className={child.class}
-                contents={child.contents}
-                edit={edit}
-                editable={editable}
-                pageIndex={pageIndex}
-                layout={layout}
-                word={word}
-              />
+              <PageRendererContext.Provider key={key} value={{ ...value, className: child.class, contents: child.contents }}>
+                <Div />
+              </PageRendererContext.Provider>
             );
           case 'edit-button':
             return (
               <EditButton
-                key={key}
                 className={child.class}
                 edit={edit}
                 editable={editable}
@@ -126,182 +91,102 @@ export default function Recursion({
             );
           case 'h2':
             return (
-              <H2
-                key={key}
-                baseReference={baseReference}
-                className={child.class}
-                contents={child.contents}
-                edit={edit}
-                editable={editable}
-                pageIndex={pageIndex}
-                layout={layout}
-                word={word}
-              />
+              <PageRendererContext.Provider key={key} value={{ ...value, className: child.class, contents: child.contents }}>
+                <H2 />
+              </PageRendererContext.Provider>
             );
           case 'h3':
             return (
-              <H3
-                key={key}
-                baseReference={baseReference}
-                className={child.class}
-                contents={child.contents}
-                edit={edit}
-                editable={editable}
-                pageIndex={pageIndex}
-                layout={layout}
-                word={word}
-              />
+              <PageRendererContext.Provider key={key} value={{ ...value, className: child.class, contents: child.contents }}>
+                <H3 />
+              </PageRendererContext.Provider>
             );
           case 'h4':
             return (
-              <H4
-                key={key}
-                baseReference={baseReference}
-                className={child.class}
-                contents={child.contents}
-                edit={edit}
-                editable={editable}
-                pageIndex={pageIndex}
-                layout={layout}
-                word={word}
-              />
+              <PageRendererContext.Provider key={key} value={{ ...value, className: child.class, contents: child.contents }}>
+                <H4 />
+              </PageRendererContext.Provider>
             );
           case 'h5':
             return (
-              <H5
-                key={key}
-                baseReference={baseReference}
-                className={child.class}
-                contents={child.contents}
-                edit={edit}
-                editable={editable}
-                pageIndex={pageIndex}
-                layout={layout}
-                word={word}
-              />
+              <PageRendererContext.Provider key={key} value={{ ...value, className: child.class, contents: child.contents }}>
+                <H5 />
+              </PageRendererContext.Provider>
             );
           case 'h6':
             return (
-              <H6
-                key={key}
-                baseReference={baseReference}
-                className={child.class}
-                contents={child.contents}
-                edit={edit}
-                editable={editable}
-                pageIndex={pageIndex}
-                layout={layout}
-                word={word}
-              />
+              <PageRendererContext.Provider key={key} value={{ ...value, className: child.class, contents: child.contents }}>
+                <H6 />
+              </PageRendererContext.Provider>
             );
           case 'mime':
             return <Mime key={key} text={child.text} mime={child.mime} />;
           case 'modify-pages-button':
             return (
-              <ModifyPagesButton
-                key={key}
-                baseReference={baseReference}
-                className={child.class}
-                onClick={child.onClick}
-                contents={child.contents}
-                edit={edit}
-                editable={editable}
-                pageIndex={pageIndex}
-                layout={layout}
-                word={word}
-              />
+              <PageRendererContext.Provider key={key} value={{ ...value, className: child.class, contents: child.contents }}>
+                <ModifyPagesButton onClick={child.onClick} />
+              </PageRendererContext.Provider>
             );
           case 'modify-page-button':
             return (
-              <ModifyPageButton
-                key={key}
-                baseReference={baseReference}
-                className={child.class}
-                onClick={child.onClick}
-                contents={child.contents}
-                edit={edit}
-                editable={editable}
-                pageIndex={pageIndex}
-                layout={layout}
-                word={word}
-              />
+              <PageRendererContext.Provider key={key} value={{ ...value, className: child.class, contents: child.contents }}>
+                <ModifyPageButton onClick={child.onClick} />
+              </PageRendererContext.Provider >
             );
           case 'p':
             return (
-              <P
-                key={key}
-                baseReference={baseReference}
-                className={child.class}
-                contents={child.contents}
-                edit={edit}
-                editable={editable}
-                pageIndex={pageIndex}
-                layout={layout}
-                word={word}
-              />
+              <PageRendererContext.Provider key={key} value={{ ...value, className: child.class, contents: child.contents }}>
+                <P />
+              </PageRendererContext.Provider >
             );
           case 'section':
             return (
-              <Section
-                key={key}
-                baseReference={baseReference}
-                className={child.class}
-                contents={child.contents}
-                edit={edit}
-                editable={editable}
-                pageIndex={pageIndex}
-                layout={layout}
-                word={word}
-              />
+              <PageRendererContext.Provider key={key} value={{ ...value, className: child.class, contents: child.contents }}>
+                <Section />
+              </PageRendererContext.Provider >
             );
           case 'span':
             return (
-              <Span
-                key={key}
-                baseReference={baseReference}
-                className={child.class}
-                contents={child.contents}
-                edit={edit}
-                editable={editable}
-                pageIndex={pageIndex}
-                layout={layout}
-                word={word}
-              />
+              <PageRendererContext.Provider key={key} value={{ ...value, className: child.class, contents: child.contents }}>
+                <Span />
+              </PageRendererContext.Provider >
             );
           case 'editable': {
             switch (child.element) {
               case 'div':
                 return (
-                  <EditableDiv
-                    key={key}
-                    baseReference={baseReference}
-                    inputs={child.inputs}
-                    outputs={child.outputs}
-                    editable={editable}
-                    pageIndex={pageIndex}
-                    layout={layout}
-                    word={word}
-                  />
+                  <PageRendererContext.Provider key={key} value={{ ...value, className: child.class, contents: child.outputs }}>
+                    <EditableDiv
+                      baseReference={baseReference}
+                      inputs={child.inputs}
+                      outputs={child.outputs}
+                      editable={editable}
+                      pageIndex={pageIndex}
+                      layout={layout}
+                      word={word}
+                    />
+                  </PageRendererContext.Provider >
                 );
               case 'span':
                 return (
-                  <EditableSpan
-                    key={key}
-                    baseReference={baseReference}
-                    inputs={child.inputs}
-                    outputs={child.outputs}
-                    editable={editable}
-                    pageIndex={pageIndex}
-                    layout={layout}
-                    word={word}
-                  />
+                  <PageRendererContext.Provider key={key} value={{ ...value, className: child.class, contents: child.outputs }}>
+                    <EditableSpan
+                      baseReference={baseReference}
+                      inputs={child.inputs}
+                      outputs={child.outputs}
+                      editable={editable}
+                      pageIndex={pageIndex}
+                      layout={layout}
+                      word={word}
+                    />
+                  </PageRendererContext.Provider >
                 );
               default:
                 return (
                   <Error key={key}>{`Invalid element: ${
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     (child as any).component
-                  }`}</Error>
+                    }`}</Error>
                 );
             }
           }

@@ -5,7 +5,7 @@ import { SearchCard } from 'otamashelf/SearchCard';
 import * as React from 'react';
 import { useState } from 'react';
 
-import { BookTemplateMediator, Mediator, NormalMediator, PageTemplateMediator, isBookTemplateMediator, isNormalMediator, isPageTemplateMediator } from '../Mediator';
+import { BookTemplateMediator, Mediator, PageTemplateMediator, isBookTemplateMediator, isNormalMediator, isPageTemplateMediator } from '../Mediator';
 import { usePagesDispatch, usePagesStore } from '../contexts/pagesContext';
 import { WordTabIndexContext } from '../contexts/wordTabIndexContext';
 import { useWorkbenchDispatch } from '../contexts/workbenchContext';

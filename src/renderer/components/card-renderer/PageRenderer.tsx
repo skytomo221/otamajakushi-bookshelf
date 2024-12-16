@@ -4,17 +4,19 @@ import { Mediator, isBookTemplateMediator, isNormalMediator, isPageTemplateMedia
 import { useWorkbenchStore } from '../../contexts/workbenchContext';
 
 import DragDropRenderer from './DragDropRenderer';
-import Recursion from './Recursion';
 import { PageRendererContext } from './PageRendererContext';
+import Recursion from './Recursion';
 
-export default function CardRenderer(mediator: Mediator): JSX.Element {
+export default function PageRenderer(mediator: Mediator): JSX.Element {
   const state = useWorkbenchStore();
   const { index, page, layout } = mediator;
   const editable =
     isNormalMediator(mediator) && (state?.find(workbench => workbench.path === mediator.index.bookPath)
       ?.editable ?? false) || isBookTemplateMediator(mediator) || isPageTemplateMediator(mediator);
   return (
-    <DragDropRenderer mediator={mediator}>
+    <DragDropRenderer
+      mediator={mediator}
+    >
       <PageRendererContext.Provider value={{
         baseReference: '',
         className: '',
