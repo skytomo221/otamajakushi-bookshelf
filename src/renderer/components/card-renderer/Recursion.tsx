@@ -18,6 +18,7 @@ import Mime from './Mime';
 import ModifyPageButton from './ModifyPageButton';
 import ModifyPagesButton from './ModifyPagesButton';
 import P from './P';
+import PageLink from './PageLink';
 import { PageRendererContext } from './PageRendererContext';
 import Section from './Section';
 import Span from './Span';
@@ -138,6 +139,12 @@ export default function Recursion(): JSX.Element {
               <PageRendererContext.Provider key={key} value={{ ...value, className: child.class, contents: child.contents }}>
                 <P />
               </PageRendererContext.Provider >
+            );
+          case 'page-link':
+            return (
+              <PageRendererContext.Provider key={key} value={{ ...value, className: child.class, contents: [] }}>
+                <PageLink pageReference={child.pageReference} />
+              </PageRendererContext.Provider>
             );
           case 'section':
             return (

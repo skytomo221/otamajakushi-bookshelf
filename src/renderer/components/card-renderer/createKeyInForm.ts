@@ -10,6 +10,7 @@ export function convertReferenceInForm(
     switch (component) {
       case 'chip':
       case 'mime':
+      case 'page-link-editor':
         return { index, ...child };
       case 'input': {
         switch (child.type) {

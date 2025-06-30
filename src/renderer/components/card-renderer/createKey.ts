@@ -17,6 +17,7 @@ function convertReference(
       case 'delete-button':
       case 'edit-button':
       case 'mime':
+      case 'page-link':
         return { index, ...child };
       case 'editable':
         return {
